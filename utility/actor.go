@@ -35,3 +35,22 @@ func (a *Actor) Draw(screen *ebiten.Image) {
 	o.GeoM.Translate(a.Location.X, a.Location.Y)
 	screen.DrawImage(a.Image, o)
 }
+
+func (a *Actor) Event_KeyPressed(key ebiten.Key) {
+}
+
+func (a *Actor) Event_KeyReleased(key ebiten.Key) {
+}
+
+func (a *Actor) Event_KeyPressing(key ebiten.Key) {
+	switch key {
+	case ebiten.KeyUp:
+		a.Location.Y -= 1
+	case ebiten.KeyDown:
+		a.Location.Y += 1
+	case ebiten.KeyLeft:
+		a.Location.X -= 1
+	case ebiten.KeyRight:
+		a.Location.X += 1
+	}
+}
