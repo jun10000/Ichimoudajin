@@ -16,7 +16,9 @@ type GameInstance struct {
 	ScreenHeight int
 	CurrentLevel *Level
 
-	Temp_Keys []ebiten.Key
+	Temp_PressedKeys  []ebiten.Key
+	Temp_ReleasedKeys []ebiten.Key
+	Temp_PressingKeys []ebiten.Key
 }
 
 func PlayGame(title string, screen_w int, screen_h int, firstlevel *Level) {
@@ -37,26 +39,18 @@ func PlayGame(title string, screen_w int, screen_h int, firstlevel *Level) {
 }
 
 func (g *GameInstance) Update() error {
-	// OnKeyPressed
-	g.Temp_Keys = inpututil.AppendJustPressedKeys(g.Temp_Keys[:0])
-	for _, k := range g.Temp_Keys {
-		for _, p := range g.CurrentLevel.Pawns {
+	g.Temp_PressedKeys = inpututil.AppendJustPressedKeys(g.Temp_PressedKeys[:0])
+	g.Temp_ReleasedKeys = inpututil.AppendJustReleasedKeys(g.Temp_ReleasedKeys[:0])
+	g.Temp_PressingKeys = inpututil.AppendPressedKeys(g.Temp_PressingKeys[:0])
+
+	for _, p := range g.CurrentLevel.Pawns {
+		for _, k := range g.Temp_PressedKeys {
 			p.Event_KeyPressed(k)
 		}
-	}
-
-	// OnKeyReleased
-	g.Temp_Keys = inpututil.AppendJustReleasedKeys(g.Temp_Keys[:0])
-	for _, k := range g.Temp_Keys {
-		for _, p := range g.CurrentLevel.Pawns {
+		for _, k := range g.Temp_ReleasedKeys {
 			p.Event_KeyReleased(k)
 		}
-	}
-
-	// OnKeyPressing
-	g.Temp_Keys = inpututil.AppendPressedKeys(g.Temp_Keys[:0])
-	for _, k := range g.Temp_Keys {
-		for _, p := range g.CurrentLevel.Pawns {
+		for _, k := range g.Temp_PressingKeys {
 			p.Event_KeyPressing(k)
 		}
 	}
