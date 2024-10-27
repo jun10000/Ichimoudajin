@@ -15,7 +15,7 @@ type Actor struct {
 	MaxSpeed float64
 }
 
-func NewActor(imagefile string, location_x float64, location_y float64, rotation float64, scale_x float64, scale_y float64, maxspeed float64) *Actor {
+func NewActor(imagefile string) *Actor {
 	image, _, err := ebitenutil.NewImageFromFile(imagefile)
 	if err != nil {
 		log.Fatal(err)
@@ -23,10 +23,10 @@ func NewActor(imagefile string, location_x float64, location_y float64, rotation
 
 	return &Actor{
 		Image:    image,
-		Location: NewVector(location_x, location_y),
-		Rotation: rotation,
-		Scale:    NewVector(scale_x, scale_y),
-		MaxSpeed: maxspeed,
+		Location: NewVector(0, 0),
+		Rotation: 0,
+		Scale:    NewVector(1, 1),
+		MaxSpeed: 5,
 	}
 }
 

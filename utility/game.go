@@ -8,9 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type GameInstance struct {
-	FirstLevel *Level
-
+type Game struct {
 	WindowTitle  string
 	ScreenWidth  int
 	ScreenHeight int
@@ -21,24 +19,20 @@ type GameInstance struct {
 	Temp_PressingKeys []ebiten.Key
 }
 
-func PlayGame(title string, screen_w int, screen_h int, firstlevel *Level) {
-	g := &GameInstance{
-		FirstLevel:   firstlevel,
-		WindowTitle:  title,
-		ScreenWidth:  screen_w,
-		ScreenHeight: screen_h,
-		CurrentLevel: firstlevel,
+func NewGame(firstlevel *Level) *Game {
+	if firstlevel == nil {
+		log.Fatal("Specified first level is invalid")
 	}
-	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
-	ebiten.SetWindowTitle(g.WindowTitle)
 
-	err := ebiten.RunGame(g)
-	if err != nil {
-		log.Fatal(err)
+	return &Game{
+		WindowTitle:  "Game",
+		ScreenWidth:  1280,
+		ScreenHeight: 720,
+		CurrentLevel: firstlevel,
 	}
 }
 
-func (g *GameInstance) Update() error {
+func (g *Game) Update() error {
 	g.Temp_PressedKeys = inpututil.AppendJustPressedKeys(g.Temp_PressedKeys[:0])
 	g.Temp_ReleasedKeys = inpututil.AppendJustReleasedKeys(g.Temp_ReleasedKeys[:0])
 	g.Temp_PressingKeys = inpututil.AppendPressedKeys(g.Temp_PressingKeys[:0])
@@ -58,15 +52,22 @@ func (g *GameInstance) Update() error {
 	return nil
 }
 
-func (g *GameInstance) Draw(screen *ebiten.Image) {
+func (g *Game) Draw(screen *ebiten.Image) {
 	for _, a := range g.CurrentLevel.Actors {
-		a.Draw(screen)
-	}
-	for _, a := range g.CurrentLevel.Pawns {
 		a.Draw(screen)
 	}
 }
 
-func (g *GameInstance) Layout(width int, height int) (int, int) {
+func (g *Game) Layout(width int, height int) (int, int) {
 	return g.ScreenWidth, g.ScreenHeight
+}
+
+func (g *Game) Play() {
+	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
+	ebiten.SetWindowTitle(g.WindowTitle)
+
+	err := ebiten.RunGame(g)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

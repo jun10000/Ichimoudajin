@@ -6,5 +6,7 @@ import (
 )
 
 func main() {
-	utility.PlayGame("Ichimoudajin", 1280, 720, gamemap.Stage1)
+	g := utility.NewGame(gamemap.Stage1)
+	g.WindowTitle = "Ichimoudajin"
+	g.Play()
 }
