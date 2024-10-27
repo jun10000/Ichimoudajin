@@ -49,6 +49,10 @@ func (g *Game) Update() error {
 		}
 	}
 
+	for _, a := range g.CurrentLevel.Actors {
+		a.Event_Tick()
+	}
+
 	return nil
 }
 

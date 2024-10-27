@@ -12,7 +12,7 @@ type Actor struct {
 	Location Vector
 	Rotation float64
 	Scale    Vector
-	MaxSpeed float64
+	Movement *MovementComponent
 }
 
 func NewActor(imagefile string) *Actor {
@@ -26,7 +26,7 @@ func NewActor(imagefile string) *Actor {
 		Location: NewVector(0, 0),
 		Rotation: 0,
 		Scale:    NewVector(1, 1),
-		MaxSpeed: 5,
+		Movement: NewMovementComponent(),
 	}
 }
 
@@ -47,12 +47,16 @@ func (a *Actor) Event_KeyReleased(key ebiten.Key) {
 func (a *Actor) Event_KeyPressing(key ebiten.Key) {
 	switch key {
 	case ebiten.KeyUp:
-		a.Location.Y -= a.MaxSpeed
+		a.Movement.AddInput(NewVector(0, -1), 1)
 	case ebiten.KeyDown:
-		a.Location.Y += a.MaxSpeed
+		a.Movement.AddInput(NewVector(0, 1), 1)
 	case ebiten.KeyLeft:
-		a.Location.X -= a.MaxSpeed
+		a.Movement.AddInput(NewVector(-1, 0), 1)
 	case ebiten.KeyRight:
-		a.Location.X += a.MaxSpeed
+		a.Movement.AddInput(NewVector(1, 0), 1)
 	}
+}
+
+func (a *Actor) Event_Tick() {
+	a.Movement.Event_Tick(a)
 }
