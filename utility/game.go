@@ -3,6 +3,7 @@ package utility
 import (
 	_ "image/png"
 	"log"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -37,6 +38,16 @@ func (g *Game) Update() error {
 	g.Temp_ReleasedKeys = inpututil.AppendJustReleasedKeys(g.Temp_ReleasedKeys[:0])
 	g.Temp_PressingKeys = inpututil.AppendPressedKeys(g.Temp_PressingKeys[:0])
 
+	for _, k := range g.Temp_PressedKeys {
+		g.Event_KeyPressed(k)
+	}
+	for _, k := range g.Temp_ReleasedKeys {
+		g.Event_KeyReleased(k)
+	}
+	for _, k := range g.Temp_PressingKeys {
+		g.Event_KeyPressing(k)
+	}
+
 	for _, p := range g.CurrentLevel.Pawns {
 		for _, k := range g.Temp_PressedKeys {
 			p.Event_KeyPressed(k)
@@ -48,6 +59,8 @@ func (g *Game) Update() error {
 			p.Event_KeyPressing(k)
 		}
 	}
+
+	g.Event_Tick()
 
 	for _, a := range g.CurrentLevel.Actors {
 		a.Event_Tick()
@@ -74,4 +87,23 @@ func (g *Game) Play() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (g *Game) Event_KeyPressed(k ebiten.Key) {
+	switch k {
+	case ebiten.KeyEscape:
+		os.Exit(0)
+	}
+}
+
+func (g *Game) Event_KeyReleased(k ebiten.Key) {
+
+}
+
+func (g *Game) Event_KeyPressing(k ebiten.Key) {
+
+}
+
+func (g *Game) Event_Tick() {
+
 }
