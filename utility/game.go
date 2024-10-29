@@ -13,6 +13,7 @@ type Game struct {
 	WindowTitle  string
 	ScreenWidth  int
 	ScreenHeight int
+
 	CurrentLevel *Level
 
 	Temp_PressedKeys  []ebiten.Key
@@ -20,16 +21,11 @@ type Game struct {
 	Temp_PressingKeys []ebiten.Key
 }
 
-func NewGame(firstlevel *Level) *Game {
-	if firstlevel == nil {
-		log.Fatal("Specified first level is invalid")
-	}
-
+func NewGame() *Game {
 	return &Game{
 		WindowTitle:  "Game",
 		ScreenWidth:  1280,
 		ScreenHeight: 720,
-		CurrentLevel: firstlevel,
 	}
 }
 
@@ -92,7 +88,12 @@ func (g *Game) Tick() {
 	}
 }
 
-func (g *Game) Play() {
+func (g *Game) Play(firstlevel *Level) {
+	if firstlevel == nil {
+		log.Fatal("Specified first level is invalid")
+	}
+	g.CurrentLevel = firstlevel
+
 	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
 	ebiten.SetWindowTitle(g.WindowTitle)
 
