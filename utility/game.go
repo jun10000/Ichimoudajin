@@ -48,23 +48,7 @@ func (g *Game) Update() error {
 		g.Event_KeyPressing(k)
 	}
 
-	for _, p := range g.CurrentLevel.Pawns {
-		for _, k := range g.Temp_PressedKeys {
-			p.Event_KeyPressed(k)
-		}
-		for _, k := range g.Temp_ReleasedKeys {
-			p.Event_KeyReleased(k)
-		}
-		for _, k := range g.Temp_PressingKeys {
-			p.Event_KeyPressing(k)
-		}
-	}
-
 	g.Event_Tick()
-
-	for _, a := range g.CurrentLevel.Actors {
-		a.Event_Tick()
-	}
 
 	return nil
 }
@@ -79,6 +63,41 @@ func (g *Game) Layout(width int, height int) (int, int) {
 	return g.ScreenWidth, g.ScreenHeight
 }
 
+func (g *Game) Event_KeyPressed(k ebiten.Key) {
+	switch k {
+	case ebiten.KeyEscape:
+		os.Exit(0)
+	}
+
+	for _, p := range g.CurrentLevel.Pawns {
+		for _, k := range g.Temp_PressedKeys {
+			p.Event_KeyPressed(k)
+		}
+	}
+}
+
+func (g *Game) Event_KeyReleased(k ebiten.Key) {
+	for _, p := range g.CurrentLevel.Pawns {
+		for _, k := range g.Temp_ReleasedKeys {
+			p.Event_KeyReleased(k)
+		}
+	}
+}
+
+func (g *Game) Event_KeyPressing(k ebiten.Key) {
+	for _, p := range g.CurrentLevel.Pawns {
+		for _, k := range g.Temp_PressingKeys {
+			p.Event_KeyPressing(k)
+		}
+	}
+}
+
+func (g *Game) Event_Tick() {
+	for _, a := range g.CurrentLevel.Actors {
+		a.Event_Tick()
+	}
+}
+
 func (g *Game) Play() {
 	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
 	ebiten.SetWindowTitle(g.WindowTitle)
@@ -87,23 +106,4 @@ func (g *Game) Play() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func (g *Game) Event_KeyPressed(k ebiten.Key) {
-	switch k {
-	case ebiten.KeyEscape:
-		os.Exit(0)
-	}
-}
-
-func (g *Game) Event_KeyReleased(k ebiten.Key) {
-
-}
-
-func (g *Game) Event_KeyPressing(k ebiten.Key) {
-
-}
-
-func (g *Game) Event_Tick() {
-
 }
