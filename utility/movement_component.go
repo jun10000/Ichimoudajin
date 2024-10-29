@@ -3,6 +3,7 @@ package utility
 import "math"
 
 type MovementComponent struct {
+	parent     *Pawn
 	AccelValue float64
 	DecelValue float64
 	MaxSpeed   float64
@@ -12,8 +13,9 @@ type MovementComponent struct {
 	Temp_Accel Vector
 }
 
-func NewMovementComponent() *MovementComponent {
+func NewMovementComponent(pawn *Pawn) *MovementComponent {
 	return &MovementComponent{
+		parent:     pawn,
 		AccelValue: 8000,
 		DecelValue: 8000,
 		MaxSpeed:   400,
@@ -25,7 +27,7 @@ func (c *MovementComponent) AddInput(normal Vector, scale float64) {
 	c.Temp_Accel = c.Temp_Accel.Add(accel)
 }
 
-func (c *MovementComponent) Event_Tick(parent *Actor) {
+func (c *MovementComponent) Tick() {
 	if c.Temp_Accel.X != 0 || c.Temp_Accel.Y != 0 {
 		c.CurrentVelocity = c.CurrentVelocity.Add(c.Temp_Accel.MulF(c.AccelValue * TickDuration))
 		if c.CurrentVelocity.GetLength() > c.MaxSpeed {
@@ -42,6 +44,6 @@ func (c *MovementComponent) Event_Tick(parent *Actor) {
 		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
 	}
 
-	parent.Location = parent.Location.Add(c.CurrentVelocity.MulF(TickDuration))
+	c.parent.Location = c.parent.Location.Add(c.CurrentVelocity.MulF(TickDuration))
 	c.Temp_Accel = ZeroVector()
 }

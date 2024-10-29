@@ -1,8 +1,9 @@
 package utility
 
 type Level struct {
-	Actors []*Actor
-	Pawns  []*Actor
+	Drawers      []Drawer
+	KeyReceivers []KeyReceiver
+	Tickers      []Ticker
 }
 
 func NewLevel() *Level {

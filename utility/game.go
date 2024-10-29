@@ -39,23 +39,23 @@ func (g *Game) Update() error {
 	g.Temp_PressingKeys = inpututil.AppendPressedKeys(g.Temp_PressingKeys[:0])
 
 	for _, k := range g.Temp_PressedKeys {
-		g.Event_KeyPressed(k)
+		g.ReceivePressedKey(k)
 	}
 	for _, k := range g.Temp_ReleasedKeys {
-		g.Event_KeyReleased(k)
+		g.ReceiveReleasedKey(k)
 	}
 	for _, k := range g.Temp_PressingKeys {
-		g.Event_KeyPressing(k)
+		g.ReceivePressingKey(k)
 	}
 
-	g.Event_Tick()
+	g.Tick()
 
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	for _, a := range g.CurrentLevel.Actors {
-		a.Draw(screen)
+	for _, d := range g.CurrentLevel.Drawers {
+		d.Draw(screen)
 	}
 }
 
@@ -63,38 +63,32 @@ func (g *Game) Layout(width int, height int) (int, int) {
 	return g.ScreenWidth, g.ScreenHeight
 }
 
-func (g *Game) Event_KeyPressed(k ebiten.Key) {
+func (g *Game) ReceivePressedKey(k ebiten.Key) {
 	switch k {
 	case ebiten.KeyEscape:
 		os.Exit(0)
 	}
 
-	for _, p := range g.CurrentLevel.Pawns {
-		for _, k := range g.Temp_PressedKeys {
-			p.Event_KeyPressed(k)
-		}
+	for _, r := range g.CurrentLevel.KeyReceivers {
+		r.ReceivePressedKey(k)
 	}
 }
 
-func (g *Game) Event_KeyReleased(k ebiten.Key) {
-	for _, p := range g.CurrentLevel.Pawns {
-		for _, k := range g.Temp_ReleasedKeys {
-			p.Event_KeyReleased(k)
-		}
+func (g *Game) ReceiveReleasedKey(k ebiten.Key) {
+	for _, r := range g.CurrentLevel.KeyReceivers {
+		r.ReceiveReleasedKey(k)
 	}
 }
 
-func (g *Game) Event_KeyPressing(k ebiten.Key) {
-	for _, p := range g.CurrentLevel.Pawns {
-		for _, k := range g.Temp_PressingKeys {
-			p.Event_KeyPressing(k)
-		}
+func (g *Game) ReceivePressingKey(k ebiten.Key) {
+	for _, r := range g.CurrentLevel.KeyReceivers {
+		r.ReceivePressingKey(k)
 	}
 }
 
-func (g *Game) Event_Tick() {
-	for _, a := range g.CurrentLevel.Actors {
-		a.Event_Tick()
+func (g *Game) Tick() {
+	for _, t := range g.CurrentLevel.Tickers {
+		t.Tick()
 	}
 }
 
