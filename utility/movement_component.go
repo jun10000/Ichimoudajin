@@ -1,40 +1,41 @@
 package utility
 
-import "math"
+import (
+	"math"
+)
 
 type MovementComponent struct {
-	parent     *Pawn
-	AccelValue float64
-	DecelValue float64
-	MaxSpeed   float64
+	Parent   *Pawn
+	Accel    float64
+	Decel    float64
+	MaxSpeed float64
 
 	CurrentVelocity Vector
 
-	Temp_Accel Vector
+	t_InputAccel Vector
 }
 
 func NewMovementComponent(pawn *Pawn) *MovementComponent {
 	return &MovementComponent{
-		parent:     pawn,
-		AccelValue: 8000,
-		DecelValue: 8000,
-		MaxSpeed:   400,
+		Parent:   pawn,
+		Accel:    8000,
+		Decel:    8000,
+		MaxSpeed: 400,
 	}
 }
 
 func (c *MovementComponent) AddInput(normal Vector, scale float64) {
-	accel := normal.Normalize().MulF(scale)
-	c.Temp_Accel = c.Temp_Accel.Add(accel)
+	c.t_InputAccel = c.t_InputAccel.Add(normal.Normalize().MulF(scale))
 }
 
 func (c *MovementComponent) Tick() {
-	if c.Temp_Accel.X != 0 || c.Temp_Accel.Y != 0 {
-		c.CurrentVelocity = c.CurrentVelocity.Add(c.Temp_Accel.MulF(c.AccelValue * TickDuration))
+	if c.t_InputAccel.X != 0 || c.t_InputAccel.Y != 0 {
+		c.CurrentVelocity = c.CurrentVelocity.Add(c.t_InputAccel.MulF(c.Accel * TickDuration))
 		if c.CurrentVelocity.GetLength() > c.MaxSpeed {
 			c.CurrentVelocity = c.CurrentVelocity.Normalize().MulF(c.MaxSpeed)
 		}
 	} else {
-		decelspeed := c.CurrentVelocity.Normalize().MulF(c.DecelValue * TickDuration)
+		decelspeed := c.CurrentVelocity.Normalize().MulF(c.Decel * TickDuration)
 		if math.Abs(decelspeed.X) > math.Abs(c.CurrentVelocity.X) {
 			decelspeed.X = c.CurrentVelocity.X
 		}
@@ -44,6 +45,6 @@ func (c *MovementComponent) Tick() {
 		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
 	}
 
-	c.parent.Location = c.parent.Location.Add(c.CurrentVelocity.MulF(TickDuration))
-	c.Temp_Accel = ZeroVector()
+	c.Parent.Location = c.Parent.Location.Add(c.CurrentVelocity.MulF(TickDuration))
+	c.t_InputAccel = ZeroVector()
 }

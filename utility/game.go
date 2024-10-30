@@ -14,11 +14,11 @@ type Game struct {
 	ScreenWidth  int
 	ScreenHeight int
 
-	CurrentLevel *Level
+	currentLevel *Level
 
-	Temp_PressedKeys  []ebiten.Key
-	Temp_ReleasedKeys []ebiten.Key
-	Temp_PressingKeys []ebiten.Key
+	t_PressedKeys  []ebiten.Key
+	t_ReleasedKeys []ebiten.Key
+	t_PressingKeys []ebiten.Key
 }
 
 func NewGame() *Game {
@@ -30,17 +30,17 @@ func NewGame() *Game {
 }
 
 func (g *Game) Update() error {
-	g.Temp_PressedKeys = inpututil.AppendJustPressedKeys(g.Temp_PressedKeys[:0])
-	g.Temp_ReleasedKeys = inpututil.AppendJustReleasedKeys(g.Temp_ReleasedKeys[:0])
-	g.Temp_PressingKeys = inpututil.AppendPressedKeys(g.Temp_PressingKeys[:0])
+	g.t_PressedKeys = inpututil.AppendJustPressedKeys(g.t_PressedKeys[:0])
+	g.t_ReleasedKeys = inpututil.AppendJustReleasedKeys(g.t_ReleasedKeys[:0])
+	g.t_PressingKeys = inpututil.AppendPressedKeys(g.t_PressingKeys[:0])
 
-	for _, k := range g.Temp_PressedKeys {
+	for _, k := range g.t_PressedKeys {
 		g.ReceivePressedKey(k)
 	}
-	for _, k := range g.Temp_ReleasedKeys {
+	for _, k := range g.t_ReleasedKeys {
 		g.ReceiveReleasedKey(k)
 	}
-	for _, k := range g.Temp_PressingKeys {
+	for _, k := range g.t_PressingKeys {
 		g.ReceivePressingKey(k)
 	}
 
@@ -50,7 +50,7 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	for _, d := range g.CurrentLevel.Drawers {
+	for _, d := range g.currentLevel.Drawers {
 		d.Draw(screen)
 	}
 }
@@ -65,35 +65,38 @@ func (g *Game) ReceivePressedKey(k ebiten.Key) {
 		os.Exit(0)
 	}
 
-	for _, r := range g.CurrentLevel.KeyReceivers {
+	for _, r := range g.currentLevel.KeyReceivers {
 		r.ReceivePressedKey(k)
 	}
 }
 
 func (g *Game) ReceiveReleasedKey(k ebiten.Key) {
-	for _, r := range g.CurrentLevel.KeyReceivers {
+	for _, r := range g.currentLevel.KeyReceivers {
 		r.ReceiveReleasedKey(k)
 	}
 }
 
 func (g *Game) ReceivePressingKey(k ebiten.Key) {
-	for _, r := range g.CurrentLevel.KeyReceivers {
+	for _, r := range g.currentLevel.KeyReceivers {
 		r.ReceivePressingKey(k)
 	}
 }
 
 func (g *Game) Tick() {
-	for _, t := range g.CurrentLevel.Tickers {
+	for _, t := range g.currentLevel.Tickers {
 		t.Tick()
 	}
 }
 
-func (g *Game) Play(firstlevel *Level) {
-	if firstlevel == nil {
-		log.Fatal("Specified first level is invalid")
+func (g *Game) LoadLevel(level *Level) {
+	if level == nil {
+		log.Fatal("Load level failed")
 	}
-	g.CurrentLevel = firstlevel
+	g.currentLevel = level
+}
 
+func (g *Game) Play(firstlevel *Level) {
+	g.LoadLevel(firstlevel)
 	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
 	ebiten.SetWindowTitle(g.WindowTitle)
 
