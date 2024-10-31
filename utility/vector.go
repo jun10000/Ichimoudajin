@@ -23,6 +23,18 @@ func (v Vector) Sub(value Vector) Vector {
 	return NewVector(v.X-value.X, v.Y-value.Y)
 }
 
+func (v Vector) Mul(value Vector) Vector {
+	return NewVector(v.X*value.X, v.Y*value.Y)
+}
+
+func (v Vector) Div(value Vector) Vector {
+	if value.X == 0 || value.Y == 0 {
+		return ZeroVector()
+	}
+
+	return NewVector(v.X/value.X, v.Y/value.Y)
+}
+
 func (v Vector) AddF(value float64) Vector {
 	return NewVector(v.X+value, v.Y+value)
 }
@@ -41,6 +53,10 @@ func (v Vector) DivF(value float64) Vector {
 	}
 
 	return NewVector(v.X/value, v.Y/value)
+}
+
+func (v Vector) Ceil() Point {
+	return NewPoint(int(math.Ceil(v.X)), int(math.Ceil(v.Y)))
 }
 
 func (v Vector) GetLength() float64 {
