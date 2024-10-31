@@ -9,9 +9,9 @@ type Pawn struct {
 	Movement *MovementComponent
 }
 
-func NewPawn(imagefile string) *Pawn {
+func NewPawn() *Pawn {
 	pawn := &Pawn{
-		Actor: NewActor(imagefile),
+		Actor: NewActor(),
 	}
 	pawn.Movement = NewMovementComponent(pawn)
 

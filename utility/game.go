@@ -1,7 +1,6 @@
 package utility
 
 import (
-	_ "image/png"
 	"log"
 	"os"
 
