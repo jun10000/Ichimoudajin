@@ -1,17 +1,24 @@
 package utility
 
 import (
+	"image"
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Pawn struct {
 	*Actor
 	Movement *MovementComponent
+
+	currentTickIndex int
 }
 
 func NewPawn() *Pawn {
+	actor := NewActor()
+	actor.Scale = NewVector(2, 2)
 	pawn := &Pawn{
-		Actor: NewActor(),
+		Actor: actor,
 	}
 	pawn.Movement = NewMovementComponent(pawn)
 
@@ -38,5 +45,34 @@ func (p *Pawn) ReceivePressingKey(key ebiten.Key) {
 }
 
 func (p *Pawn) Tick() {
+	p.currentTickIndex++
 	p.Movement.Tick()
+}
+
+func (p *Pawn) Draw(screen *ebiten.Image) {
+	tipframecount := 4
+	tipspeed := 4
+	tipsize := NewPoint(32, 32)
+
+	tipindex := (p.currentTickIndex * tipspeed / TickCount) % tipframecount
+	if tipindex == 3 {
+		tipindex = 1
+	}
+
+	tipdirection := 0
+	switch {
+	case p.Rotation < math.Pi/4:
+		tipdirection = 0
+	case p.Rotation < math.Pi*3/4:
+		tipdirection = 1
+	case p.Rotation < math.Pi*5/4:
+		tipdirection = 3
+	case p.Rotation < math.Pi*7/4:
+		tipdirection = 2
+	}
+
+	o := &ebiten.DrawImageOptions{}
+	o.GeoM.Scale(p.Scale.X, p.Scale.Y)
+	o.GeoM.Translate(p.Location.X, p.Location.Y)
+	screen.DrawImage(p.Image.SubImage(image.Rect(tipindex*tipsize.X, tipdirection*tipsize.Y, tipindex*tipsize.X+tipsize.X, tipdirection*tipsize.Y+tipsize.Y)).(*ebiten.Image), o)
 }
