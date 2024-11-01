@@ -15,7 +15,7 @@ func NewStage1() *utility.Level {
 
 	player := utility.NewPawn()
 	player.Image = assets.GetImage("ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
-	player.Location = utility.NewVector(300, 400)
+	player.Location = utility.NewVector(600, 300)
 	level.Add(player)
 
 	return level

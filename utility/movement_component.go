@@ -31,9 +31,10 @@ func (c *MovementComponent) AddInput(normal Vector, scale float64) {
 func (c *MovementComponent) Tick() {
 	if c.t_InputAccel.X != 0 || c.t_InputAccel.Y != 0 {
 		c.CurrentVelocity = c.CurrentVelocity.Add(c.t_InputAccel.MulF(c.Accel * TickDuration))
-		if c.CurrentVelocity.GetLength() > c.MaxSpeed {
+		if c.CurrentVelocity.Length() > c.MaxSpeed {
 			c.CurrentVelocity = c.CurrentVelocity.Normalize().MulF(c.MaxSpeed)
 		}
+		c.Parent.Rotation.Set(NewVector(0, 1).CrossingAngle(c.t_InputAccel))
 	} else {
 		decelspeed := c.CurrentVelocity.Normalize().MulF(c.Decel * TickDuration)
 		if math.Abs(decelspeed.X) > math.Abs(c.CurrentVelocity.X) {

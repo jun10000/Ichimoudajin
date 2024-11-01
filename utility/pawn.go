@@ -59,16 +59,16 @@ func (p *Pawn) Draw(screen *ebiten.Image) {
 		tipindex = 1
 	}
 
-	tipdirection := 0
+	tipdirection := 3
 	switch {
-	case p.Rotation < math.Pi/4:
-		tipdirection = 0
-	case p.Rotation < math.Pi*3/4:
-		tipdirection = 1
-	case p.Rotation < math.Pi*5/4:
+	case p.Rotation.Get() < math.Pi*-3/4:
 		tipdirection = 3
-	case p.Rotation < math.Pi*7/4:
+	case p.Rotation.Get() < math.Pi*-1/4:
 		tipdirection = 2
+	case p.Rotation.Get() < math.Pi*1/4:
+		tipdirection = 0
+	case p.Rotation.Get() < math.Pi*3/4:
+		tipdirection = 1
 	}
 
 	o := &ebiten.DrawImageOptions{}
