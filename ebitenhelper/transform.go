@@ -1,4 +1,4 @@
-package utility
+package ebitenhelper
 
 type Transform struct {
 	Location Vector

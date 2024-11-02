@@ -1,4 +1,4 @@
-package utility
+package ebitenhelper
 
 type Point struct {
 	X int

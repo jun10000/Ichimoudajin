@@ -1,4 +1,4 @@
-package utility
+package ebitenhelper
 
 import "github.com/hajimehoshi/ebiten/v2"
 

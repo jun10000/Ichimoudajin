@@ -1,4 +1,4 @@
-package utility
+package ebitenhelper
 
 type Level struct {
 	Drawers      []Drawer
