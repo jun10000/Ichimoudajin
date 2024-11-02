@@ -12,6 +12,10 @@ func NewRotator(value float64) Rotator {
 	return rot
 }
 
+func ZeroRotator() Rotator {
+	return NewRotator(0)
+}
+
 func (r *Rotator) Get() float64 {
 	return r.value
 }

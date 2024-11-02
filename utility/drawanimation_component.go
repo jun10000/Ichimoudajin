@@ -6,8 +6,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type AnimationComponent struct {
-	Parent            *Pawn
+type DrawAnimationComponent struct {
+	parent            *Pawn
+	Image             *ebiten.Image
 	FrameCount        int
 	FrameSize         Point
 	FPS               int
@@ -16,9 +17,9 @@ type AnimationComponent struct {
 	currentTickIndex int
 }
 
-func NewAnimationComponent(pawn *Pawn) *AnimationComponent {
-	return &AnimationComponent{
-		Parent:            pawn,
+func NewDrawAnimationComponent(parentActor *Pawn) *DrawAnimationComponent {
+	return &DrawAnimationComponent{
+		parent:            parentActor,
 		FrameCount:        3,
 		FrameSize:         NewPoint(32, 32),
 		FPS:               4,
@@ -26,11 +27,19 @@ func NewAnimationComponent(pawn *Pawn) *AnimationComponent {
 	}
 }
 
-func (c *AnimationComponent) Tick() {
+func (c *DrawAnimationComponent) Tick() {
+	if c.Image == nil {
+		return
+	}
+
 	c.currentTickIndex++
 }
 
-func (c *AnimationComponent) Draw(screen *ebiten.Image) {
+func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
+	if c.Image == nil {
+		return
+	}
+
 	excount := 2*c.FrameCount - 2
 	index := (c.currentTickIndex * c.FPS / TickCount) % excount
 	if index >= c.FrameCount {
@@ -38,7 +47,7 @@ func (c *AnimationComponent) Draw(screen *ebiten.Image) {
 	}
 
 	direction := c.FrameDirectionMap[3]
-	switch r := c.Parent.Rotation.Get(); {
+	switch r := c.parent.Rotation.Get(); {
 	case r < math.Pi*-3/4:
 		direction = c.FrameDirectionMap[3]
 	case r < math.Pi*-1/4:
@@ -55,7 +64,7 @@ func (c *AnimationComponent) Draw(screen *ebiten.Image) {
 	)
 
 	o := &ebiten.DrawImageOptions{}
-	o.GeoM.Scale(c.Parent.Scale.X, c.Parent.Scale.Y)
-	o.GeoM.Translate(c.Parent.Location.X, c.Parent.Location.Y)
-	screen.DrawImage(GetSubImage(c.Parent.Image, location, c.FrameSize), o)
+	o.GeoM.Scale(c.parent.Scale.X, c.parent.Scale.Y)
+	o.GeoM.Translate(c.parent.Location.X, c.parent.Location.Y)
+	screen.DrawImage(GetSubImage(c.Image, location, c.FrameSize), o)
 }

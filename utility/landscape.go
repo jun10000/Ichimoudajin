@@ -5,13 +5,13 @@ import (
 )
 
 type Landscape struct {
-	Image     *ebiten.Image
-	TileScale Vector
+	Scale Vector
+	Image *ebiten.Image
 }
 
 func NewLandscape() *Landscape {
 	return &Landscape{
-		TileScale: NewVector(1, 1),
+		Scale: NewVector(1, 1),
 	}
 }
 
@@ -27,13 +27,13 @@ func (l *Landscape) Draw(screen *ebiten.Image) {
 	tilesize := NewVector(
 		float64(l.Image.Bounds().Dx()),
 		float64(l.Image.Bounds().Dy()),
-	).Mul(l.TileScale)
+	).Mul(l.Scale)
 	tilecount := screensize.Div(tilesize).Ceil()
 
 	for y := 0; y < tilecount.Y; y++ {
 		for x := 0; x < tilecount.X; x++ {
 			o := &ebiten.DrawImageOptions{}
-			o.GeoM.Scale(l.TileScale.X, l.TileScale.Y)
+			o.GeoM.Scale(l.Scale.X, l.Scale.Y)
 			o.GeoM.Translate(tilesize.X*float64(x), tilesize.Y*float64(y))
 			screen.DrawImage(l.Image, o)
 		}

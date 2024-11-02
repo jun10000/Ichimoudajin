@@ -5,19 +5,17 @@ import (
 )
 
 type Pawn struct {
-	*Actor
+	Transform
 	Movement  *MovementComponent
-	Animation *AnimationComponent
+	Animation *DrawAnimationComponent
 }
 
 func NewPawn() *Pawn {
-	actor := NewActor()
-	actor.Scale = NewVector(2, 2)
 	pawn := &Pawn{
-		Actor: actor,
+		Transform: DefaultTransform(),
 	}
 	pawn.Movement = NewMovementComponent(pawn)
-	pawn.Animation = NewAnimationComponent(pawn)
+	pawn.Animation = NewDrawAnimationComponent(pawn)
 
 	return pawn
 }
