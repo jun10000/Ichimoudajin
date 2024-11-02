@@ -8,7 +8,7 @@ import (
 
 type DrawAnimationComponent struct {
 	parent            *Pawn
-	Image             *ebiten.Image
+	Source            *ebiten.Image
 	FrameCount        int
 	FrameSize         Point
 	FPS               int
@@ -28,7 +28,7 @@ func NewDrawAnimationComponent(parentActor *Pawn) *DrawAnimationComponent {
 }
 
 func (c *DrawAnimationComponent) Tick() {
-	if c.Image == nil {
+	if c.Source == nil {
 		return
 	}
 
@@ -36,7 +36,7 @@ func (c *DrawAnimationComponent) Tick() {
 }
 
 func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
-	if c.Image == nil {
+	if c.Source == nil {
 		return
 	}
 
@@ -66,5 +66,5 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
 	o := &ebiten.DrawImageOptions{}
 	o.GeoM.Scale(c.parent.Scale.X, c.parent.Scale.Y)
 	o.GeoM.Translate(c.parent.Location.X, c.parent.Location.Y)
-	screen.DrawImage(GetSubImage(c.Image, location, c.FrameSize), o)
+	screen.DrawImage(GetSubImage(c.Source, location, c.FrameSize), o)
 }
