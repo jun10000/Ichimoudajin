@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/jun10000/Ichimoudajin/assets"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper"
 )
@@ -8,10 +10,8 @@ import (
 func NewStage1() *ebitenhelper.Level {
 	level := ebitenhelper.NewLevel()
 
-	background := ebitenhelper.NewLandscape()
-	background.Image.Source = assets.GetImage("terracotta-tiles-941741_640.jpg")
-	background.Image.TileScale = ebitenhelper.NewVector(0.25, 0.25)
-	level.Add(background)
+	mapdata := assets.GetMapData("stage1.tmx")
+	log.Println(mapdata.Version)
 
 	player := ebitenhelper.NewPawn()
 	player.Location = ebitenhelper.NewVector(600, 300)
