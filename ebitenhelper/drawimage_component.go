@@ -1,8 +1,6 @@
 package ebitenhelper
 
 import (
-	"log"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -12,10 +10,6 @@ type DrawImageComponent struct {
 }
 
 func NewDrawImageComponent(parentActor *Actor) *DrawImageComponent {
-	if parentActor == nil {
-		log.Fatal("Failed to create DrawImageComponent")
-	}
-
 	return &DrawImageComponent{
 		parent: parentActor,
 	}

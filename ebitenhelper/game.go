@@ -1,7 +1,7 @@
 package ebitenhelper
 
 import (
-	"log"
+	"errors"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -87,20 +87,27 @@ func (g *Game) Tick() {
 	}
 }
 
-func (g *Game) LoadLevel(level *Level) {
+func (g *Game) LoadLevel(level *Level) error {
 	if level == nil {
-		log.Fatal("Load level failed")
+		return errors.New("loaded level is empty")
 	}
 	g.currentLevel = level
+	return nil
 }
 
-func (g *Game) Play(firstlevel *Level) {
-	g.LoadLevel(firstlevel)
+func (g *Game) Play(firstlevel *Level) error {
+	err := g.LoadLevel(firstlevel)
+	if err != nil {
+		return err
+	}
+
 	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
 	ebiten.SetWindowTitle(g.WindowTitle)
 
-	err := ebiten.RunGame(g)
+	err = ebiten.RunGame(g)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }

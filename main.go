@@ -8,15 +8,23 @@ import (
 )
 
 func NewStage1() *ebitenhelper.Level {
-	level := ebitenhelper.NewLevel()
-
-	mapdata := assets.GetMapData("stage1.tmx")
+	mapdata, err := assets.GetMapData("stage1.tmx")
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println(mapdata.MapSize)
+
+	image_player, err := assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	level := ebitenhelper.NewLevel()
 
 	player := ebitenhelper.NewPawn()
 	player.Location = ebitenhelper.NewVector(600, 300)
 	player.Scale = ebitenhelper.NewVector(2, 2)
-	player.Animation.Source = assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
+	player.Animation.Source = image_player
 	level.Add(player)
 
 	return level
@@ -25,5 +33,8 @@ func NewStage1() *ebitenhelper.Level {
 func main() {
 	g := ebitenhelper.NewGame()
 	g.WindowTitle = "Ichimoudajin"
-	g.Play(NewStage1())
+	err := g.Play(NewStage1())
+	if err != nil {
+		log.Fatal(err)
+	}
 }

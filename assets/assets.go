@@ -78,8 +78,13 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	}
 
 	for _, v := range mxml.Tilesets {
+		image, err := GetImage(v.Image.Source)
+		if err != nil {
+			return err
+		}
+
 		tileset := MapTileset{
-			Image:      GetImage(v.Image.Source),
+			Image:      image,
 			StartIndex: v.FirstGID,
 		}
 		result.Tilesets = append(result.Tilesets, tileset)
@@ -100,26 +105,26 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	return nil
 }
 
-func GetImage(imagefile string) *ebiten.Image {
-	image, _, err := ebitenutil.NewImageFromFileSystem(assets, imagefile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return image
-}
-
-func GetMapData(mapfile string) *MapInfo {
+func GetMapData(mapfile string) (*MapInfo, error) {
 	data, err := assets.ReadFile(mapfile)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	data2 := &MapInfo{}
 	err = xml.Unmarshal(data, data2)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return data2
+	return data2, nil
+}
+
+func GetImage(imagefile string) (*ebiten.Image, error) {
+	image, _, err := ebitenutil.NewImageFromFileSystem(assets, imagefile)
+	if err != nil {
+		return nil, err
+	}
+
+	return image, nil
 }
