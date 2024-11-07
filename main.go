@@ -11,12 +11,12 @@ func NewStage1() *ebitenhelper.Level {
 	level := ebitenhelper.NewLevel()
 
 	mapdata := assets.GetMapData("stage1.tmx")
-	log.Println(mapdata.Version)
+	log.Println(mapdata.MapSize)
 
 	player := ebitenhelper.NewPawn()
 	player.Location = ebitenhelper.NewVector(600, 300)
 	player.Scale = ebitenhelper.NewVector(2, 2)
-	player.Animation.Source = assets.GetImage("ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
+	player.Animation.Source = assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
 	level.Add(player)
 
 	return level
