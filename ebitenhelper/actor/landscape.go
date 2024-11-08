@@ -1,16 +1,17 @@
-package ebitenhelper
+package actor
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 )
 
 type Landscape struct {
-	Image *DrawFullScreenComponent
+	Image *component.DrawFullScreenComponent
 }
 
 func NewLandscape() *Landscape {
 	return &Landscape{
-		Image: NewDrawFullScreenComponent(),
+		Image: component.NewDrawFullScreenComponent(),
 	}
 }
 

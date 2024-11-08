@@ -10,7 +10,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/jun10000/Ichimoudajin/ebitenhelper"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 //go:embed *
@@ -55,8 +55,8 @@ type MapLayer struct {
 }
 
 type MapInfo struct {
-	MapSize  ebitenhelper.Point
-	TileSize ebitenhelper.Point
+	MapSize  utility.Point
+	TileSize utility.Point
 	Tilesets []MapTileset
 	Layers   []MapLayer
 }
@@ -73,8 +73,8 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	}
 
 	result := MapInfo{
-		MapSize:  ebitenhelper.NewPoint(mxml.Width, mxml.Height),
-		TileSize: ebitenhelper.NewPoint(mxml.TileWidth, mxml.TileHeight),
+		MapSize:  utility.NewPoint(mxml.Width, mxml.Height),
+		TileSize: utility.NewPoint(mxml.TileWidth, mxml.TileHeight),
 	}
 
 	for _, v := range mxml.Tilesets {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 type Game struct {
@@ -13,7 +14,7 @@ type Game struct {
 	ScreenWidth  int
 	ScreenHeight int
 
-	currentLevel *Level
+	currentLevel *utility.Level
 
 	t_PressedKeys  []ebiten.Key
 	t_ReleasedKeys []ebiten.Key
@@ -87,7 +88,7 @@ func (g *Game) Tick() {
 	}
 }
 
-func (g *Game) LoadLevel(level *Level) error {
+func (g *Game) LoadLevel(level *utility.Level) error {
 	if level == nil {
 		return errors.New("loaded level is empty")
 	}
@@ -95,7 +96,7 @@ func (g *Game) LoadLevel(level *Level) error {
 	return nil
 }
 
-func (g *Game) Play(firstlevel *Level) error {
+func (g *Game) Play(firstlevel *utility.Level) error {
 	err := g.LoadLevel(firstlevel)
 	if err != nil {
 		return err

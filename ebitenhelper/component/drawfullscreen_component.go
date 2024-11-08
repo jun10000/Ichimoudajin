@@ -1,15 +1,18 @@
-package ebitenhelper
+package component
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
+)
 
 type DrawFullScreenComponent struct {
 	Source    *ebiten.Image
-	TileScale Vector
+	TileScale utility.Vector
 }
 
 func NewDrawFullScreenComponent() *DrawFullScreenComponent {
 	return &DrawFullScreenComponent{
-		TileScale: NewVector(1, 1),
+		TileScale: utility.NewVector(1, 1),
 	}
 }
 
@@ -18,11 +21,11 @@ func (c *DrawFullScreenComponent) Draw(screen *ebiten.Image) {
 		return
 	}
 
-	screensize := NewVector(
+	screensize := utility.NewVector(
 		float64(screen.Bounds().Dx()),
 		float64(screen.Bounds().Dy()),
 	)
-	tilesize := NewVector(
+	tilesize := utility.NewVector(
 		float64(c.Source.Bounds().Dx()),
 		float64(c.Source.Bounds().Dy()),
 	).Mul(c.TileScale)

@@ -1,4 +1,4 @@
-package ebitenhelper
+package utility
 
 type Vector3 struct {
 	X float64

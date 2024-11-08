@@ -1,42 +1,42 @@
-package ebitenhelper
+package component
 
 import (
 	"math"
+
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 type MovementComponent struct {
-	Parent   *Pawn
 	Accel    float64
 	Decel    float64
 	MaxSpeed float64
 
-	CurrentVelocity Vector
+	CurrentVelocity utility.Vector
 
-	t_InputAccel Vector
+	t_InputAccel utility.Vector
 }
 
-func NewMovementComponent(pawn *Pawn) *MovementComponent {
+func NewMovementComponent() *MovementComponent {
 	return &MovementComponent{
-		Parent:   pawn,
 		Accel:    8000,
 		Decel:    8000,
 		MaxSpeed: 400,
 	}
 }
 
-func (c *MovementComponent) AddInput(normal Vector, scale float64) {
+func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.t_InputAccel = c.t_InputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) Tick() {
+func (c *MovementComponent) Tick(transform *utility.Transform) {
 	if c.t_InputAccel.X != 0 || c.t_InputAccel.Y != 0 {
-		c.CurrentVelocity = c.CurrentVelocity.Add(c.t_InputAccel.MulF(c.Accel * TickDuration))
+		c.CurrentVelocity = c.CurrentVelocity.Add(c.t_InputAccel.MulF(c.Accel * utility.TickDuration))
 		if c.CurrentVelocity.Length() > c.MaxSpeed {
 			c.CurrentVelocity = c.CurrentVelocity.Normalize().MulF(c.MaxSpeed)
 		}
-		c.Parent.Rotation.Set(NewVector(0, 1).CrossingAngle(c.t_InputAccel))
+		transform.Rotation.Set(utility.NewVector(0, 1).CrossingAngle(c.t_InputAccel))
 	} else {
-		decelspeed := c.CurrentVelocity.Normalize().MulF(c.Decel * TickDuration)
+		decelspeed := c.CurrentVelocity.Normalize().MulF(c.Decel * utility.TickDuration)
 		if math.Abs(decelspeed.X) > math.Abs(c.CurrentVelocity.X) {
 			decelspeed.X = c.CurrentVelocity.X
 		}
@@ -46,6 +46,6 @@ func (c *MovementComponent) Tick() {
 		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
 	}
 
-	c.Parent.Location = c.Parent.Location.Add(c.CurrentVelocity.MulF(TickDuration))
-	c.t_InputAccel = ZeroVector()
+	transform.Location = transform.Location.Add(c.CurrentVelocity.MulF(utility.TickDuration))
+	c.t_InputAccel = utility.ZeroVector()
 }

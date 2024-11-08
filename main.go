@@ -5,9 +5,11 @@ import (
 
 	"github.com/jun10000/Ichimoudajin/assets"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-func NewStage1() *ebitenhelper.Level {
+func NewStage1() *utility.Level {
 	mapdata, err := assets.GetMapData("stage1.tmx")
 	if err != nil {
 		log.Fatal(err)
@@ -19,11 +21,11 @@ func NewStage1() *ebitenhelper.Level {
 		log.Fatal(err)
 	}
 
-	level := ebitenhelper.NewLevel()
+	level := utility.NewLevel()
 
-	player := ebitenhelper.NewPawn()
-	player.Location = ebitenhelper.NewVector(600, 300)
-	player.Scale = ebitenhelper.NewVector(2, 2)
+	player := actor.NewPawn()
+	player.Location = utility.NewVector(600, 300)
+	player.Scale = utility.NewVector(2, 2)
 	player.Animation.Source = image_player
 	level.Add(player)
 

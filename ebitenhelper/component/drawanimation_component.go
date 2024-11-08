@@ -1,27 +1,26 @@
-package ebitenhelper
+package component
 
 import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 type DrawAnimationComponent struct {
-	parent            *Pawn
 	Source            *ebiten.Image
 	FrameCount        int
-	FrameSize         Point
+	FrameSize         utility.Point
 	FPS               int
 	FrameDirectionMap []int // Front, Left, Right, Back
 
 	currentTickIndex int
 }
 
-func NewDrawAnimationComponent(parentActor *Pawn) *DrawAnimationComponent {
+func NewDrawAnimationComponent() *DrawAnimationComponent {
 	return &DrawAnimationComponent{
-		parent:            parentActor,
 		FrameCount:        3,
-		FrameSize:         NewPoint(32, 32),
+		FrameSize:         utility.NewPoint(32, 32),
 		FPS:               4,
 		FrameDirectionMap: []int{0, 1, 2, 3},
 	}
@@ -35,19 +34,19 @@ func (c *DrawAnimationComponent) Tick() {
 	c.currentTickIndex++
 }
 
-func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
+func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transform utility.Transform) {
 	if c.Source == nil {
 		return
 	}
 
 	excount := 2*c.FrameCount - 2
-	index := (c.currentTickIndex * c.FPS / TickCount) % excount
+	index := (c.currentTickIndex * c.FPS / utility.TickCount) % excount
 	if index >= c.FrameCount {
 		index = excount - index
 	}
 
 	direction := c.FrameDirectionMap[3]
-	switch r := c.parent.Rotation.Get(); {
+	switch r := transform.Rotation.Get(); {
 	case r < math.Pi*-3/4:
 		direction = c.FrameDirectionMap[3]
 	case r < math.Pi*-1/4:
@@ -58,13 +57,13 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
 		direction = c.FrameDirectionMap[1]
 	}
 
-	location := NewPoint(
+	location := utility.NewPoint(
 		index*c.FrameSize.X,
 		direction*c.FrameSize.Y,
 	)
 
 	o := &ebiten.DrawImageOptions{}
-	o.GeoM.Scale(c.parent.Scale.X, c.parent.Scale.Y)
-	o.GeoM.Translate(c.parent.Location.X, c.parent.Location.Y)
-	screen.DrawImage(GetSubImage(c.Source, location, c.FrameSize), o)
+	o.GeoM.Scale(transform.Scale.X, transform.Scale.Y)
+	o.GeoM.Translate(transform.Location.X, transform.Location.Y)
+	screen.DrawImage(utility.GetSubImage(c.Source, location, c.FrameSize), o)
 }
