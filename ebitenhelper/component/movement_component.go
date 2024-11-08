@@ -20,7 +20,7 @@ func NewMovementComponent() *MovementComponent {
 	return &MovementComponent{
 		Accel:    8000,
 		Decel:    8000,
-		MaxSpeed: 400,
+		MaxSpeed: 200,
 	}
 }
 

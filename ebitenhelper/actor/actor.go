@@ -8,17 +8,17 @@ import (
 
 type Actor struct {
 	utility.Transform
-	ImageCom *component.DrawImageComponent
+	Image *component.DrawImageComponent
 }
 
 func NewActor() *Actor {
 	actor := &Actor{
 		Transform: utility.DefaultTransform(),
-		ImageCom:  component.NewDrawImageComponent(),
+		Image:     component.NewDrawImageComponent(),
 	}
 	return actor
 }
 
 func (a *Actor) Draw(screen *ebiten.Image) {
-	a.ImageCom.Draw(screen, a.Transform)
+	a.Image.Draw(screen, a.Transform)
 }

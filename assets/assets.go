@@ -6,6 +6,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -25,8 +26,10 @@ type mapLayerData_xml struct {
 }
 
 type mapTileset_xml struct {
-	FirstGID int                 `xml:"firstgid,attr"`
-	Image    mapTilesetImage_xml `xml:"image"`
+	FirstGID  int                 `xml:"firstgid,attr"`
+	TileCount int                 `xml:"tilecount,attr"`
+	Columns   int                 `xml:"columns,attr"`
+	Image     mapTilesetImage_xml `xml:"image"`
 }
 
 type mapLayer_xml struct {
@@ -44,14 +47,21 @@ type mapInfo_xml struct {
 	Layers     []mapLayer_xml   `xml:"layer"`
 }
 
+type MapCell struct {
+	Tileset   *MapTileset
+	TileIndex int
+}
+
 type MapTileset struct {
-	Image      *ebiten.Image
-	StartIndex int
+	Image       *ebiten.Image
+	ColumnCount int
+	StartIndex  int
+	LastIndex   int
 }
 
 type MapLayer struct {
-	Name string
-	Data []string
+	Name  string
+	Cells []MapCell
 }
 
 type MapInfo struct {
@@ -84,20 +94,37 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 		}
 
 		tileset := MapTileset{
-			Image:      image,
-			StartIndex: v.FirstGID,
+			Image:       image,
+			ColumnCount: v.Columns,
+			StartIndex:  v.FirstGID,
+			LastIndex:   v.FirstGID + v.TileCount - 1,
 		}
 		result.Tilesets = append(result.Tilesets, tileset)
 	}
 
 	for _, v := range mxml.Layers {
-		ds := strings.ReplaceAll(v.Data.Inner, "\r", "")
-		ds = strings.ReplaceAll(ds, "\n", "")
-		ds = strings.ReplaceAll(ds, " ", "")
 		layer := MapLayer{
 			Name: v.Name,
-			Data: strings.Split(ds, ","),
 		}
+
+		cellstrings := strings.ReplaceAll(v.Data.Inner, "\r", "")
+		cellstrings = strings.ReplaceAll(cellstrings, "\n", "")
+		cellstrings = strings.ReplaceAll(cellstrings, " ", "")
+
+		for _, cellstring := range strings.Split(cellstrings, ",") {
+			c := MapCell{}
+			cellvalue, _ := strconv.Atoi(cellstring)
+			for _, t := range result.Tilesets {
+				if t.StartIndex <= cellvalue && cellvalue <= t.LastIndex {
+					c.Tileset = &t
+					c.TileIndex = cellvalue - t.StartIndex
+					break
+				}
+			}
+
+			layer.Cells = append(layer.Cells, c)
+		}
+
 		result.Layers = append(result.Layers, layer)
 	}
 
