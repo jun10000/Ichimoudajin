@@ -21,25 +21,7 @@ func NewStage1() *utility.Level {
 	}
 
 	level := utility.NewLevel()
-
-	for _, l := range mapdata.Layers {
-		for ci, c := range l.Cells {
-			if c.Tileset == nil {
-				continue
-			}
-
-			a := actor.NewActor()
-			a.Location = utility.NewVector(
-				float64((ci%mapdata.MapSize.X)*mapdata.TileSize.X),
-				float64(ci/mapdata.MapSize.X*mapdata.TileSize.Y))
-			a.Image.Source = utility.GetSubImage(c.Tileset.Image,
-				utility.NewPoint(
-					c.TileIndex%c.Tileset.ColumnCount*mapdata.TileSize.X,
-					c.TileIndex/c.Tileset.ColumnCount*mapdata.TileSize.Y),
-				mapdata.TileSize)
-			level.Add(a)
-		}
-	}
+	level.AddRange(mapdata.GetActors())
 
 	player := actor.NewPawn()
 	player.Location = utility.NewVector(600, 300)

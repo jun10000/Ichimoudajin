@@ -11,6 +11,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
@@ -72,6 +73,7 @@ type MapInfo struct {
 }
 
 func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
+	// Read and check XML data
 	mxml := &mapInfo_xml{}
 	err := decoder.DecodeElement(mxml, &start)
 	if err != nil {
@@ -82,11 +84,13 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 		log.Println("This may cause problem")
 	}
 
+	// Begin creating MapInfo
 	result := MapInfo{
 		MapSize:  utility.NewPoint(mxml.Width, mxml.Height),
 		TileSize: utility.NewPoint(mxml.TileWidth, mxml.TileHeight),
 	}
 
+	// Add MapTilesets
 	for _, v := range mxml.Tilesets {
 		image, err := GetImage(v.Image.Source)
 		if err != nil {
@@ -102,6 +106,7 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 		result.Tilesets = append(result.Tilesets, tileset)
 	}
 
+	// Add MapLayers
 	for _, v := range mxml.Layers {
 		layer := MapLayer{
 			Name: v.Name,
@@ -128,8 +133,34 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 		result.Layers = append(result.Layers, layer)
 	}
 
+	// Finished creating MapInfo
 	*m = result
 	return nil
+}
+
+func (m *MapInfo) GetActors() []any {
+	var result []any
+	for _, l := range m.Layers {
+		for ci, c := range l.Cells {
+			if c.Tileset == nil {
+				continue
+			}
+
+			a := actor.NewActor()
+			a.Location = utility.NewVector(
+				float64((ci%m.MapSize.X)*m.TileSize.X),
+				float64(ci/m.MapSize.X*m.TileSize.Y))
+			a.Image.Source = utility.GetSubImage(
+				c.Tileset.Image,
+				utility.NewPoint(
+					c.TileIndex%c.Tileset.ColumnCount*m.TileSize.X,
+					c.TileIndex/c.Tileset.ColumnCount*m.TileSize.Y),
+				m.TileSize)
+			result = append(result, a)
+		}
+	}
+
+	return result
 }
 
 func GetMapData(mapfile string) (*MapInfo, error) {

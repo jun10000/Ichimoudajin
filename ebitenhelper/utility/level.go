@@ -26,3 +26,9 @@ func (l *Level) Add(actor any) {
 		l.Tickers = append(l.Tickers, t)
 	}
 }
+
+func (l *Level) AddRange(actors []any) {
+	for _, a := range actors {
+		l.Add(a)
+	}
+}
