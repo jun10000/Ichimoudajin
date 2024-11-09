@@ -12,11 +12,10 @@ type Actor struct {
 }
 
 func NewActor() *Actor {
-	actor := &Actor{
+	return &Actor{
 		Transform: utility.DefaultTransform(),
 		Image:     component.NewDrawImageComponent(),
 	}
-	return actor
 }
 
 func (a *Actor) Draw(screen *ebiten.Image) {

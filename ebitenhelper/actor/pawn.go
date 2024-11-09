@@ -13,13 +13,11 @@ type Pawn struct {
 }
 
 func NewPawn() *Pawn {
-	pawn := &Pawn{
+	return &Pawn{
 		Transform: utility.DefaultTransform(),
 		Movement:  component.NewMovementComponent(),
 		Animation: component.NewDrawAnimationComponent(),
 	}
-
-	return pawn
 }
 
 func (p *Pawn) ReceivePressedKey(key ebiten.Key) {

@@ -2,6 +2,7 @@ package utility
 
 import (
 	"image"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -17,4 +18,10 @@ func NewRectangle(location Point, size Point) image.Rectangle {
 
 func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.Image {
 	return parentimage.SubImage(NewRectangle(location, size)).(*ebiten.Image)
+}
+
+func ExitIfError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
