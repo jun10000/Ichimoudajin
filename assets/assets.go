@@ -22,6 +22,11 @@ type mapTilesetImage_xml struct {
 	Source string `xml:"source,attr"`
 }
 
+type mapLayerProperty_xml struct {
+	Name  string `xml:"name,attr"`
+	Value string `xml:"value,attr"`
+}
+
 type mapLayerData_xml struct {
 	Inner string `xml:",innerxml"`
 }
@@ -34,8 +39,9 @@ type mapTileset_xml struct {
 }
 
 type mapLayer_xml struct {
-	Name string           `xml:"name,attr"`
-	Data mapLayerData_xml `xml:"data"`
+	Name       string                 `xml:"name,attr"`
+	Properties []mapLayerProperty_xml `xml:"properties>property"`
+	Data       mapLayerData_xml       `xml:"data"`
 }
 
 type mapInfo_xml struct {
@@ -61,8 +67,9 @@ type MapTileset struct {
 }
 
 type MapLayer struct {
-	Name  string
-	Cells []MapCell
+	Name        string
+	IsCollision bool
+	Cells       []MapCell
 }
 
 type MapInfo struct {
@@ -109,13 +116,23 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	// Add MapLayers
 	for _, v := range mxml.Layers {
 		layer := MapLayer{
-			Name: v.Name,
+			Name:        v.Name,
+			IsCollision: false,
 		}
 
+		// Add Properties
+		for _, p := range v.Properties {
+			switch p.Name {
+			case "IsCollision":
+				v, _ := strconv.ParseBool(p.Value)
+				layer.IsCollision = v
+			}
+		}
+
+		// Add MapCells
 		cellstrings := strings.ReplaceAll(v.Data.Inner, "\r", "")
 		cellstrings = strings.ReplaceAll(cellstrings, "\n", "")
 		cellstrings = strings.ReplaceAll(cellstrings, " ", "")
-
 		for _, cellstring := range strings.Split(cellstrings, ",") {
 			c := MapCell{}
 			cellvalue, _ := strconv.Atoi(cellstring)
@@ -141,22 +158,26 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 func (m *MapInfo) GetActors() []any {
 	var result []any
 	for _, l := range m.Layers {
-		for ci, c := range l.Cells {
-			if c.Tileset == nil {
-				continue
-			}
+		if l.IsCollision {
+			// add blockingobject here
+		} else {
+			for ci, c := range l.Cells {
+				if c.Tileset == nil {
+					continue
+				}
 
-			a := actor.NewActor()
-			a.Location = utility.NewVector(
-				float64((ci%m.MapSize.X)*m.TileSize.X),
-				float64(ci/m.MapSize.X*m.TileSize.Y))
-			a.Image.Source = utility.GetSubImage(
-				c.Tileset.Image,
-				utility.NewPoint(
-					c.TileIndex%c.Tileset.ColumnCount*m.TileSize.X,
-					c.TileIndex/c.Tileset.ColumnCount*m.TileSize.Y),
-				m.TileSize)
-			result = append(result, a)
+				a := actor.NewActor()
+				a.Location = utility.NewVector(
+					float64((ci%m.MapSize.X)*m.TileSize.X),
+					float64(ci/m.MapSize.X*m.TileSize.Y))
+				a.Image.Source = utility.GetSubImage(
+					c.Tileset.Image,
+					utility.NewPoint(
+						c.TileIndex%c.Tileset.ColumnCount*m.TileSize.X,
+						c.TileIndex/c.Tileset.ColumnCount*m.TileSize.Y),
+					m.TileSize)
+				result = append(result, a)
+			}
 		}
 	}
 
