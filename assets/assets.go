@@ -156,7 +156,11 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 }
 
 func (m *MapInfo) GetActors() []any {
-	var result []any
+	mapimage := ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
+	mapactor := actor.NewActor()
+	mapactor.Image.Source = mapimage
+	result := []any{mapactor}
+
 	for _, l := range m.Layers {
 		if l.IsCollision {
 			// add blockingobject here
@@ -166,17 +170,16 @@ func (m *MapInfo) GetActors() []any {
 					continue
 				}
 
-				a := actor.NewActor()
-				a.Location = utility.NewVector(
+				o := &ebiten.DrawImageOptions{}
+				o.GeoM.Translate(
 					float64((ci%m.MapSize.X)*m.TileSize.X),
 					float64(ci/m.MapSize.X*m.TileSize.Y))
-				a.Image.Source = utility.GetSubImage(
+				mapimage.DrawImage(utility.GetSubImage(
 					c.Tileset.Image,
 					utility.NewPoint(
 						c.TileIndex%c.Tileset.ColumnCount*m.TileSize.X,
 						c.TileIndex/c.Tileset.ColumnCount*m.TileSize.Y),
-					m.TileSize)
-				result = append(result, a)
+					m.TileSize), o)
 			}
 		}
 	}
