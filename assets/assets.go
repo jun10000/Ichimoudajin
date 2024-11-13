@@ -134,7 +134,9 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 		cellstrings = strings.ReplaceAll(cellstrings, "\n", "")
 		cellstrings = strings.ReplaceAll(cellstrings, " ", "")
 		for _, cellstring := range strings.Split(cellstrings, ",") {
-			c := MapCell{}
+			c := MapCell{
+				TileIndex: -1,
+			}
 			cellvalue, _ := strconv.Atoi(cellstring)
 			for _, t := range result.Tilesets {
 				if t.StartIndex <= cellvalue && cellvalue <= t.LastIndex {
@@ -163,7 +165,18 @@ func (m *MapInfo) GetActors() []any {
 
 	for _, l := range m.Layers {
 		if l.IsCollision {
-			// add blockingobject here
+			for ci, c := range l.Cells {
+				if c.TileIndex < 0 {
+					continue
+				}
+
+				b := actor.NewBlockingArea()
+				b.Location = utility.NewVector(
+					float64((ci%m.MapSize.X)*m.TileSize.X),
+					float64(ci/m.MapSize.X*m.TileSize.Y))
+				b.Size = m.TileSize.ToVector()
+				result = append(result, b)
+			}
 		} else {
 			for ci, c := range l.Cells {
 				if c.Tileset == nil {

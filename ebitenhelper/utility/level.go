@@ -4,6 +4,7 @@ type Level struct {
 	Drawers      []Drawer
 	KeyReceivers []KeyReceiver
 	Tickers      []Ticker
+	Colliders    []Collider
 }
 
 func NewLevel() *Level {
@@ -24,6 +25,11 @@ func (l *Level) Add(actor any) {
 	t, ok := actor.(Ticker)
 	if ok {
 		l.Tickers = append(l.Tickers, t)
+	}
+
+	c, ok := actor.(Collider)
+	if ok {
+		l.Colliders = append(l.Colliders, c)
 	}
 }
 

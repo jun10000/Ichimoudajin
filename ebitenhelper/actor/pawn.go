@@ -47,3 +47,7 @@ func (p *Pawn) Tick() {
 func (p *Pawn) Draw(screen *ebiten.Image) {
 	p.Animation.Draw(screen, p.Transform)
 }
+
+func (p *Pawn) GetBounds() utility.RectangleF {
+	return utility.NewRectangleF(p.Location, p.Animation.FrameSize.ToVector())
+}

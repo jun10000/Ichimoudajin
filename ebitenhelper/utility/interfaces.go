@@ -15,3 +15,7 @@ type KeyReceiver interface {
 	ReceiveReleasedKey(key ebiten.Key)
 	ReceivePressingKey(key ebiten.Key)
 }
+
+type Collider interface {
+	GetBounds() RectangleF
+}
