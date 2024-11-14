@@ -23,5 +23,5 @@ func (a *AnimatedActor) Tick() {
 }
 
 func (a *AnimatedActor) Draw(screen *ebiten.Image) {
-	a.Animation.Draw(screen, a.Transform)
+	a.Animation.Draw(screen, a)
 }

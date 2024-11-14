@@ -34,7 +34,7 @@ func (c *DrawAnimationComponent) Tick() {
 	c.currentTickIndex++
 }
 
-func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transform utility.Transform) {
+func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transformer utility.Transformer) {
 	if c.Source == nil {
 		return
 	}
@@ -46,7 +46,7 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transform utility.Tr
 	}
 
 	direction := c.FrameDirectionMap[3]
-	switch r := transform.GetRotation(); {
+	switch r := transformer.GetRotation(); {
 	case r < math.Pi*-3/4:
 		direction = c.FrameDirectionMap[3]
 	case r < math.Pi*-1/4:
@@ -57,8 +57,8 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transform utility.Tr
 		direction = c.FrameDirectionMap[1]
 	}
 
-	location := transform.GetLocation()
-	scale := transform.GetScale()
+	location := transformer.GetLocation()
+	scale := transformer.GetScale()
 	sublocation := utility.NewPoint(
 		index*c.FrameSize.X,
 		direction*c.FrameSize.Y,

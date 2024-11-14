@@ -19,5 +19,5 @@ func NewActor() *Actor {
 }
 
 func (a *Actor) Draw(screen *ebiten.Image) {
-	a.Image.Draw(screen, a.Transform)
+	a.Image.Draw(screen, a)
 }

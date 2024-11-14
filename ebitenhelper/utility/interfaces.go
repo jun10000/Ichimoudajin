@@ -19,3 +19,25 @@ type KeyReceiver interface {
 type Collider interface {
 	GetBounds() RectangleF
 }
+
+type Locator interface {
+	GetLocation() Vector
+	SetLocation(value Vector)
+	AddLocation(value Vector)
+}
+
+type Rotator interface {
+	GetRotation() float64
+	SetRotation(value float64)
+}
+
+type Scaler interface {
+	GetScale() Vector
+	SetScale(value Vector)
+}
+
+type Transformer interface {
+	Locator
+	Rotator
+	Scaler
+}

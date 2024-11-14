@@ -40,12 +40,12 @@ func (p *Pawn) ReceivePressingKey(key ebiten.Key) {
 }
 
 func (p *Pawn) Tick() {
-	p.Movement.Tick(&p.Transform)
+	p.Movement.Tick(p)
 	p.Animation.Tick()
 }
 
 func (p *Pawn) Draw(screen *ebiten.Image) {
-	p.Animation.Draw(screen, p.Transform)
+	p.Animation.Draw(screen, p)
 }
 
 func (p *Pawn) GetBounds() utility.RectangleF {

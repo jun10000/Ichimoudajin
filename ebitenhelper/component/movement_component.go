@@ -28,13 +28,13 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.t_InputAccel = c.t_InputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) Tick(transform *utility.Transform) {
+func (c *MovementComponent) Tick(transformer utility.Transformer) {
 	if c.t_InputAccel.X != 0 || c.t_InputAccel.Y != 0 {
 		c.CurrentVelocity = c.CurrentVelocity.Add(c.t_InputAccel.MulF(c.Accel * utility.TickDuration))
 		if c.CurrentVelocity.Length() > c.MaxSpeed {
 			c.CurrentVelocity = c.CurrentVelocity.Normalize().MulF(c.MaxSpeed)
 		}
-		transform.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.t_InputAccel))
+		transformer.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.t_InputAccel))
 	} else {
 		decelspeed := c.CurrentVelocity.Normalize().MulF(c.Decel * utility.TickDuration)
 		if math.Abs(decelspeed.X) > math.Abs(c.CurrentVelocity.X) {
@@ -46,6 +46,6 @@ func (c *MovementComponent) Tick(transform *utility.Transform) {
 		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
 	}
 
-	transform.AddLocation(c.CurrentVelocity.MulF(utility.TickDuration))
+	transformer.AddLocation(c.CurrentVelocity.MulF(utility.TickDuration))
 	c.t_InputAccel = utility.ZeroVector()
 }
