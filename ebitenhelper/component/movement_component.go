@@ -34,7 +34,7 @@ func (c *MovementComponent) Tick(transform *utility.Transform) {
 		if c.CurrentVelocity.Length() > c.MaxSpeed {
 			c.CurrentVelocity = c.CurrentVelocity.Normalize().MulF(c.MaxSpeed)
 		}
-		transform.Rotation.Set(utility.NewVector(0, 1).CrossingAngle(c.t_InputAccel))
+		transform.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.t_InputAccel))
 	} else {
 		decelspeed := c.CurrentVelocity.Normalize().MulF(c.Decel * utility.TickDuration)
 		if math.Abs(decelspeed.X) > math.Abs(c.CurrentVelocity.X) {
@@ -46,6 +46,6 @@ func (c *MovementComponent) Tick(transform *utility.Transform) {
 		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
 	}
 
-	transform.Location = transform.Location.Add(c.CurrentVelocity.MulF(utility.TickDuration))
+	transform.AddLocation(c.CurrentVelocity.MulF(utility.TickDuration))
 	c.t_InputAccel = utility.ZeroVector()
 }

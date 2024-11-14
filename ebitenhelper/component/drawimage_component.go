@@ -18,9 +18,12 @@ func (c *DrawImageComponent) Draw(screen *ebiten.Image, transform utility.Transf
 		return
 	}
 
+	location := transform.GetLocation()
+	scale := transform.GetScale()
+
 	o := &ebiten.DrawImageOptions{}
-	o.GeoM.Scale(transform.Scale.X, transform.Scale.Y)
-	o.GeoM.Rotate(transform.Rotation.Get())
-	o.GeoM.Translate(transform.Location.X, transform.Location.Y)
+	o.GeoM.Scale(scale.X, scale.Y)
+	o.GeoM.Rotate(transform.GetRotation())
+	o.GeoM.Translate(location.X, location.Y)
 	screen.DrawImage(c.Source, o)
 }

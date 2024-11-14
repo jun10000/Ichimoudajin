@@ -46,7 +46,7 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transform utility.Tr
 	}
 
 	direction := c.FrameDirectionMap[3]
-	switch r := transform.Rotation.Get(); {
+	switch r := transform.GetRotation(); {
 	case r < math.Pi*-3/4:
 		direction = c.FrameDirectionMap[3]
 	case r < math.Pi*-1/4:
@@ -57,13 +57,15 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transform utility.Tr
 		direction = c.FrameDirectionMap[1]
 	}
 
-	location := utility.NewPoint(
+	location := transform.GetLocation()
+	scale := transform.GetScale()
+	sublocation := utility.NewPoint(
 		index*c.FrameSize.X,
 		direction*c.FrameSize.Y,
 	)
 
 	o := &ebiten.DrawImageOptions{}
-	o.GeoM.Scale(transform.Scale.X, transform.Scale.Y)
-	o.GeoM.Translate(transform.Location.X, transform.Location.Y)
-	screen.DrawImage(utility.GetSubImage(c.Source, location, c.FrameSize), o)
+	o.GeoM.Scale(scale.X, scale.Y)
+	o.GeoM.Translate(location.X, location.Y)
+	screen.DrawImage(utility.GetSubImage(c.Source, sublocation, c.FrameSize), o)
 }

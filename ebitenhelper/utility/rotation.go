@@ -2,25 +2,25 @@ package utility
 
 import "math"
 
-type Rotator struct {
+type Rotation struct {
 	value float64
 }
 
-func NewRotator(value float64) Rotator {
-	rot := Rotator{}
+func NewRotation(value float64) Rotation {
+	rot := Rotation{}
 	rot.Set(value)
 	return rot
 }
 
-func ZeroRotator() Rotator {
-	return NewRotator(0)
+func ZeroRotation() Rotation {
+	return NewRotation(0)
 }
 
-func (r *Rotator) Get() float64 {
+func (r *Rotation) Get() float64 {
 	return r.value
 }
 
-func (r *Rotator) Set(value float64) {
+func (r *Rotation) Set(value float64) {
 	v := math.Mod(value, 2*math.Pi)
 	if v >= math.Pi {
 		v -= 2 * math.Pi

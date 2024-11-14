@@ -49,5 +49,5 @@ func (p *Pawn) Draw(screen *ebiten.Image) {
 }
 
 func (p *Pawn) GetBounds() utility.RectangleF {
-	return utility.NewRectangleF(p.Location, p.Animation.FrameSize.ToVector())
+	return utility.NewRectangleF(p.GetLocation(), p.Animation.FrameSize.ToVector())
 }

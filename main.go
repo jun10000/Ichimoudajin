@@ -21,12 +21,12 @@ func NewStage1() *utility.Level {
 	level.AddRange(mapdata.GetActors())
 
 	player := actor.NewPawn()
-	player.Location = utility.NewVector(600, 300)
+	player.SetLocation(utility.NewVector(600, 300))
 	player.Animation.Source = image_player
 	level.Add(player)
 
 	blocker := actor.NewAnimatedActor()
-	blocker.Location = utility.NewVector(500, 300)
+	blocker.SetLocation(utility.NewVector(500, 300))
 	blocker.Animation.Source = image_blocker
 	level.Add(blocker)
 
