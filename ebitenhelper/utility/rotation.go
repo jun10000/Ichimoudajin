@@ -8,7 +8,7 @@ type Rotation struct {
 
 func NewRotation(value float64) Rotation {
 	rot := Rotation{}
-	rot.Set(value)
+	rot.SetRotation(value)
 	return rot
 }
 
@@ -16,11 +16,11 @@ func ZeroRotation() Rotation {
 	return NewRotation(0)
 }
 
-func (r *Rotation) Get() float64 {
+func (r *Rotation) GetRotation() float64 {
 	return r.value
 }
 
-func (r *Rotation) Set(value float64) {
+func (r *Rotation) SetRotation(value float64) {
 	v := math.Mod(value, 2*math.Pi)
 	if v >= math.Pi {
 		v -= 2 * math.Pi
