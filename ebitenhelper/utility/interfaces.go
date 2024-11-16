@@ -23,7 +23,6 @@ type Collider interface {
 type Locator interface {
 	GetLocation() Vector
 	SetLocation(value Vector)
-	AddLocation(value Vector)
 }
 
 type Rotator interface {
@@ -40,4 +39,9 @@ type Transformer interface {
 	Locator
 	Rotator
 	Scaler
+}
+
+type Mover interface {
+	Transformer
+	Collider
 }

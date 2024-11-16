@@ -3,6 +3,7 @@ package component
 import (
 	"math"
 
+	"github.com/jun10000/Ichimoudajin/ebitenhelper"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
@@ -28,13 +29,13 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.t_InputAccel = c.t_InputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) Tick(transformer utility.Transformer) {
+func (c *MovementComponent) Tick(mover utility.Mover) {
 	if c.t_InputAccel.X != 0 || c.t_InputAccel.Y != 0 {
 		c.CurrentVelocity = c.CurrentVelocity.Add(c.t_InputAccel.MulF(c.Accel * utility.TickDuration))
 		if c.CurrentVelocity.Length() > c.MaxSpeed {
 			c.CurrentVelocity = c.CurrentVelocity.Normalize().MulF(c.MaxSpeed)
 		}
-		transformer.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.t_InputAccel))
+		mover.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.t_InputAccel))
 	} else {
 		decelspeed := c.CurrentVelocity.Normalize().MulF(c.Decel * utility.TickDuration)
 		if math.Abs(decelspeed.X) > math.Abs(c.CurrentVelocity.X) {
@@ -46,6 +47,11 @@ func (c *MovementComponent) Tick(transformer utility.Transformer) {
 		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
 	}
 
-	transformer.AddLocation(c.CurrentVelocity.MulF(utility.TickDuration))
+	dst := ebitenhelper.GetGameInstance().GetCurrentLevel().RectTrace(
+		mover.GetLocation(),
+		mover.GetLocation().Add(c.CurrentVelocity.MulF(utility.TickDuration)),
+		mover.GetBounds().Size(),
+		mover)
+	mover.SetLocation(dst)
 	c.t_InputAccel = utility.ZeroVector()
 }

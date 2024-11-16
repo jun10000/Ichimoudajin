@@ -9,6 +9,12 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
+var gameInstance *Game
+
+func GetGameInstance() *Game {
+	return gameInstance
+}
+
 type Game struct {
 	WindowTitle  string
 	ScreenWidth  int
@@ -88,6 +94,10 @@ func (g *Game) Tick() {
 	}
 }
 
+func (g *Game) GetCurrentLevel() *utility.Level {
+	return g.currentLevel
+}
+
 func (g *Game) LoadLevel(level *utility.Level) error {
 	if level == nil {
 		return errors.New("loaded level is empty")
@@ -102,6 +112,7 @@ func (g *Game) Play(firstlevel *utility.Level) error {
 		return err
 	}
 
+	gameInstance = g
 	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
 	ebiten.SetWindowTitle(g.WindowTitle)
 

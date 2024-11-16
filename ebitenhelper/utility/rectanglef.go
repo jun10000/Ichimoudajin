@@ -16,9 +16,17 @@ func NewRectangleF(location Vector, size Vector) RectangleF {
 	}
 }
 
-func (r RectangleF) Intersect(bounds RectangleF) bool {
-	return (r.MinX <= bounds.MaxX &&
-		r.MaxX >= bounds.MinX &&
-		r.MinY <= bounds.MaxY &&
-		r.MaxY >= bounds.MinY)
+func (r RectangleF) Location() Vector {
+	return NewVector(r.MinX, r.MinY)
+}
+
+func (r RectangleF) Size() Vector {
+	return NewVector(r.MaxX-r.MinX, r.MaxY-r.MinY)
+}
+
+func (r RectangleF) Intersect(rectangle RectangleF) bool {
+	return (r.MinX <= rectangle.MaxX &&
+		r.MaxX >= rectangle.MinX &&
+		r.MinY <= rectangle.MaxY &&
+		r.MaxY >= rectangle.MinY)
 }
