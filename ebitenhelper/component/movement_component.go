@@ -47,7 +47,7 @@ func (c *MovementComponent) Tick(mover utility.Mover) {
 		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
 	}
 
-	dst := ebitenhelper.GetGameInstance().GetCurrentLevel().RectTrace(
+	dst := ebitenhelper.GetLevel().RectTrace(
 		mover.GetLocation(),
 		mover.GetLocation().Add(c.CurrentVelocity.MulF(utility.TickDuration)),
 		mover.GetBounds().Size(),

@@ -9,18 +9,29 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-var gameInstance *Game
+var currentGameInstance *Game
+var currentLevel *utility.Level
 
 func GetGameInstance() *Game {
-	return gameInstance
+	return currentGameInstance
+}
+
+func GetLevel() *utility.Level {
+	return currentLevel
+}
+
+func SetLevel(level *utility.Level) error {
+	if level == nil {
+		return errors.New("loaded level is empty")
+	}
+	currentLevel = level
+	return nil
 }
 
 type Game struct {
 	WindowTitle  string
 	ScreenWidth  int
 	ScreenHeight int
-
-	currentLevel *utility.Level
 
 	t_PressedKeys  []ebiten.Key
 	t_ReleasedKeys []ebiten.Key
@@ -56,7 +67,7 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	for _, d := range g.currentLevel.Drawers {
+	for _, d := range GetLevel().Drawers {
 		d.Draw(screen)
 	}
 }
@@ -71,48 +82,36 @@ func (g *Game) ReceivePressedKey(k ebiten.Key) {
 		os.Exit(0)
 	}
 
-	for _, r := range g.currentLevel.KeyReceivers {
+	for _, r := range GetLevel().KeyReceivers {
 		r.ReceivePressedKey(k)
 	}
 }
 
 func (g *Game) ReceiveReleasedKey(k ebiten.Key) {
-	for _, r := range g.currentLevel.KeyReceivers {
+	for _, r := range GetLevel().KeyReceivers {
 		r.ReceiveReleasedKey(k)
 	}
 }
 
 func (g *Game) ReceivePressingKey(k ebiten.Key) {
-	for _, r := range g.currentLevel.KeyReceivers {
+	for _, r := range GetLevel().KeyReceivers {
 		r.ReceivePressingKey(k)
 	}
 }
 
 func (g *Game) Tick() {
-	for _, t := range g.currentLevel.Tickers {
+	for _, t := range GetLevel().Tickers {
 		t.Tick()
 	}
 }
 
-func (g *Game) GetCurrentLevel() *utility.Level {
-	return g.currentLevel
-}
-
-func (g *Game) LoadLevel(level *utility.Level) error {
-	if level == nil {
-		return errors.New("loaded level is empty")
-	}
-	g.currentLevel = level
-	return nil
-}
-
 func (g *Game) Play(firstlevel *utility.Level) error {
-	err := g.LoadLevel(firstlevel)
+	err := SetLevel(firstlevel)
 	if err != nil {
 		return err
 	}
 
-	gameInstance = g
+	currentGameInstance = g
 	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
 	ebiten.SetWindowTitle(g.WindowTitle)
 
