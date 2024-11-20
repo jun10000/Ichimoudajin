@@ -1,6 +1,9 @@
 package utility
 
-import "math"
+import (
+	"log"
+	"math"
+)
 
 type Level struct {
 	Drawers      []Drawer
@@ -53,7 +56,9 @@ func (l *Level) RectTrace(src Vector, dst Vector, size Vector, except Collider) 
 				continue
 			}
 
-			if c.GetBounds().Intersect(tracerect) {
+			n, result := tracerect.Intersect(c.GetBounds())
+			if result {
+				log.Println(n)
 				return src.Add(tracediff.MulF(i - 1))
 			}
 		}
