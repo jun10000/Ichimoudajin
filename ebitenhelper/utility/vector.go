@@ -63,6 +63,10 @@ func (v Vector) Ceil() Point {
 	return NewPoint(int(math.Ceil(v.X)), int(math.Ceil(v.Y)))
 }
 
+func (v Vector) Negate() Vector {
+	return NewVector(-v.X, -v.Y)
+}
+
 func (v Vector) Clamp(min float64, max float64) Vector {
 	l := v.Length()
 	if l < min {
@@ -104,4 +108,9 @@ func (v Vector) CrossingAngle(value Vector) float64 {
 	}
 
 	return angle
+}
+
+func (v Vector) Reflect(normal Vector, factor float64) Vector {
+	n := normal.Normalize()
+	return n.MulF(v.Negate().Dot(n) * (1 + factor)).Add(v)
 }
