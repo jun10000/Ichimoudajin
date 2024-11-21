@@ -47,11 +47,15 @@ func (c *MovementComponent) Tick(mover utility.Mover) {
 		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
 	}
 
-	dst := ebitenhelper.GetLevel().RectTrace(
-		mover.GetLocation(),
-		mover.GetLocation().Add(c.CurrentVelocity.MulF(utility.TickDuration)),
-		mover.GetBounds().Size(),
-		mover)
-	mover.SetLocation(dst)
+	tracestart := mover.GetLocation()
+	traceend := tracestart.Add(c.CurrentVelocity.MulF(utility.TickDuration))
+	tracesize := mover.GetBounds().Size()
+	traceresult := ebitenhelper.GetLevel().RectTrace(tracestart, traceend, tracesize, mover)
+	if traceresult.IsHit {
+		mover.SetLocation(traceresult.HitLocation)
+	} else {
+		mover.SetLocation(traceend)
+	}
+
 	c.t_InputAccel = utility.ZeroVector()
 }

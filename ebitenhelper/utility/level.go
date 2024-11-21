@@ -1,9 +1,14 @@
 package utility
 
 import (
-	"log"
 	"math"
 )
+
+type TraceResult struct {
+	IsHit       bool
+	HitLocation Vector
+	HitNormal   Vector
+}
 
 type Level struct {
 	Drawers      []Drawer
@@ -44,7 +49,7 @@ func (l *Level) AddRange(actors []any) {
 	}
 }
 
-func (l *Level) RectTrace(src Vector, dst Vector, size Vector, except Collider) Vector {
+func (l *Level) RectTrace(src Vector, dst Vector, size Vector, except Collider) TraceResult {
 	vecdiff := dst.Sub(src)
 	tracecount := math.Ceil(vecdiff.Length())
 	tracediff := vecdiff.DivF(tracecount)
@@ -56,13 +61,16 @@ func (l *Level) RectTrace(src Vector, dst Vector, size Vector, except Collider) 
 				continue
 			}
 
-			n, result := tracerect.Intersect(c.GetBounds())
-			if result {
-				log.Println(n)
-				return src.Add(tracediff.MulF(i - 1))
+			n := tracerect.Intersect(c.GetBounds())
+			if !n.IsZero() {
+				return TraceResult{
+					IsHit:       true,
+					HitLocation: src.Add(tracediff.MulF(i - 1)),
+					HitNormal:   n,
+				}
 			}
 		}
 	}
 
-	return dst
+	return TraceResult{}
 }

@@ -15,6 +15,10 @@ func ZeroVector() Vector {
 	return NewVector(0, 0)
 }
 
+func (v Vector) IsZero() bool {
+	return (v.X == 0 && v.Y == 0)
+}
+
 func (v Vector) Add(value Vector) Vector {
 	return NewVector(v.X+value.X, v.Y+value.Y)
 }
