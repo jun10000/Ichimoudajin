@@ -4,12 +4,6 @@ import (
 	"math"
 )
 
-type TraceResult struct {
-	IsHit       bool
-	HitLocation Vector
-	HitNormal   Vector
-}
-
 type Level struct {
 	Drawers      []Drawer
 	KeyReceivers []KeyReceiver
@@ -49,28 +43,50 @@ func (l *Level) AddRange(actors []any) {
 	}
 }
 
+type TraceResult struct {
+	IsHit         bool
+	Location      Vector
+	Normal        Vector
+	Distance      float64
+	DistanceRatio float64
+}
+
+func NewTraceResult(distance float64) TraceResult {
+	return TraceResult{
+		IsHit:         false,
+		Location:      ZeroVector(),
+		Normal:        ZeroVector(),
+		Distance:      distance,
+		DistanceRatio: 1,
+	}
+}
+
 func (l *Level) RectTrace(src Vector, dst Vector, size Vector, except Collider) TraceResult {
-	vecdiff := dst.Sub(src)
-	tracecount := math.Ceil(vecdiff.Length())
-	tracediff := vecdiff.DivF(tracecount)
+	tracevec := dst.Sub(src)
+	tracecount := math.Ceil(tracevec.Length())
+	tracevec_unit := tracevec.DivF(tracecount)
+	result := NewTraceResult(tracevec.Length())
 
 	for i := 1.0; i <= tracecount; i++ {
-		tracerect := NewRectangleF(src.Add(tracediff.MulF(i)), size)
+		rect := NewRectangleF(src.Add(tracevec_unit.MulF(i)), size)
 		for _, c := range l.Colliders {
 			if c == except {
 				continue
 			}
 
-			n := tracerect.Intersect(c.GetBounds())
-			if !n.IsZero() {
-				return TraceResult{
-					IsHit:       true,
-					HitLocation: src.Add(tracediff.MulF(i - 1)),
-					HitNormal:   n,
-				}
+			normal := rect.Intersect(c.GetBounds())
+			if !normal.IsZero() {
+				vecdiff := tracevec_unit.MulF(i - 1)
+				dist := vecdiff.Length()
+				result.IsHit = true
+				result.Location = src.Add(vecdiff)
+				result.Normal = normal
+				result.Distance = dist
+				result.DistanceRatio = dist / tracevec.Length()
+				return result
 			}
 		}
 	}
 
-	return TraceResult{}
+	return result
 }
