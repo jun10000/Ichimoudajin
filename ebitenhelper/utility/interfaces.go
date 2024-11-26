@@ -17,7 +17,7 @@ type KeyReceiver interface {
 }
 
 type Collider interface {
-	GetBounds() RectangleF
+	GetBounds() any
 }
 
 type Locator interface {

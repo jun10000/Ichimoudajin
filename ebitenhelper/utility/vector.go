@@ -92,6 +92,10 @@ func (v Vector) Normalize() Vector {
 	return NewVector(v.X/l, v.Y/l)
 }
 
+func (v Vector) Distance(value Vector) float64 {
+	return value.Sub(v).Length()
+}
+
 func (v Vector) Dot(value Vector) float64 {
 	return v.X*value.X + v.Y*value.Y
 }

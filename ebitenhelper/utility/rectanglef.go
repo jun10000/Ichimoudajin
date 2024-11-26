@@ -1,7 +1,5 @@
 package utility
 
-import "math"
-
 type RectangleF struct {
 	MinX float64
 	MinY float64
@@ -24,33 +22,4 @@ func (r RectangleF) Location() Vector {
 
 func (r RectangleF) Size() Vector {
 	return NewVector(r.MaxX-r.MinX, r.MaxY-r.MinY)
-}
-
-func (rect1 RectangleF) Intersect(rect2 RectangleF) (normal Vector) {
-	xleft := rect1.MaxX - rect2.MinX
-	xright := rect2.MaxX - rect1.MinX
-	ytop := rect1.MaxY - rect2.MinY
-	ybottom := rect2.MaxY - rect1.MinY
-
-	if xleft < 0 || xright < 0 || ytop < 0 || ybottom < 0 {
-		return ZeroVector()
-	}
-
-	isright := xleft > xright
-	isbottom := ytop > ybottom
-	isy := math.Min(xleft, xright) > math.Min(ytop, ybottom)
-
-	if isy {
-		if isbottom {
-			return NewVector(0, 1)
-		} else {
-			return NewVector(0, -1)
-		}
-	} else {
-		if isright {
-			return NewVector(1, 0)
-		} else {
-			return NewVector(-1, 0)
-		}
-	}
 }

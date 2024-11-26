@@ -25,3 +25,13 @@ func ExitIfError(err error) {
 		log.Fatal(err)
 	}
 }
+
+func ClampFloat(value float64, min float64, max float64) float64 {
+	if value < min {
+		return min
+	} else if value > max {
+		return max
+	}
+
+	return value
+}

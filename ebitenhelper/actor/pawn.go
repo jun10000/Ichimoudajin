@@ -1,6 +1,8 @@
 package actor
 
 import (
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
@@ -48,6 +50,7 @@ func (p *Pawn) Draw(screen *ebiten.Image) {
 	p.Animation.Draw(screen, p)
 }
 
-func (p *Pawn) GetBounds() utility.RectangleF {
-	return utility.NewRectangleF(p.GetLocation(), p.Animation.FrameSize.ToVector())
+func (p *Pawn) GetBounds() any {
+	hs := p.Animation.FrameSize.ToVector().DivF(2)
+	return utility.NewCircleF(p.GetLocation().Add(hs), math.Max(hs.X, hs.Y))
 }
