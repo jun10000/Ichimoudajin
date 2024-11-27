@@ -23,6 +23,7 @@ type Collider interface {
 type Locator interface {
 	GetLocation() Vector
 	SetLocation(value Vector)
+	AddLocation(value Vector)
 }
 
 type Rotator interface {

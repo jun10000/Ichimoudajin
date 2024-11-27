@@ -21,3 +21,7 @@ func (l *Location) GetLocation() Vector {
 func (l *Location) SetLocation(value Vector) {
 	l.value = value
 }
+
+func (l *Location) AddLocation(value Vector) {
+	l.value = l.value.Add(value)
+}

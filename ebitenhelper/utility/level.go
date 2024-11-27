@@ -45,41 +45,27 @@ func (l *Level) AddRange(actors []any) {
 }
 
 type TraceResult struct {
-	IsHit          bool
-	Offset         Vector
-	Normal         Vector
-	Distance       float64
-	RDistance      float64
-	DistanceRatio  float64
-	RDistanceRatio float64
+	IsHit   bool
+	Offset  Vector
+	ROffset Vector
+	Normal  Vector
 }
 
-func NewTraceResult_NoHit(fulldistance float64) TraceResult {
+func NewTraceResult_NoHit(offset Vector) TraceResult {
 	return TraceResult{
-		IsHit:          false,
-		Offset:         ZeroVector(),
-		Normal:         ZeroVector(),
-		Distance:       fulldistance,
-		RDistance:      0,
-		DistanceRatio:  1,
-		RDistanceRatio: 0,
+		IsHit:   false,
+		Offset:  offset,
+		ROffset: ZeroVector(),
+		Normal:  ZeroVector(),
 	}
 }
 
-func NewTraceResult_Hit(offset Vector, normal Vector, distance float64, fulldistance float64) TraceResult {
-	if normal.IsZero() || distance < 0 || fulldistance <= 0 || distance > fulldistance {
-		return NewTraceResult_NoHit(0)
-	}
-
-	rdist := fulldistance - distance
+func NewTraceResult_Hit(offset Vector, roffset Vector, normal Vector) TraceResult {
 	return TraceResult{
-		IsHit:          true,
-		Offset:         offset,
-		Normal:         normal.Normalize(),
-		Distance:       distance,
-		RDistance:      rdist,
-		DistanceRatio:  distance / fulldistance,
-		RDistanceRatio: rdist / fulldistance,
+		IsHit:   true,
+		Offset:  offset,
+		ROffset: roffset,
+		Normal:  normal.Normalize(),
 	}
 }
 
@@ -88,21 +74,21 @@ func (l *Level) traceCircle(circle CircleF, offset Vector, except Collider) Trac
 	tu := offset.DivF(tc)
 
 	for i := 1.0; i <= tc; i++ {
-		nc := NewCircleF(circle.Origin.Add(tu.MulF(i)), circle.Radius)
+		to := NewCircleF(circle.Origin.Add(tu.MulF(i)), circle.Radius)
 		for _, c := range l.Colliders {
 			if c == except {
 				continue
 			}
 
-			normal := nc.Intersect(c.GetBounds())
-			if !normal.IsZero() {
-				vecdiff := tu.MulF(i - 1)
-				return NewTraceResult_Hit(vecdiff, normal, vecdiff.Length(), offset.Length())
+			tr := to.Intersect(c.GetBounds())
+			if !tr.IsZero() {
+				tro := tu.MulF(i - 1)
+				return NewTraceResult_Hit(tro, offset.Sub(tro), tr)
 			}
 		}
 	}
 
-	return NewTraceResult_NoHit(offset.Length())
+	return NewTraceResult_NoHit(offset)
 }
 
 func (l *Level) Trace(target any, offset Vector, except Collider) TraceResult {
@@ -111,6 +97,6 @@ func (l *Level) Trace(target any, offset Vector, except Collider) TraceResult {
 		return l.traceCircle(v, offset, except)
 	default:
 		log.Println("Detected not supported trace target type")
-		return NewTraceResult_NoHit(0)
+		return NewTraceResult_NoHit(ZeroVector())
 	}
 }
