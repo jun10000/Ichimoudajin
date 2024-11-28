@@ -55,8 +55,8 @@ func (c *MovementComponent) Tick(mover utility.Mover) {
 			break
 		}
 
-		c.CurrentVelocity = c.CurrentVelocity.Reflect(tr.Normal, 0)
-		trm = tr.ROffset.Reflect(tr.Normal, 0)
+		c.CurrentVelocity = c.CurrentVelocity.Reflect(tr.Normal, 0.2)
+		trm = tr.ROffset.Reflect(tr.Normal, 0.2)
 	}
 
 	c.t_InputAccel = utility.ZeroVector()
