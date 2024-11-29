@@ -67,16 +67,24 @@ func (v Vector) Negate() Vector {
 	return NewVector(-v.X, -v.Y)
 }
 
-func (v Vector) Clamp(min float64, max float64) Vector {
-	l := v.Length()
-	if l < min {
-		l = min
-	} else if l > max {
-		l = max
+func (v Vector) ClampMin(min float64) Vector {
+	if v.Length() >= min {
+		return v
 	}
 
-	n := v.Normalize()
-	return n.MulF(l)
+	return v.Normalize().MulF(min)
+}
+
+func (v Vector) ClampMax(max float64) Vector {
+	if v.Length() <= max {
+		return v
+	}
+
+	return v.Normalize().MulF(max)
+}
+
+func (v Vector) Clamp(min float64, max float64) Vector {
+	return v.ClampMin(min).ClampMax(max)
 }
 
 func (v Vector) Length() float64 {

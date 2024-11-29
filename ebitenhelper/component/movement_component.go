@@ -1,8 +1,6 @@
 package component
 
 import (
-	"math"
-
 	"github.com/jun10000/Ichimoudajin/ebitenhelper"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -12,9 +10,8 @@ type MovementComponent struct {
 	Decel    float64
 	MaxSpeed float64
 
-	CurrentVelocity utility.Vector
-
-	t_InputAccel utility.Vector
+	velocity   utility.Vector
+	inputAccel utility.Vector
 }
 
 func NewMovementComponent() *MovementComponent {
@@ -26,28 +23,25 @@ func NewMovementComponent() *MovementComponent {
 }
 
 func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
-	c.t_InputAccel = c.t_InputAccel.Add(normal.Normalize().MulF(scale))
+	c.inputAccel = c.inputAccel.Add(normal.Normalize().MulF(scale))
 }
 
 func (c *MovementComponent) Tick(mover utility.Mover) {
-	if c.t_InputAccel.X != 0 || c.t_InputAccel.Y != 0 {
-		c.CurrentVelocity = c.CurrentVelocity.Add(c.t_InputAccel.MulF(c.Accel * utility.TickDuration))
-		if c.CurrentVelocity.Length() > c.MaxSpeed {
-			c.CurrentVelocity = c.CurrentVelocity.Normalize().MulF(c.MaxSpeed)
-		}
-		mover.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.t_InputAccel))
+	// Update movement from input
+	if !c.inputAccel.IsZero() {
+		as := c.Accel * utility.TickDuration
+		av := c.inputAccel.Normalize().MulF(as)
+		c.velocity = c.velocity.Add(av).ClampMax(c.MaxSpeed)
+		mover.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.inputAccel))
 	} else {
-		decelspeed := c.CurrentVelocity.Normalize().MulF(c.Decel * utility.TickDuration)
-		if math.Abs(decelspeed.X) > math.Abs(c.CurrentVelocity.X) {
-			decelspeed.X = c.CurrentVelocity.X
-		}
-		if math.Abs(decelspeed.Y) > math.Abs(c.CurrentVelocity.Y) {
-			decelspeed.Y = c.CurrentVelocity.Y
-		}
-		c.CurrentVelocity = c.CurrentVelocity.Sub(decelspeed)
+		ds := utility.ClampFloat(c.Decel*utility.TickDuration, 0, c.velocity.Length())
+		dv := c.velocity.Normalize().MulF(ds)
+		c.velocity = c.velocity.Sub(dv)
 	}
+	c.inputAccel = utility.ZeroVector()
 
-	trm := c.CurrentVelocity.MulF(utility.TickDuration)
+	// Collision test
+	trm := c.velocity.MulF(utility.TickDuration)
 	for i := 0; i < 10; i++ {
 		tr := ebitenhelper.GetLevel().Trace(mover.GetBounds(), trm, mover)
 		mover.AddLocation(tr.Offset)
@@ -55,9 +49,7 @@ func (c *MovementComponent) Tick(mover utility.Mover) {
 			break
 		}
 
-		c.CurrentVelocity = c.CurrentVelocity.Reflect(tr.Normal, 0.2)
+		c.velocity = c.velocity.Reflect(tr.Normal, 0.2)
 		trm = tr.ROffset.Reflect(tr.Normal, 0.2)
 	}
-
-	c.t_InputAccel = utility.ZeroVector()
 }
