@@ -33,9 +33,10 @@ type Game struct {
 	ScreenWidth  int
 	ScreenHeight int
 
-	t_PressedKeys  []ebiten.Key
-	t_ReleasedKeys []ebiten.Key
-	t_PressingKeys []ebiten.Key
+	pressedKeys  []ebiten.Key
+	releasedKeys []ebiten.Key
+	pressingKeys []ebiten.Key
+	drawEvents   []func(screen *ebiten.Image)
 }
 
 func NewGame() *Game {
@@ -46,18 +47,22 @@ func NewGame() *Game {
 	}
 }
 
-func (g *Game) Update() error {
-	g.t_PressedKeys = inpututil.AppendJustPressedKeys(g.t_PressedKeys[:0])
-	g.t_ReleasedKeys = inpututil.AppendJustReleasedKeys(g.t_ReleasedKeys[:0])
-	g.t_PressingKeys = inpututil.AppendPressedKeys(g.t_PressingKeys[:0])
+func (g *Game) AddDrawEvent(event func(*ebiten.Image)) {
+	g.drawEvents = append(g.drawEvents, event)
+}
 
-	for _, k := range g.t_PressedKeys {
+func (g *Game) Update() error {
+	g.pressedKeys = inpututil.AppendJustPressedKeys(g.pressedKeys[:0])
+	g.releasedKeys = inpututil.AppendJustReleasedKeys(g.releasedKeys[:0])
+	g.pressingKeys = inpututil.AppendPressedKeys(g.pressingKeys[:0])
+
+	for _, k := range g.pressedKeys {
 		g.ReceivePressedKey(k)
 	}
-	for _, k := range g.t_ReleasedKeys {
+	for _, k := range g.releasedKeys {
 		g.ReceiveReleasedKey(k)
 	}
-	for _, k := range g.t_PressingKeys {
+	for _, k := range g.pressingKeys {
 		g.ReceivePressingKey(k)
 	}
 
@@ -70,6 +75,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, d := range GetLevel().Drawers {
 		d.Draw(screen)
 	}
+
+	for _, d := range g.drawEvents {
+		d(screen)
+	}
+	g.drawEvents = g.drawEvents[:0]
 }
 
 func (g *Game) Layout(width int, height int) (int, int) {
