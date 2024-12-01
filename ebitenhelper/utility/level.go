@@ -73,17 +73,17 @@ func (l *Level) traceCircle(circle CircleF, offset Vector, except Collider) Trac
 	tc := math.Ceil(offset.Length())
 	tu := offset.DivF(tc)
 
-	for i := 1.0; i <= tc; i++ {
+	for i := 0.0; i <= tc; i++ {
 		to := NewCircleF(circle.Origin.Add(tu.MulF(i)), circle.Radius)
 		for _, c := range l.Colliders {
 			if c == except {
 				continue
 			}
 
-			tr := to.Intersect(c.GetBounds())
-			if !tr.IsZero() {
-				tro := tu.MulF(i - 1)
-				return NewTraceResult_Hit(tro, offset.Sub(tro), tr)
+			n := to.Intersect(c.GetBounds())
+			if !n.IsZero() {
+				tro := tu.MulF(i - 2)
+				return NewTraceResult_Hit(tro, offset.Sub(tro), n)
 			}
 		}
 	}

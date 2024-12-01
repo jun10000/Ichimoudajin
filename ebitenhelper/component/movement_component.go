@@ -49,7 +49,7 @@ func (c *MovementComponent) Tick(mover utility.Mover) {
 			break
 		}
 
-		c.velocity = c.velocity.Reflect(tr.Normal, 0.2)
-		trm = tr.ROffset.Reflect(tr.Normal, 0.2)
+		c.velocity = c.velocity.Reflect(tr.Normal, 0)
+		trm = tr.ROffset.Reflect(tr.Normal, 0)
 	}
 }
