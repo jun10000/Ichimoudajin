@@ -59,6 +59,10 @@ func (v Vector) DivF(value float64) Vector {
 	return NewVector(v.X/value, v.Y/value)
 }
 
+func (v Vector) Floor() Point {
+	return NewPoint(int(math.Floor(v.X)), int(math.Floor(v.Y)))
+}
+
 func (v Vector) Ceil() Point {
 	return NewPoint(int(math.Ceil(v.X)), int(math.Ceil(v.Y)))
 }
@@ -125,4 +129,11 @@ func (v Vector) CrossingAngle(value Vector) float64 {
 func (v Vector) Reflect(normal Vector, factor float64) Vector {
 	n := normal.Normalize()
 	return n.MulF(v.Negate().Dot(n) * (1 + factor)).Add(v)
+}
+
+func (v Vector) Rotate(angle float64) Vector {
+	return NewVector(
+		v.X*math.Cos(angle)+v.Y*math.Sin(angle),
+		v.X*math.Sin(angle)-v.Y*math.Cos(angle),
+	)
 }
