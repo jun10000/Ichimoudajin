@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/jun10000/Ichimoudajin/assets"
-	"github.com/jun10000/Ichimoudajin/ebitenhelper"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -34,7 +33,7 @@ func NewStage1() *utility.Level {
 }
 
 func main() {
-	g := ebitenhelper.NewGame()
+	g := utility.NewGame()
 	g.WindowTitle = "Ichimoudajin"
 	g.ScreenWidth = 32 * 40
 	g.ScreenHeight = 32 * 22

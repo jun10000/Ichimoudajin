@@ -134,6 +134,6 @@ func (v Vector) Reflect(normal Vector, factor float64) Vector {
 func (v Vector) Rotate(angle float64) Vector {
 	return NewVector(
 		v.X*math.Cos(angle)+v.Y*math.Sin(angle),
-		v.X*math.Sin(angle)-v.Y*math.Cos(angle),
+		-v.X*math.Sin(angle)+v.Y*math.Cos(angle),
 	)
 }

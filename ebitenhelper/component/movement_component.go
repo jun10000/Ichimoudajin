@@ -1,7 +1,8 @@
 package component
 
 import (
-	"github.com/jun10000/Ichimoudajin/ebitenhelper"
+	"math"
+
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
@@ -29,13 +30,17 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 func (c *MovementComponent) Tick(mover utility.Mover) {
 	// Update movement from input
 	if !c.inputAccel.IsZero() {
-		as := c.Accel * utility.TickDuration
-		av := c.inputAccel.Normalize().MulF(as)
-		c.velocity = c.velocity.Add(av).ClampMax(c.MaxSpeed)
+		av := c.inputAccel.Normalize().MulF(c.Accel * utility.TickDuration)
+		cr := c.inputAccel.Normalize().Cross(c.velocity).Dot(utility.NewVector3(0, 0, 1))
+		dv := c.inputAccel.Rotate(math.Pi / 2).Normalize().MulF(c.Decel * utility.TickDuration).ClampMax(math.Abs(cr))
+		if cr < 0 {
+			dv = dv.Negate()
+		}
+
+		c.velocity = c.velocity.Add(av).Add(dv).ClampMax(c.MaxSpeed)
 		mover.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.inputAccel))
 	} else {
-		ds := utility.ClampFloat(c.Decel*utility.TickDuration, 0, c.velocity.Length())
-		dv := c.velocity.Normalize().MulF(ds)
+		dv := c.velocity.Normalize().MulF(utility.ClampFloat(c.Decel*utility.TickDuration, 0, c.velocity.Length()))
 		c.velocity = c.velocity.Sub(dv)
 	}
 	c.inputAccel = utility.ZeroVector()
@@ -43,7 +48,7 @@ func (c *MovementComponent) Tick(mover utility.Mover) {
 	// Collision test
 	trm := c.velocity.MulF(utility.TickDuration)
 	for i := 0; i < 10; i++ {
-		tr := ebitenhelper.GetLevel().Trace(mover.GetBounds(), trm, mover)
+		tr := utility.GetLevel().Trace(mover.GetBounds(), trm, mover)
 		mover.AddLocation(tr.Offset)
 		if !tr.IsHit {
 			break

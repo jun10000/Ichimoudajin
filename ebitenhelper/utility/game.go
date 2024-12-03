@@ -1,4 +1,4 @@
-package ebitenhelper
+package utility
 
 import (
 	"errors"
@@ -6,21 +6,20 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 var currentGameInstance *Game
-var currentLevel *utility.Level
+var currentLevel *Level
 
 func GetGameInstance() *Game {
 	return currentGameInstance
 }
 
-func GetLevel() *utility.Level {
+func GetLevel() *Level {
 	return currentLevel
 }
 
-func SetLevel(level *utility.Level) error {
+func SetLevel(level *Level) error {
 	if level == nil {
 		return errors.New("loaded level is empty")
 	}
@@ -115,7 +114,7 @@ func (g *Game) Tick() {
 	}
 }
 
-func (g *Game) Play(firstlevel *utility.Level) error {
+func (g *Game) Play(firstlevel *Level) error {
 	err := SetLevel(firstlevel)
 	if err != nil {
 		return err
