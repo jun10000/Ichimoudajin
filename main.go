@@ -29,14 +29,14 @@ func NewStage1() *utility.Level {
 	blocker.Animation.Source = image_blocker
 	level.Add(blocker)
 
+	level.IsLoop = true
 	return level
 }
 
 func main() {
 	g := utility.NewGame()
 	g.WindowTitle = "Ichimoudajin"
-	g.ScreenWidth = 32 * 40
-	g.ScreenHeight = 32 * 22
+	g.ScreenSize = utility.NewPoint(32*40, 32*22)
 
 	err := g.Play(NewStage1())
 	utility.ExitIfError(err)

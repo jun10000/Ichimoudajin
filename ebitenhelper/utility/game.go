@@ -28,9 +28,8 @@ func SetLevel(level *Level) error {
 }
 
 type Game struct {
-	WindowTitle  string
-	ScreenWidth  int
-	ScreenHeight int
+	WindowTitle string
+	ScreenSize  Point
 
 	pressedKeys  []ebiten.Key
 	releasedKeys []ebiten.Key
@@ -40,9 +39,8 @@ type Game struct {
 
 func NewGame() *Game {
 	return &Game{
-		WindowTitle:  "Game",
-		ScreenWidth:  1280,
-		ScreenHeight: 720,
+		WindowTitle: "Game",
+		ScreenSize:  NewPoint(1280, 720),
 	}
 }
 
@@ -82,7 +80,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(width int, height int) (int, int) {
-	return g.ScreenWidth, g.ScreenHeight
+	return g.ScreenSize.X, g.ScreenSize.Y
 }
 
 func (g *Game) ReceivePressedKey(k ebiten.Key) {
@@ -121,7 +119,7 @@ func (g *Game) Play(firstlevel *Level) error {
 	}
 
 	currentGameInstance = g
-	ebiten.SetWindowSize(g.ScreenWidth, g.ScreenHeight)
+	ebiten.SetWindowSize(g.ScreenSize.X, g.ScreenSize.Y)
 	ebiten.SetWindowTitle(g.WindowTitle)
 
 	err = ebiten.RunGame(g)

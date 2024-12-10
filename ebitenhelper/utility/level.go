@@ -6,6 +6,7 @@ import (
 )
 
 type Level struct {
+	IsLoop       bool
 	Drawers      []Drawer
 	KeyReceivers []KeyReceiver
 	Tickers      []Ticker

@@ -20,8 +20,22 @@ func (l *Location) GetLocation() Vector {
 
 func (l *Location) SetLocation(value Vector) {
 	l.value = value
+
+	lv, gi := GetLevel(), GetGameInstance()
+	if lv == nil || !lv.IsLoop || gi == nil {
+		return
+	}
+
+	ss := gi.ScreenSize.ToVector()
+	l.value = l.value.Mod(ss)
+	if l.value.X < 0 {
+		l.value.X += ss.X
+	}
+	if l.value.Y < 0 {
+		l.value.Y += ss.Y
+	}
 }
 
 func (l *Location) AddLocation(value Vector) {
-	l.value = l.value.Add(value)
+	l.SetLocation(l.value.Add(value))
 }

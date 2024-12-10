@@ -39,6 +39,14 @@ func (v Vector) Div(value Vector) Vector {
 	return NewVector(v.X/value.X, v.Y/value.Y)
 }
 
+func (v Vector) Mod(value Vector) Vector {
+	if value.X == 0 || value.Y == 0 {
+		return ZeroVector()
+	}
+
+	return NewVector(math.Mod(v.X, value.X), math.Mod(v.Y, value.Y))
+}
+
 func (v Vector) AddF(value float64) Vector {
 	return NewVector(v.X+value, v.Y+value)
 }
@@ -57,6 +65,14 @@ func (v Vector) DivF(value float64) Vector {
 	}
 
 	return NewVector(v.X/value, v.Y/value)
+}
+
+func (v Vector) ModF(value float64) Vector {
+	if value == 0 {
+		return ZeroVector()
+	}
+
+	return NewVector(math.Mod(v.X, value), math.Mod(v.Y, value))
 }
 
 func (v Vector) Floor() Point {
