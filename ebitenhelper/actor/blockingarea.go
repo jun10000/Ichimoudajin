@@ -16,6 +16,6 @@ func NewBlockingArea() *BlockingArea {
 	}
 }
 
-func (a *BlockingArea) GetBounds() any {
+func (a *BlockingArea) GetBounds() utility.Bounder {
 	return utility.NewRectangleF(a.Location, a.Size)
 }

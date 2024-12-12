@@ -16,8 +16,13 @@ type KeyReceiver interface {
 	ReceivePressingKey(key ebiten.Key)
 }
 
+type Bounder interface {
+	BoundingBox() RectangleF
+	Offset(value Vector) Bounder
+}
+
 type Collider interface {
-	GetBounds() any
+	GetBounds() Bounder
 }
 
 type Locator interface {

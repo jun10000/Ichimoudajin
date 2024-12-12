@@ -70,21 +70,44 @@ func NewTraceResult_Hit(offset Vector, roffset Vector, normal Vector) TraceResul
 	}
 }
 
+func (l *Level) GetColliderBounds(except Collider) []Bounder {
+	ret := []Bounder{}
+	for _, c := range l.Colliders {
+		if c == except {
+			continue
+		}
+
+		b := c.GetBounds()
+		ret = append(ret, b)
+		if l.IsLoop {
+			ss := GetGameInstance().ScreenSize.ToVector()
+			ret = append(ret,
+				b.Offset(ss.Mul(NewVector(-1, -1))),
+				b.Offset(ss.Mul(NewVector(0, -1))),
+				b.Offset(ss.Mul(NewVector(1, -1))),
+				b.Offset(ss.Mul(NewVector(-1, 0))),
+				b.Offset(ss.Mul(NewVector(1, 0))),
+				b.Offset(ss.Mul(NewVector(-1, 1))),
+				b.Offset(ss.Mul(NewVector(0, 1))),
+				b.Offset(ss.Mul(NewVector(1, 1))),
+			)
+		}
+	}
+	return ret
+}
+
 func (l *Level) traceCircle(circle CircleF, offset Vector, except Collider) TraceResult {
-	tc := math.Ceil(offset.Length())
-	tu := offset.DivF(tc)
+	cnt := math.Ceil(offset.Length())
+	uni := offset.DivF(cnt)
+	bs := l.GetColliderBounds(except)
 
-	for i := 0.0; i <= tc; i++ {
-		to := NewCircleF(circle.Origin.Add(tu.MulF(i)), circle.Radius)
-		for _, c := range l.Colliders {
-			if c == except {
-				continue
-			}
-
-			n := to.Intersect(c.GetBounds())
-			if !n.IsZero() {
-				tro := tu.MulF(i - 2)
-				return NewTraceResult_Hit(tro, offset.Sub(tro), n)
+	for i := 0.0; i <= cnt; i++ {
+		obj := NewCircleF(circle.Origin.Add(uni.MulF(i)), circle.Radius)
+		for _, b := range bs {
+			tr := obj.Intersect(b)
+			if !tr.IsZero() {
+				res := uni.MulF(i - 2)
+				return NewTraceResult_Hit(res, offset.Sub(res), tr)
 			}
 		}
 	}
@@ -92,7 +115,7 @@ func (l *Level) traceCircle(circle CircleF, offset Vector, except Collider) Trac
 	return NewTraceResult_NoHit(offset)
 }
 
-func (l *Level) Trace(target any, offset Vector, except Collider) TraceResult {
+func (l *Level) Trace(target Bounder, offset Vector, except Collider) TraceResult {
 	switch v := target.(type) {
 	case CircleF:
 		return l.traceCircle(v, offset, except)

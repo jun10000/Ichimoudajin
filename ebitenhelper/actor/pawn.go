@@ -50,7 +50,7 @@ func (p *Pawn) Draw(screen *ebiten.Image) {
 	p.Animation.Draw(screen, p)
 }
 
-func (p *Pawn) GetBounds() any {
+func (p *Pawn) GetBounds() utility.Bounder {
 	hs := p.Animation.FrameSize.ToVector().DivF(2)
 	return utility.NewCircleF(p.GetLocation().Add(hs), math.Max(hs.X, hs.Y))
 }

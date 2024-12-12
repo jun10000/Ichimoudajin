@@ -23,3 +23,11 @@ func (r RectangleF) Location() Vector {
 func (r RectangleF) Size() Vector {
 	return NewVector(r.MaxX-r.MinX, r.MaxY-r.MinY)
 }
+
+func (r RectangleF) BoundingBox() RectangleF {
+	return r
+}
+
+func (r RectangleF) Offset(value Vector) Bounder {
+	return NewRectangleF(r.Location().Add(value), r.Size())
+}
