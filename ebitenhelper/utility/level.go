@@ -6,7 +6,7 @@ import (
 )
 
 type Level struct {
-	IsLoop       bool
+	IsLooping    bool
 	Drawers      []Drawer
 	KeyReceivers []KeyReceiver
 	Tickers      []Ticker
@@ -79,7 +79,7 @@ func (l *Level) GetColliderBounds(except Collider) []Bounder {
 
 		b := c.GetBounds()
 		ret = append(ret, b)
-		if l.IsLoop {
+		if l.IsLooping {
 			ss := GetGameInstance().ScreenSize.ToVector()
 			ret = append(ret,
 				b.Offset(ss.Mul(NewVector(-1, -1))),

@@ -29,7 +29,7 @@ func NewStage1() *utility.Level {
 	blocker.Animation.Source = image_blocker
 	level.Add(blocker)
 
-	level.IsLoop = true
+	level.IsLooping = true
 	return level
 }
 

@@ -22,7 +22,7 @@ func (l *Location) SetLocation(value Vector) {
 	l.value = value
 
 	lv, gi := GetLevel(), GetGameInstance()
-	if lv == nil || !lv.IsLoop || gi == nil {
+	if lv == nil || !lv.IsLooping || gi == nil {
 		return
 	}
 

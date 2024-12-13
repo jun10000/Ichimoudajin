@@ -14,7 +14,7 @@ type DrawAnimationComponent struct {
 	FPS               int
 	FrameDirectionMap []int // Front, Left, Right, Back
 
-	currentTickIndex int
+	tickIndex int
 }
 
 func NewDrawAnimationComponent() *DrawAnimationComponent {
@@ -31,7 +31,7 @@ func (c *DrawAnimationComponent) Tick() {
 		return
 	}
 
-	c.currentTickIndex++
+	c.tickIndex++
 }
 
 func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transformer utility.Transformer) {
@@ -39,33 +39,49 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transformer utility.
 		return
 	}
 
-	excount := 2*c.FrameCount - 2
-	index := (c.currentTickIndex * c.FPS / utility.TickCount) % excount
-	if index >= c.FrameCount {
-		index = excount - index
+	// Determine sub image index X (Pose)
+	idxe := 2*c.FrameCount - 2
+	idx := (c.tickIndex * c.FPS / utility.TickCount) % idxe
+	if idx >= c.FrameCount {
+		idx = idxe - idx
 	}
 
-	direction := c.FrameDirectionMap[3]
+	// Determine sub image index Y (Direction)
+	idy := c.FrameDirectionMap[3]
 	switch r := transformer.GetRotation(); {
 	case r < math.Pi*-3/4:
-		direction = c.FrameDirectionMap[3]
+		idy = c.FrameDirectionMap[3]
 	case r < math.Pi*-1/4:
-		direction = c.FrameDirectionMap[2]
+		idy = c.FrameDirectionMap[2]
 	case r < math.Pi*1/4:
-		direction = c.FrameDirectionMap[0]
+		idy = c.FrameDirectionMap[0]
 	case r <= math.Pi*3/4:
-		direction = c.FrameDirectionMap[1]
+		idy = c.FrameDirectionMap[1]
 	}
 
-	location := transformer.GetLocation()
-	scale := transformer.GetScale()
-	sublocation := utility.NewPoint(
-		index*c.FrameSize.X,
-		direction*c.FrameSize.Y,
-	)
+	il := utility.NewPoint(idx*c.FrameSize.X, idy*c.FrameSize.Y)
+	al := transformer.GetLocation()
+	as := transformer.GetScale()
+	als := []utility.Vector{al}
+	if utility.GetLevel().IsLooping {
+		ss := utility.GetGameInstance().ScreenSize.ToVector()
+		als = append(als,
+			al.Add(ss.Mul(utility.NewVector(-1, -1))),
+			al.Add(ss.Mul(utility.NewVector(0, -1))),
+			al.Add(ss.Mul(utility.NewVector(1, -1))),
+			al.Add(ss.Mul(utility.NewVector(-1, 0))),
+			al.Add(ss.Mul(utility.NewVector(1, 0))),
+			al.Add(ss.Mul(utility.NewVector(-1, 1))),
+			al.Add(ss.Mul(utility.NewVector(0, 1))),
+			al.Add(ss.Mul(utility.NewVector(1, 1))),
+		)
+	}
 
-	o := &ebiten.DrawImageOptions{}
-	o.GeoM.Scale(scale.X, scale.Y)
-	o.GeoM.Translate(location.X, location.Y)
-	screen.DrawImage(utility.GetSubImage(c.Source, sublocation, c.FrameSize), o)
+	// Draw images
+	for _, l := range als {
+		o := &ebiten.DrawImageOptions{}
+		o.GeoM.Scale(as.X, as.Y)
+		o.GeoM.Translate(l.X, l.Y)
+		screen.DrawImage(utility.GetSubImage(c.Source, il, c.FrameSize), o)
+	}
 }
