@@ -9,7 +9,7 @@ import (
 )
 
 type Pawn struct {
-	utility.Transform
+	*utility.Transform
 	Movement  *component.MovementComponent
 	Animation *component.DrawAnimationComponent
 }

@@ -34,11 +34,7 @@ func (c *DrawAnimationComponent) Tick() {
 	c.tickIndex++
 }
 
-func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transformer utility.Transformer) {
-	if c.Source == nil {
-		return
-	}
-
+func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transform utility.Transformer) {
 	// Determine sub image index X (Pose)
 	idxe := 2*c.FrameCount - 2
 	idx := (c.tickIndex * c.FPS / utility.TickCount) % idxe
@@ -48,7 +44,7 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transformer utility.
 
 	// Determine sub image index Y (Direction)
 	idy := c.FrameDirectionMap[3]
-	switch r := transformer.GetRotation(); {
+	switch r := transform.GetRotation(); {
 	case r < math.Pi*-3/4:
 		idy = c.FrameDirectionMap[3]
 	case r < math.Pi*-1/4:
@@ -59,29 +55,12 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transformer utility.
 		idy = c.FrameDirectionMap[1]
 	}
 
-	il := utility.NewPoint(idx*c.FrameSize.X, idy*c.FrameSize.Y)
-	al := transformer.GetLocation()
-	as := transformer.GetScale()
-	als := []utility.Vector{al}
-	if utility.GetLevel().IsLooping {
-		ss := utility.GetGameInstance().ScreenSize.ToVector()
-		als = append(als,
-			al.Add(ss.Mul(utility.NewVector(-1, -1))),
-			al.Add(ss.Mul(utility.NewVector(0, -1))),
-			al.Add(ss.Mul(utility.NewVector(1, -1))),
-			al.Add(ss.Mul(utility.NewVector(-1, 0))),
-			al.Add(ss.Mul(utility.NewVector(1, 0))),
-			al.Add(ss.Mul(utility.NewVector(-1, 1))),
-			al.Add(ss.Mul(utility.NewVector(0, 1))),
-			al.Add(ss.Mul(utility.NewVector(1, 1))),
-		)
-	}
-
 	// Draw images
-	for _, l := range als {
-		o := &ebiten.DrawImageOptions{}
-		o.GeoM.Scale(as.X, as.Y)
-		o.GeoM.Translate(l.X, l.Y)
-		screen.DrawImage(utility.GetSubImage(c.Source, il, c.FrameSize), o)
-	}
+	il := utility.NewPoint(idx*c.FrameSize.X, idy*c.FrameSize.Y)
+	img := utility.GetSubImage(c.Source, il, c.FrameSize)
+	utility.DrawImage(screen, img, utility.NewTransform(
+		transform.GetLocation(),
+		0,
+		transform.GetScale(),
+	))
 }

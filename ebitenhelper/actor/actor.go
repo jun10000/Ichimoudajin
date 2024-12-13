@@ -7,7 +7,7 @@ import (
 )
 
 type Actor struct {
-	utility.Transform
+	*utility.Transform
 	Image *component.DrawImageComponent
 }
 

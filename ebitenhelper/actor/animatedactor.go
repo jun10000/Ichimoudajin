@@ -7,7 +7,7 @@ import (
 )
 
 type AnimatedActor struct {
-	utility.Transform
+	*utility.Transform
 	Animation *component.DrawAnimationComponent
 }
 
