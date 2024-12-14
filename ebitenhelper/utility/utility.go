@@ -2,6 +2,7 @@ package utility
 
 import (
 	"image"
+	"image/color"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -10,6 +11,13 @@ import (
 const (
 	TickCount    int     = 60
 	TickDuration float64 = 1.0 / float64(TickCount)
+)
+
+var (
+	ColorGray  = color.RGBA{R: 128, G: 128, B: 128}
+	ColorRed   = color.RGBA{R: 255, G: 8}
+	ColorGreen = color.RGBA{G: 255}
+	ColorBlue  = color.RGBA{G: 128, B: 255}
 )
 
 func NewRectangle(location Point, size Point) image.Rectangle {
