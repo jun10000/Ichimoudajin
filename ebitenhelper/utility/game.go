@@ -113,6 +113,8 @@ func (g *Game) Tick() {
 }
 
 func (g *Game) Play(firstlevel *Level) error {
+	RunDebugServer()
+
 	err := SetLevel(firstlevel)
 	if err != nil {
 		return err

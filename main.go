@@ -38,6 +38,5 @@ func main() {
 	g.WindowTitle = "Ichimoudajin"
 	g.ScreenSize = utility.NewPoint(32*40, 32*22)
 
-	utility.RunDebugServer()
 	utility.ExitIfError(g.Play(NewStage1()))
 }

@@ -11,7 +11,9 @@
             "mode": "debug",
             "program": "${workspaceFolder}",
             "output": "__debug_bin",
-            "buildFlags": "-tags=debug"
+            "env": {
+                "debug": ""
+            }
         },
         {
             "name": "Launch",
