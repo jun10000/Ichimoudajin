@@ -16,6 +16,12 @@ type KeyReceiver interface {
 	ReceivePressingKey(key ebiten.Key)
 }
 
+type GamepadReceiver interface {
+	ReceivePressedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton)
+	ReceiveReleasedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton)
+	ReceiveAxisValue(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64)
+}
+
 type Bounder interface {
 	BoundingBox() RectangleF
 	Offset(value Vector) Bounder

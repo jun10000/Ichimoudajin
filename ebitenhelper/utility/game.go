@@ -34,6 +34,7 @@ type Game struct {
 	pressedKeys  []ebiten.Key
 	releasedKeys []ebiten.Key
 	pressingKeys []ebiten.Key
+	gamepadIDs   []ebiten.GamepadID
 	drawEvents   []func(screen *ebiten.Image)
 }
 
@@ -46,6 +47,18 @@ func NewGame() *Game {
 
 func (g *Game) AddDrawEvent(event func(*ebiten.Image)) {
 	g.drawEvents = append(g.drawEvents, event)
+}
+
+func (g *Game) GetGamepadIDs() []ebiten.GamepadID {
+	g.gamepadIDs = inpututil.AppendJustConnectedGamepadIDs(g.gamepadIDs)
+	for _, id := range g.gamepadIDs {
+		if inpututil.IsGamepadJustDisconnected(id) ||
+			!ebiten.IsStandardGamepadLayoutAvailable(id) {
+			g.gamepadIDs = RemoveSliceItem(g.gamepadIDs, id)
+		}
+	}
+
+	return g.gamepadIDs
 }
 
 func (g *Game) Update() error {
@@ -61,6 +74,20 @@ func (g *Game) Update() error {
 	}
 	for _, k := range g.pressingKeys {
 		g.ReceivePressingKey(k)
+	}
+
+	for _, id := range g.GetGamepadIDs() {
+		for b := ebiten.StandardGamepadButton(0); b <= ebiten.StandardGamepadButtonMax; b++ {
+			if inpututil.IsStandardGamepadButtonJustPressed(id, b) {
+				g.ReceivePressedButton(id, b)
+			}
+			if inpututil.IsStandardGamepadButtonJustReleased(id, b) {
+				g.ReceiveReleasedButton(id, b)
+			}
+		}
+		for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
+			g.ReceiveAxisValue(id, a, ebiten.StandardGamepadAxisValue(id, a))
+		}
 	}
 
 	g.Tick()
@@ -103,6 +130,24 @@ func (g *Game) ReceiveReleasedKey(k ebiten.Key) {
 func (g *Game) ReceivePressingKey(k ebiten.Key) {
 	for _, r := range GetLevel().KeyReceivers {
 		r.ReceivePressingKey(k)
+	}
+}
+
+func (g *Game) ReceivePressedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton) {
+	for _, r := range GetLevel().GamepadReceivers {
+		r.ReceivePressedButton(id, button)
+	}
+}
+
+func (g *Game) ReceiveReleasedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton) {
+	for _, r := range GetLevel().GamepadReceivers {
+		r.ReceiveReleasedButton(id, button)
+	}
+}
+
+func (g *Game) ReceiveAxisValue(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
+	for _, r := range GetLevel().GamepadReceivers {
+		r.ReceiveAxisValue(id, axis, value)
 	}
 }
 

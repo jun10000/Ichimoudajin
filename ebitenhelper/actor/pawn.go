@@ -41,6 +41,26 @@ func (p *Pawn) ReceivePressingKey(key ebiten.Key) {
 	}
 }
 
+func (p *Pawn) ReceivePressedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton) {
+}
+
+func (p *Pawn) ReceiveReleasedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton) {
+}
+
+func (p *Pawn) ReceiveAxisValue(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
+	// Use DeadZone
+	if -0.2 < value && value < 0.2 {
+		value = 0
+	}
+
+	switch axis {
+	case ebiten.StandardGamepadAxisLeftStickHorizontal:
+		p.Movement.AddInput(utility.NewVector(1, 0), value)
+	case ebiten.StandardGamepadAxisLeftStickVertical:
+		p.Movement.AddInput(utility.NewVector(0, 1), value)
+	}
+}
+
 func (p *Pawn) Tick() {
 	p.Movement.Tick(p)
 	p.Animation.Tick()

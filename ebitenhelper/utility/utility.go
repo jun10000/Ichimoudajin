@@ -81,3 +81,16 @@ func ClampFloat(value float64, min float64, max float64) float64 {
 
 	return value
 }
+
+func RemoveSliceItem[T comparable](slice []T, item T) []T {
+	r := make([]T, len(slice))
+	for _, v := range slice {
+		if v == item {
+			continue
+		}
+
+		r = append(r, v)
+	}
+
+	return r
+}
