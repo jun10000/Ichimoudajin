@@ -20,6 +20,14 @@ var (
 	ColorBlue  = color.RGBA{G: 128, B: 255}
 )
 
+type PressState int
+
+const (
+	PressState_Pressed PressState = iota
+	PressState_Released
+	PressState_Pressing
+)
+
 func NewRectangle(location Point, size Point) image.Rectangle {
 	return image.Rect(location.X, location.Y, location.X+size.X, location.Y+size.Y)
 }

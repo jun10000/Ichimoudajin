@@ -2,7 +2,6 @@ package utility
 
 import (
 	"errors"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -63,30 +62,31 @@ func (g *Game) GetGamepadIDs() []ebiten.GamepadID {
 
 func (g *Game) Update() error {
 	g.pressedKeys = inpututil.AppendJustPressedKeys(g.pressedKeys[:0])
-	g.releasedKeys = inpututil.AppendJustReleasedKeys(g.releasedKeys[:0])
-	g.pressingKeys = inpututil.AppendPressedKeys(g.pressingKeys[:0])
-
 	for _, k := range g.pressedKeys {
-		g.ReceivePressedKey(k)
+		g.ReceiveKeyInput(k, PressState_Pressed)
 	}
+
+	g.releasedKeys = inpututil.AppendJustReleasedKeys(g.releasedKeys[:0])
 	for _, k := range g.releasedKeys {
-		g.ReceiveReleasedKey(k)
+		g.ReceiveKeyInput(k, PressState_Released)
 	}
+
+	g.pressingKeys = inpututil.AppendPressedKeys(g.pressingKeys[:0])
 	for _, k := range g.pressingKeys {
-		g.ReceivePressingKey(k)
+		g.ReceiveKeyInput(k, PressState_Pressing)
 	}
 
 	for _, id := range g.GetGamepadIDs() {
 		for b := ebiten.StandardGamepadButton(0); b <= ebiten.StandardGamepadButtonMax; b++ {
 			if inpututil.IsStandardGamepadButtonJustPressed(id, b) {
-				g.ReceivePressedButton(id, b)
+				g.ReceiveButtonInput(id, b, PressState_Pressed)
 			}
 			if inpututil.IsStandardGamepadButtonJustReleased(id, b) {
-				g.ReceiveReleasedButton(id, b)
+				g.ReceiveButtonInput(id, b, PressState_Released)
 			}
 		}
 		for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
-			g.ReceiveAxisValue(id, a, ebiten.StandardGamepadAxisValue(id, a))
+			g.ReceiveAxisInput(id, a, ebiten.StandardGamepadAxisValue(id, a))
 		}
 	}
 
@@ -110,44 +110,21 @@ func (g *Game) Layout(width int, height int) (int, int) {
 	return g.ScreenSize.X, g.ScreenSize.Y
 }
 
-func (g *Game) ReceivePressedKey(k ebiten.Key) {
-	switch k {
-	case ebiten.KeyEscape:
-		os.Exit(0)
-	}
-
-	for _, r := range GetLevel().KeyReceivers {
-		r.ReceivePressedKey(k)
+func (g *Game) ReceiveKeyInput(key ebiten.Key, state PressState) {
+	for _, r := range GetLevel().InputReceivers {
+		r.ReceiveKeyInput(key, state)
 	}
 }
 
-func (g *Game) ReceiveReleasedKey(k ebiten.Key) {
-	for _, r := range GetLevel().KeyReceivers {
-		r.ReceiveReleasedKey(k)
+func (g *Game) ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState) {
+	for _, r := range GetLevel().InputReceivers {
+		r.ReceiveButtonInput(id, button, state)
 	}
 }
 
-func (g *Game) ReceivePressingKey(k ebiten.Key) {
-	for _, r := range GetLevel().KeyReceivers {
-		r.ReceivePressingKey(k)
-	}
-}
-
-func (g *Game) ReceivePressedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton) {
-	for _, r := range GetLevel().GamepadReceivers {
-		r.ReceivePressedButton(id, button)
-	}
-}
-
-func (g *Game) ReceiveReleasedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton) {
-	for _, r := range GetLevel().GamepadReceivers {
-		r.ReceiveReleasedButton(id, button)
-	}
-}
-
-func (g *Game) ReceiveAxisValue(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
-	for _, r := range GetLevel().GamepadReceivers {
-		r.ReceiveAxisValue(id, axis, value)
+func (g *Game) ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
+	for _, r := range GetLevel().InputReceivers {
+		r.ReceiveAxisInput(id, axis, value)
 	}
 }
 

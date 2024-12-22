@@ -10,16 +10,10 @@ type Ticker interface {
 	Tick()
 }
 
-type KeyReceiver interface {
-	ReceivePressedKey(key ebiten.Key)
-	ReceiveReleasedKey(key ebiten.Key)
-	ReceivePressingKey(key ebiten.Key)
-}
-
-type GamepadReceiver interface {
-	ReceivePressedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton)
-	ReceiveReleasedButton(id ebiten.GamepadID, button ebiten.StandardGamepadButton)
-	ReceiveAxisValue(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64)
+type InputReceiver interface {
+	ReceiveKeyInput(key ebiten.Key, state PressState)
+	ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState) // PressState_Pressing is not supported
+	ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64)
 }
 
 type Bounder interface {

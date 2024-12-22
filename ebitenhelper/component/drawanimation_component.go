@@ -64,3 +64,8 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image, transform utility.Tr
 		transform.GetScale(),
 	))
 }
+
+func (c *DrawAnimationComponent) GetCircleBounds(transform utility.Transformer) utility.CircleF {
+	hs := c.FrameSize.ToVector().DivF(2).Mul(transform.GetScale())
+	return utility.NewCircleF(transform.GetLocation().Add(hs), math.Max(hs.X, hs.Y))
+}

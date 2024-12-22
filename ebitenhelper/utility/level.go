@@ -6,12 +6,11 @@ import (
 )
 
 type Level struct {
-	IsLooping        bool
-	Drawers          []Drawer
-	KeyReceivers     []KeyReceiver
-	GamepadReceivers []GamepadReceiver
-	Tickers          []Ticker
-	Colliders        []Collider
+	IsLooping      bool
+	Drawers        []Drawer
+	InputReceivers []InputReceiver
+	Tickers        []Ticker
+	Colliders      []Collider
 }
 
 func NewLevel() *Level {
@@ -24,14 +23,9 @@ func (l *Level) Add(actor any) {
 		l.Drawers = append(l.Drawers, d)
 	}
 
-	r, ok := actor.(KeyReceiver)
+	r, ok := actor.(InputReceiver)
 	if ok {
-		l.KeyReceivers = append(l.KeyReceivers, r)
-	}
-
-	g, ok := actor.(GamepadReceiver)
-	if ok {
-		l.GamepadReceivers = append(l.GamepadReceivers, g)
+		l.InputReceivers = append(l.InputReceivers, r)
 	}
 
 	t, ok := actor.(Ticker)
