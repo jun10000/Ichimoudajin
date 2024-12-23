@@ -21,12 +21,12 @@ func NewStage1() *utility.Level {
 
 	player := actor.NewPawn()
 	player.SetLocation(utility.NewVector(600, 300))
-	player.Animation.Source = image_player
+	player.Image = image_player
 	level.Add(player)
 
 	blocker := actor.NewAnimatedActor()
 	blocker.SetLocation(utility.NewVector(500, 300))
-	blocker.Animation.Source = image_blocker
+	blocker.Image = image_blocker
 	level.Add(blocker)
 
 	level.IsLooping = true

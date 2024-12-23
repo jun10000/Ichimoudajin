@@ -9,15 +9,17 @@ import (
 
 type ControllerComponent struct {
 	DeadZone float64
+	target   *MovementComponent
 }
 
-func NewControllerComponent() *ControllerComponent {
+func NewControllerComponent(target *MovementComponent) *ControllerComponent {
 	return &ControllerComponent{
 		DeadZone: 0.2,
+		target:   target,
 	}
 }
 
-func (c *ControllerComponent) ReceiveKeyInput(movement *MovementComponent, key ebiten.Key, state utility.PressState) {
+func (c *ControllerComponent) ReceiveKeyInput(key ebiten.Key, state utility.PressState) {
 	switch key {
 	case ebiten.KeyEscape:
 		os.Exit(0)
@@ -29,28 +31,28 @@ func (c *ControllerComponent) ReceiveKeyInput(movement *MovementComponent, key e
 
 	switch key {
 	case ebiten.KeyUp:
-		movement.AddInput(utility.NewVector(0, -1), 1)
+		c.target.AddInput(utility.NewVector(0, -1), 1)
 	case ebiten.KeyDown:
-		movement.AddInput(utility.NewVector(0, 1), 1)
+		c.target.AddInput(utility.NewVector(0, 1), 1)
 	case ebiten.KeyLeft:
-		movement.AddInput(utility.NewVector(-1, 0), 1)
+		c.target.AddInput(utility.NewVector(-1, 0), 1)
 	case ebiten.KeyRight:
-		movement.AddInput(utility.NewVector(1, 0), 1)
+		c.target.AddInput(utility.NewVector(1, 0), 1)
 	}
 }
 
-func (c *ControllerComponent) ReceiveButtonInput(movement *MovementComponent, id ebiten.GamepadID, button ebiten.StandardGamepadButton, state utility.PressState) {
+func (c *ControllerComponent) ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state utility.PressState) {
 }
 
-func (c *ControllerComponent) ReceiveAxisInput(movement *MovementComponent, id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
+func (c *ControllerComponent) ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
 	if -c.DeadZone < value && value < c.DeadZone {
 		return
 	}
 
 	switch axis {
 	case ebiten.StandardGamepadAxisLeftStickHorizontal:
-		movement.AddInput(utility.NewVector(1, 0), value)
+		c.target.AddInput(utility.NewVector(1, 0), value)
 	case ebiten.StandardGamepadAxisLeftStickVertical:
-		movement.AddInput(utility.NewVector(0, 1), value)
+		c.target.AddInput(utility.NewVector(0, 1), value)
 	}
 }

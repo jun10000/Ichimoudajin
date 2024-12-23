@@ -6,13 +6,16 @@ import (
 )
 
 type DrawImageComponent struct {
-	Source *ebiten.Image
+	Image  *ebiten.Image
+	parent utility.Transformer
 }
 
-func NewDrawImageComponent() *DrawImageComponent {
-	return &DrawImageComponent{}
+func NewDrawImageComponent(parent utility.Transformer) *DrawImageComponent {
+	return &DrawImageComponent{
+		parent: parent,
+	}
 }
 
-func (c *DrawImageComponent) Draw(screen *ebiten.Image, transform utility.Transformer) {
-	utility.DrawImage(screen, c.Source, transform)
+func (c *DrawImageComponent) Draw(screen *ebiten.Image) {
+	utility.DrawImage(screen, c.Image, c.parent)
 }

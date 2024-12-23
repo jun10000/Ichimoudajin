@@ -11,15 +11,17 @@ type MovementComponent struct {
 	Decel    float64
 	MaxSpeed float64
 
+	parent     utility.Mover
 	velocity   utility.Vector
 	inputAccel utility.Vector
 }
 
-func NewMovementComponent() *MovementComponent {
+func NewMovementComponent(parent utility.Mover) *MovementComponent {
 	return &MovementComponent{
 		Accel:    8000,
 		Decel:    8000,
 		MaxSpeed: 200,
+		parent:   parent,
 	}
 }
 
@@ -27,7 +29,7 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.inputAccel = c.inputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) Tick(mover utility.Mover) {
+func (c *MovementComponent) Tick() {
 	// Update movement from input
 	if !c.inputAccel.IsZero() {
 		av := c.inputAccel.Normalize().MulF(c.Accel * utility.TickDuration)
@@ -38,7 +40,7 @@ func (c *MovementComponent) Tick(mover utility.Mover) {
 		}
 
 		c.velocity = c.velocity.Add(av).Add(dv).ClampMax(c.MaxSpeed)
-		mover.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.inputAccel))
+		c.parent.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.inputAccel))
 	} else {
 		dv := c.velocity.Normalize().MulF(utility.ClampFloat(c.Decel*utility.TickDuration, 0, c.velocity.Length()))
 		c.velocity = c.velocity.Sub(dv)
@@ -48,8 +50,8 @@ func (c *MovementComponent) Tick(mover utility.Mover) {
 	// Collision test
 	trm := c.velocity.MulF(utility.TickDuration)
 	for i := 0; i < 10; i++ {
-		tr := utility.GetLevel().Trace(mover.GetBounds(), trm, mover)
-		mover.AddLocation(tr.Offset)
+		tr := utility.GetLevel().Trace(c.parent.GetBounds(), trm, c.parent)
+		c.parent.AddLocation(tr.Offset)
 		if !tr.IsHit {
 			break
 		}

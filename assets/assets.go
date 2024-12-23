@@ -160,7 +160,7 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 func (m *MapInfo) GetActors() []any {
 	mapimage := ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
 	mapactor := actor.NewActor()
-	mapactor.Image.Source = mapimage
+	mapactor.Image = mapimage
 	result := []any{mapactor}
 
 	for _, l := range m.Layers {
