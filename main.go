@@ -7,29 +7,31 @@ import (
 )
 
 func NewStage1() *utility.Level {
-	mapdata, err := assets.GetMapData("stage1.tmx")
-	utility.ExitIfError(err)
-
-	image_player, err := assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
-	utility.ExitIfError(err)
-
-	image_blocker, err := assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
-	utility.ExitIfError(err)
-
+	// Level
 	level := utility.NewLevel()
-	level.AddRange(mapdata.GetActors())
+	level.IsLooping = true
 
+	// Map actors
+	mapData, err := assets.GetMapData("stage1.tmx")
+	utility.ExitIfError(err)
+	level.AddRange(mapData.GetActors())
+
+	// Player
+	playerImage, err := assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
+	utility.ExitIfError(err)
 	player := actor.NewPawn()
 	player.SetLocation(utility.NewVector(600, 300))
-	player.Image = image_player
+	player.Image = playerImage
 	level.Add(player)
 
-	blocker := actor.NewAnimatedActor()
-	blocker.SetLocation(utility.NewVector(500, 300))
-	blocker.Image = image_blocker
-	level.Add(blocker)
+	// Enemy
+	enemyImage, err := assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
+	utility.ExitIfError(err)
+	enemy := actor.NewAIPawn()
+	enemy.SetLocation(utility.NewVector(500, 300))
+	enemy.Image = enemyImage
+	level.Add(enemy)
 
-	level.IsLooping = true
 	return level
 }
 

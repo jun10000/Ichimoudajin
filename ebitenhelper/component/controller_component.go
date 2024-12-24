@@ -25,7 +25,7 @@ func (c *ControllerComponent) ReceiveKeyInput(key ebiten.Key, state utility.Pres
 		os.Exit(0)
 	}
 
-	if state != utility.PressState_Pressing {
+	if state != utility.PressStatePressing {
 		return
 	}
 

@@ -22,7 +22,7 @@ type Bounder interface {
 }
 
 type Collider interface {
-	GetBounds() Bounder
+	GetColliderBounds() Bounder
 }
 
 type Locator interface {

@@ -63,26 +63,26 @@ func (g *Game) GetGamepadIDs() []ebiten.GamepadID {
 func (g *Game) Update() error {
 	g.pressedKeys = inpututil.AppendJustPressedKeys(g.pressedKeys[:0])
 	for _, k := range g.pressedKeys {
-		g.ReceiveKeyInput(k, PressState_Pressed)
+		g.ReceiveKeyInput(k, PressStatePressed)
 	}
 
 	g.releasedKeys = inpututil.AppendJustReleasedKeys(g.releasedKeys[:0])
 	for _, k := range g.releasedKeys {
-		g.ReceiveKeyInput(k, PressState_Released)
+		g.ReceiveKeyInput(k, PressStateReleased)
 	}
 
 	g.pressingKeys = inpututil.AppendPressedKeys(g.pressingKeys[:0])
 	for _, k := range g.pressingKeys {
-		g.ReceiveKeyInput(k, PressState_Pressing)
+		g.ReceiveKeyInput(k, PressStatePressing)
 	}
 
 	for _, id := range g.GetGamepadIDs() {
 		for b := ebiten.StandardGamepadButton(0); b <= ebiten.StandardGamepadButtonMax; b++ {
 			if inpututil.IsStandardGamepadButtonJustPressed(id, b) {
-				g.ReceiveButtonInput(id, b, PressState_Pressed)
+				g.ReceiveButtonInput(id, b, PressStatePressed)
 			}
 			if inpututil.IsStandardGamepadButtonJustReleased(id, b) {
-				g.ReceiveButtonInput(id, b, PressState_Released)
+				g.ReceiveButtonInput(id, b, PressStateReleased)
 			}
 		}
 		for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {

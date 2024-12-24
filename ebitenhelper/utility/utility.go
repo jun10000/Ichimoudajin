@@ -23,9 +23,9 @@ var (
 type PressState int
 
 const (
-	PressState_Pressed PressState = iota
-	PressState_Released
-	PressState_Pressing
+	PressStatePressed PressState = iota
+	PressStateReleased
+	PressStatePressing
 )
 
 func NewRectangle(location Point, size Point) image.Rectangle {

@@ -18,24 +18,17 @@ func NewLevel() *Level {
 }
 
 func (l *Level) Add(actor any) {
-	d, ok := actor.(Drawer)
-	if ok {
-		l.Drawers = append(l.Drawers, d)
+	if a, ok := actor.(Drawer); ok {
+		l.Drawers = append(l.Drawers, a)
 	}
-
-	r, ok := actor.(InputReceiver)
-	if ok {
-		l.InputReceivers = append(l.InputReceivers, r)
+	if a, ok := actor.(InputReceiver); ok {
+		l.InputReceivers = append(l.InputReceivers, a)
 	}
-
-	t, ok := actor.(Ticker)
-	if ok {
-		l.Tickers = append(l.Tickers, t)
+	if a, ok := actor.(Ticker); ok {
+		l.Tickers = append(l.Tickers, a)
 	}
-
-	c, ok := actor.(Collider)
-	if ok {
-		l.Colliders = append(l.Colliders, c)
+	if a, ok := actor.(Collider); ok {
+		l.Colliders = append(l.Colliders, a)
 	}
 }
 
@@ -52,7 +45,7 @@ type TraceResult struct {
 	Normal  Vector
 }
 
-func NewTraceResult_NoHit(offset Vector) TraceResult {
+func NewTraceResultNoHit(offset Vector) TraceResult {
 	return TraceResult{
 		IsHit:   false,
 		Offset:  offset,
@@ -61,7 +54,7 @@ func NewTraceResult_NoHit(offset Vector) TraceResult {
 	}
 }
 
-func NewTraceResult_Hit(offset Vector, roffset Vector, normal Vector) TraceResult {
+func NewTraceResultHit(offset Vector, roffset Vector, normal Vector) TraceResult {
 	return TraceResult{
 		IsHit:   true,
 		Offset:  offset,
@@ -77,7 +70,7 @@ func (l *Level) GetColliderBounds(except Collider) []Bounder {
 			continue
 		}
 
-		b := c.GetBounds()
+		b := c.GetColliderBounds()
 		ret = append(ret, b)
 		if l.IsLooping {
 			ss := GetGameInstance().ScreenSize.ToVector()
@@ -107,12 +100,12 @@ func (l *Level) traceCircle(circle CircleF, offset Vector, except Collider) Trac
 			tr := obj.Intersect(b)
 			if !tr.IsZero() {
 				res := uni.MulF(i - 2)
-				return NewTraceResult_Hit(res, offset.Sub(res), tr)
+				return NewTraceResultHit(res, offset.Sub(res), tr)
 			}
 		}
 	}
 
-	return NewTraceResult_NoHit(offset)
+	return NewTraceResultNoHit(offset)
 }
 
 func (l *Level) Trace(target Bounder, offset Vector, except Collider) TraceResult {
@@ -121,6 +114,6 @@ func (l *Level) Trace(target Bounder, offset Vector, except Collider) TraceResul
 		return l.traceCircle(v, offset, except)
 	default:
 		log.Println("Detected not supported trace target type")
-		return NewTraceResult_NoHit(ZeroVector())
+		return NewTraceResultNoHit(ZeroVector())
 	}
 }
