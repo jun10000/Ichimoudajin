@@ -8,6 +8,7 @@ type Level struct {
 	IsLooping      bool
 	Drawers        []Drawer
 	InputReceivers []InputReceiver
+	AITickers      []AITicker
 	Tickers        []Ticker
 	Colliders      []Collider
 }
@@ -22,6 +23,9 @@ func (l *Level) Add(actor any) {
 	}
 	if a, ok := actor.(InputReceiver); ok {
 		l.InputReceivers = append(l.InputReceivers, a)
+	}
+	if a, ok := actor.(AITicker); ok {
+		l.AITickers = append(l.AITickers, a)
 	}
 	if a, ok := actor.(Ticker); ok {
 		l.Tickers = append(l.Tickers, a)

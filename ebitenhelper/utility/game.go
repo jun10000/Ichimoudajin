@@ -26,21 +26,41 @@ func SetLevel(level *Level) error {
 	return nil
 }
 
+type GamepadAxisKey struct {
+	ID   ebiten.GamepadID
+	Axis ebiten.StandardGamepadAxis
+}
+
+func NewGamepadAxisKey(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis) GamepadAxisKey {
+	return GamepadAxisKey{
+		ID:   id,
+		Axis: axis,
+	}
+}
+
 type Game struct {
 	WindowTitle string
 	ScreenSize  Point
 
-	pressedKeys  []ebiten.Key
-	releasedKeys []ebiten.Key
-	pressingKeys []ebiten.Key
-	gamepadIDs   []ebiten.GamepadID
-	drawEvents   []func(screen *ebiten.Image)
+	pressedKeys     []ebiten.Key
+	releasedKeys    []ebiten.Key
+	pressingKeys    []ebiten.Key
+	gamepadIDs      []ebiten.GamepadID
+	pressedButtons  map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	releasedButtons map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	pressingButtons map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	axisValues      map[GamepadAxisKey]float64
+	drawEvents      []func(screen *ebiten.Image)
 }
 
 func NewGame() *Game {
 	return &Game{
-		WindowTitle: "Game",
-		ScreenSize:  NewPoint(1280, 720),
+		WindowTitle:     "Game",
+		ScreenSize:      NewPoint(1280, 720),
+		pressedButtons:  map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
+		releasedButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
+		pressingButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
+		axisValues:      map[GamepadAxisKey]float64{},
 	}
 }
 
@@ -48,7 +68,10 @@ func (g *Game) AddDrawEvent(event func(*ebiten.Image)) {
 	g.drawEvents = append(g.drawEvents, event)
 }
 
-func (g *Game) GetGamepadIDs() []ebiten.GamepadID {
+func (g *Game) Update() error {
+	g.pressedKeys = inpututil.AppendJustPressedKeys(g.pressedKeys[:0])
+	g.releasedKeys = inpututil.AppendJustReleasedKeys(g.releasedKeys[:0])
+	g.pressingKeys = inpututil.AppendPressedKeys(g.pressingKeys[:0])
 	g.gamepadIDs = inpututil.AppendJustConnectedGamepadIDs(g.gamepadIDs)
 	for _, id := range g.gamepadIDs {
 		if inpututil.IsGamepadJustDisconnected(id) ||
@@ -56,41 +79,51 @@ func (g *Game) GetGamepadIDs() []ebiten.GamepadID {
 			g.gamepadIDs = RemoveSliceItem(g.gamepadIDs, id)
 		}
 	}
-
-	return g.gamepadIDs
-}
-
-func (g *Game) Update() error {
-	g.pressedKeys = inpututil.AppendJustPressedKeys(g.pressedKeys[:0])
-	for _, k := range g.pressedKeys {
-		g.ReceiveKeyInput(k, PressStatePressed)
-	}
-
-	g.releasedKeys = inpututil.AppendJustReleasedKeys(g.releasedKeys[:0])
-	for _, k := range g.releasedKeys {
-		g.ReceiveKeyInput(k, PressStateReleased)
-	}
-
-	g.pressingKeys = inpututil.AppendPressedKeys(g.pressingKeys[:0])
-	for _, k := range g.pressingKeys {
-		g.ReceiveKeyInput(k, PressStatePressing)
-	}
-
-	for _, id := range g.GetGamepadIDs() {
-		for b := ebiten.StandardGamepadButton(0); b <= ebiten.StandardGamepadButtonMax; b++ {
-			if inpututil.IsStandardGamepadButtonJustPressed(id, b) {
-				g.ReceiveButtonInput(id, b, PressStatePressed)
-			}
-			if inpututil.IsStandardGamepadButtonJustReleased(id, b) {
-				g.ReceiveButtonInput(id, b, PressStateReleased)
-			}
-		}
+	for _, id := range g.gamepadIDs {
+		g.pressedButtons[id] = inpututil.AppendJustPressedStandardGamepadButtons(id, g.pressedButtons[id][:0])
+		g.releasedButtons[id] = inpututil.AppendJustReleasedStandardGamepadButtons(id, g.releasedButtons[id][:0])
+		g.pressingButtons[id] = inpututil.AppendPressedStandardGamepadButtons(id, g.pressingButtons[id][:0])
 		for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
-			g.ReceiveAxisInput(id, a, ebiten.StandardGamepadAxisValue(id, a))
+			k := NewGamepadAxisKey(id, a)
+			v := ebiten.StandardGamepadAxisValue(id, a)
+			g.axisValues[k] = v
 		}
 	}
 
-	g.Tick()
+	for _, r := range GetLevel().InputReceivers {
+		for _, k := range g.pressedKeys {
+			r.ReceiveKeyInput(k, PressStatePressed)
+		}
+		for _, k := range g.releasedKeys {
+			r.ReceiveKeyInput(k, PressStateReleased)
+		}
+		for _, k := range g.pressingKeys {
+			r.ReceiveKeyInput(k, PressStatePressing)
+		}
+		for _, id := range g.gamepadIDs {
+			for _, b := range g.pressedButtons[id] {
+				r.ReceiveButtonInput(id, b, PressStatePressed)
+			}
+			for _, b := range g.releasedButtons[id] {
+				r.ReceiveButtonInput(id, b, PressStateReleased)
+			}
+			for _, b := range g.pressingButtons[id] {
+				r.ReceiveButtonInput(id, b, PressStatePressing)
+			}
+			for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
+				k := NewGamepadAxisKey(id, a)
+				r.ReceiveAxisInput(id, a, g.axisValues[k])
+			}
+		}
+	}
+
+	for _, t := range GetLevel().AITickers {
+		t.AITick()
+	}
+
+	for _, t := range GetLevel().Tickers {
+		t.Tick()
+	}
 
 	return nil
 }
@@ -108,30 +141,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 func (g *Game) Layout(width int, height int) (int, int) {
 	return g.ScreenSize.X, g.ScreenSize.Y
-}
-
-func (g *Game) ReceiveKeyInput(key ebiten.Key, state PressState) {
-	for _, r := range GetLevel().InputReceivers {
-		r.ReceiveKeyInput(key, state)
-	}
-}
-
-func (g *Game) ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState) {
-	for _, r := range GetLevel().InputReceivers {
-		r.ReceiveButtonInput(id, button, state)
-	}
-}
-
-func (g *Game) ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
-	for _, r := range GetLevel().InputReceivers {
-		r.ReceiveAxisInput(id, axis, value)
-	}
-}
-
-func (g *Game) Tick() {
-	for _, t := range GetLevel().Tickers {
-		t.Tick()
-	}
 }
 
 func (g *Game) Play(firstlevel *Level) error {

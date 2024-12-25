@@ -12,8 +12,12 @@ type Ticker interface {
 
 type InputReceiver interface {
 	ReceiveKeyInput(key ebiten.Key, state PressState)
-	ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState) // PressState_Pressing is not supported
+	ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState)
 	ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64)
+}
+
+type AITicker interface {
+	AITick()
 }
 
 type Bounder interface {

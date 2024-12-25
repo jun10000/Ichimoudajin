@@ -21,6 +21,11 @@ func NewAIPawn() *AIPawn {
 	return a
 }
 
+func (a *AIPawn) AITick() {
+	// test
+	a.AddInput(utility.NewVector(1, 1), 1)
+}
+
 func (a *AIPawn) Tick() {
 	a.MovementComponent.Tick()
 	a.DrawAnimationComponent.Tick()
