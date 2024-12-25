@@ -102,3 +102,51 @@ func RemoveSliceItem[T comparable](slice []T, item T) []T {
 
 	return r
 }
+
+func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (normal Vector) {
+	p := NewVector(
+		ClampFloat(circle.Origin.X, rectangle.MinX, rectangle.MaxX),
+		ClampFloat(circle.Origin.Y, rectangle.MinY, rectangle.MaxY))
+	r := circle.Origin.Sub(p)
+
+	if r.Length() > circle.Radius {
+		return ZeroVector()
+	}
+
+	return r.Normalize()
+}
+
+func IntersectCircleToCircle(circle1 CircleF, circle2 CircleF) (normal Vector) {
+	d := circle1.Origin.Sub(circle2.Origin)
+	if d.Length() > circle1.Radius+circle2.Radius {
+		return ZeroVector()
+	}
+
+	return d.Normalize()
+}
+
+/*
+Intersect supports following type combinations
+  - RectangleF -> CircleF
+  - CircleF -> RectangleF
+  - CircleF -> CircleF
+*/
+func Intersect(src Bounder, dst Bounder) (normal Vector) {
+	switch v1 := src.(type) {
+	case RectangleF:
+		switch v2 := dst.(type) {
+		case CircleF:
+			return IntersectCircleToRectangle(v2, v1).Negate()
+		}
+	case CircleF:
+		switch v2 := dst.(type) {
+		case RectangleF:
+			return IntersectCircleToRectangle(v1, v2)
+		case CircleF:
+			return IntersectCircleToCircle(v1, v2)
+		}
+	}
+
+	log.Println("Detected unsupported intersect")
+	return ZeroVector()
+}

@@ -1,7 +1,6 @@
 package utility
 
 import (
-	"log"
 	"math"
 )
 
@@ -63,7 +62,7 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector) TraceResult
 	}
 }
 
-func (l *Level) GetColliderBounds(except Collider) []Bounder {
+func (l *Level) GetActorBounds(except Collider) []Bounder {
 	ret := []Bounder{}
 	for _, c := range l.Colliders {
 		if c == except {
@@ -89,15 +88,15 @@ func (l *Level) GetColliderBounds(except Collider) []Bounder {
 	return ret
 }
 
-func (l *Level) traceCircle(circle CircleF, offset Vector, except Collider) TraceResult {
+func (l *Level) Trace(target Bounder, offset Vector, except Collider) TraceResult {
 	cnt := math.Ceil(offset.Length())
 	uni := offset.DivF(cnt)
-	bs := l.GetColliderBounds(except)
+	bs := l.GetActorBounds(except)
 
 	for i := 0.0; i <= cnt; i++ {
-		obj := NewCircleF(circle.Origin.Add(uni.MulF(i)), circle.Radius)
+		obj := target.Offset(uni.MulF(i))
 		for _, b := range bs {
-			tr := obj.Intersect(b)
+			tr := Intersect(obj, b)
 			if !tr.IsZero() {
 				res := uni.MulF(i - 2)
 				return NewTraceResultHit(res, offset.Sub(res), tr)
@@ -106,14 +105,4 @@ func (l *Level) traceCircle(circle CircleF, offset Vector, except Collider) Trac
 	}
 
 	return NewTraceResultNoHit(offset)
-}
-
-func (l *Level) Trace(target Bounder, offset Vector, except Collider) TraceResult {
-	switch v := target.(type) {
-	case CircleF:
-		return l.traceCircle(v, offset, except)
-	default:
-		log.Println("Detected not supported trace target type")
-		return NewTraceResultNoHit(ZeroVector())
-	}
 }
