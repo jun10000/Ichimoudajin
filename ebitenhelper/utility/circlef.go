@@ -29,10 +29,21 @@ func (c CircleF) intersectRectangleF(rect RectangleF) (normal Vector) {
 	return r.Normalize()
 }
 
+func (c CircleF) intersectCircleF(circle CircleF) (normal Vector) {
+	d := c.Origin.Sub(circle.Origin)
+	if d.Length() > c.Radius+circle.Radius {
+		return ZeroVector()
+	}
+
+	return d.Normalize()
+}
+
 func (c CircleF) Intersect(target Bounder) (normal Vector) {
 	switch v := target.(type) {
 	case RectangleF:
 		return c.intersectRectangleF(v)
+	case CircleF:
+		return c.intersectCircleF(v)
 	default:
 		log.Println("Detected not supported intersect target type")
 		return ZeroVector()
