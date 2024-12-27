@@ -5,17 +5,17 @@ import (
 )
 
 type BlockingArea struct {
-	Location utility.Vector
-	Size     utility.Vector
+	utility.Transform
+	Size utility.Vector
 }
 
 func NewBlockingArea() *BlockingArea {
 	return &BlockingArea{
-		Location: utility.ZeroVector(),
-		Size:     utility.NewVector(32, 32),
+		Transform: utility.DefaultTransform(),
+		Size:      utility.NewVector(32, 32),
 	}
 }
 
 func (a *BlockingArea) GetColliderBounds() utility.Bounder {
-	return utility.NewRectangleF(a.Location, a.Size)
+	return utility.NewRectangleF(a.GetLocation(), a.Size)
 }

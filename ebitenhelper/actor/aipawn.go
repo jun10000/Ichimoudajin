@@ -6,7 +6,7 @@ import (
 )
 
 type AIPawn struct {
-	*utility.Transform
+	utility.Transform
 	*component.MovementComponent
 	*component.DrawAnimationComponent
 }
@@ -22,8 +22,9 @@ func NewAIPawn() *AIPawn {
 }
 
 func (a *AIPawn) AITick() {
-	// test
-	a.AddInput(utility.NewVector(1, 1), 1)
+	pl := utility.GetLevel().InputReceivers[0].GetLocation()
+	el := a.GetLocation()
+	a.AddInput(pl.Sub(el), 1)
 }
 
 func (a *AIPawn) Tick() {

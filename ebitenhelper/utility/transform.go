@@ -14,8 +14,8 @@ func NewTransform(location Vector, rotation float64, scale Vector) *Transform {
 	}
 }
 
-func DefaultTransform() *Transform {
-	return &Transform{
+func DefaultTransform() Transform {
+	return Transform{
 		Location: ZeroLocation(),
 		Rotation: ZeroRotation(),
 		Scale:    DefaultScale(),

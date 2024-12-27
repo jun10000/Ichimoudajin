@@ -18,40 +18,40 @@ import (
 //go:embed *
 var assets embed.FS
 
-type mapTilesetImage_xml struct {
+type mapTilesetImageXML struct {
 	Source string `xml:"source,attr"`
 }
 
-type mapLayerProperty_xml struct {
+type mapLayerPropertyXML struct {
 	Name  string `xml:"name,attr"`
 	Value string `xml:"value,attr"`
 }
 
-type mapLayerData_xml struct {
+type mapLayerDataXML struct {
 	Inner string `xml:",innerxml"`
 }
 
-type mapTileset_xml struct {
-	FirstGID  int                 `xml:"firstgid,attr"`
-	TileCount int                 `xml:"tilecount,attr"`
-	Columns   int                 `xml:"columns,attr"`
-	Image     mapTilesetImage_xml `xml:"image"`
+type mapTilesetXML struct {
+	FirstGID  int                `xml:"firstgid,attr"`
+	TileCount int                `xml:"tilecount,attr"`
+	Columns   int                `xml:"columns,attr"`
+	Image     mapTilesetImageXML `xml:"image"`
 }
 
-type mapLayer_xml struct {
-	Name       string                 `xml:"name,attr"`
-	Properties []mapLayerProperty_xml `xml:"properties>property"`
-	Data       mapLayerData_xml       `xml:"data"`
+type mapLayerXML struct {
+	Name       string                `xml:"name,attr"`
+	Properties []mapLayerPropertyXML `xml:"properties>property"`
+	Data       mapLayerDataXML       `xml:"data"`
 }
 
-type mapInfo_xml struct {
-	Version    string           `xml:"version,attr"`
-	Width      int              `xml:"width,attr"`
-	Height     int              `xml:"height,attr"`
-	TileWidth  int              `xml:"tilewidth,attr"`
-	TileHeight int              `xml:"tileheight,attr"`
-	Tilesets   []mapTileset_xml `xml:"tileset"`
-	Layers     []mapLayer_xml   `xml:"layer"`
+type mapInfoXML struct {
+	Version    string          `xml:"version,attr"`
+	Width      int             `xml:"width,attr"`
+	Height     int             `xml:"height,attr"`
+	TileWidth  int             `xml:"tilewidth,attr"`
+	TileHeight int             `xml:"tileheight,attr"`
+	Tilesets   []mapTilesetXML `xml:"tileset"`
+	Layers     []mapLayerXML   `xml:"layer"`
 }
 
 type MapCell struct {
@@ -81,7 +81,7 @@ type MapInfo struct {
 
 func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
 	// Read and check XML data
-	mxml := &mapInfo_xml{}
+	mxml := &mapInfoXML{}
 	err := decoder.DecodeElement(mxml, &start)
 	if err != nil {
 		return err
@@ -171,9 +171,9 @@ func (m *MapInfo) GetActors() []any {
 				}
 
 				b := actor.NewBlockingArea()
-				b.Location = utility.NewVector(
+				b.SetLocation(utility.NewVector(
 					float64((ci%m.MapSize.X)*m.TileSize.X),
-					float64(ci/m.MapSize.X*m.TileSize.Y))
+					float64(ci/m.MapSize.X*m.TileSize.Y)))
 				b.Size = m.TileSize.ToVector()
 				result = append(result, b)
 			}
