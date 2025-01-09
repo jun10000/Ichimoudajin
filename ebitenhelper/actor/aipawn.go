@@ -9,6 +9,7 @@ type AIPawn struct {
 	utility.Transform
 	*component.MovementComponent
 	*component.DrawAnimationComponent
+	*component.AIControllerComponent
 }
 
 func NewAIPawn() *AIPawn {
@@ -18,13 +19,8 @@ func NewAIPawn() *AIPawn {
 
 	a.MovementComponent = component.NewMovementComponent(a)
 	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
+	a.AIControllerComponent = component.NewAIControllerComponent(a, a.MovementComponent)
 	return a
-}
-
-func (a *AIPawn) AITick() {
-	pl := utility.GetLevel().InputReceivers[0].GetLocation()
-	el := a.GetLocation()
-	a.AddInput(pl.Sub(el), 1)
 }
 
 func (a *AIPawn) Tick() {
