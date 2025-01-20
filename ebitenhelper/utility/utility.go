@@ -103,15 +103,6 @@ func RemoveSliceItem[T comparable](slice []T, item T) []T {
 	return r
 }
 
-// RemoveSliceItem2 might replace RemoveSliceItem.
-func RemoveSliceItem2[T comparable](slice []T, item T) {
-	for i, v := range slice {
-		if v == item {
-			slice = append(slice[:i], slice[i+1:]...)
-		}
-	}
-}
-
 func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (normal Vector) {
 	p := NewVector(
 		ClampFloat(circle.Origin.X, rectangle.MinX, rectangle.MaxX),
