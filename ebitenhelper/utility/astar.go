@@ -31,31 +31,28 @@ func (n *AStarNode) GetAroundLocations() []Point {
 }
 
 type AStar struct {
-	IsLocationValidCB func(location Point) bool
-
 	currentNode *AStarNode
 	openedNodes map[Point]*AStarNode
 	closedNodes map[Point]*AStarNode
 }
 
-func NewAStar(islocvalidcb func(location Point) bool) *AStar {
+func NewAStar() *AStar {
 	return &AStar{
-		IsLocationValidCB: islocvalidcb,
-		openedNodes:       map[Point]*AStarNode{},
-		closedNodes:       map[Point]*AStarNode{},
+		openedNodes: map[Point]*AStarNode{},
+		closedNodes: map[Point]*AStarNode{},
 	}
 }
 
-func (a *AStar) Run(start Point, goal Point) (result []Point, ok bool) {
+func (a *AStar) Run(start Point, goal Point, isLocationValid func(location Point) bool) []Point {
 	a.currentNode = NewAStarNode(start)
 
 	for a.currentNode != nil {
 		if a.currentNode.Location == goal {
-			return a.GetCurrentPath(), true
+			return a.GetCurrentPath()
 		}
 
 		for _, l := range a.currentNode.GetAroundLocations() {
-			if !a.IsLocationValidCB(l) || a.closedNodes[l] != nil {
+			if !isLocationValid(l) || a.closedNodes[l] != nil {
 				continue
 			}
 
@@ -70,7 +67,7 @@ func (a *AStar) Run(start Point, goal Point) (result []Point, ok bool) {
 		a.currentNode = a.GetNextOpenNode()
 	}
 
-	return nil, false
+	return []Point{}
 }
 
 func (a *AStar) UpdateNode(node *AStarNode, goal Point) {

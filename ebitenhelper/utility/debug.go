@@ -35,3 +35,11 @@ func DrawDebugLine(start Vector, end Vector, color color.Color) {
 		})
 	}
 }
+
+func DrawDebugRectangle(topleft Vector, size Vector, color color.Color) {
+	if isDebug {
+		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
+			vector.DrawFilledRect(screen, float32(topleft.X), float32(topleft.Y), float32(size.X), float32(size.Y), color, false)
+		})
+	}
+}
