@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -103,6 +104,35 @@ func RemoveSliceItem[T comparable](slice []T, item T) []T {
 	return r
 }
 
+func IntersectRectangleToRectangle(rectangle1 RectangleF, rectangle2 RectangleF) (normal Vector) {
+	xleft := rectangle1.MaxX - rectangle2.MinX
+	xright := rectangle2.MaxX - rectangle1.MinX
+	ytop := rectangle1.MaxY - rectangle2.MinY
+	ybottom := rectangle2.MaxY - rectangle1.MinY
+
+	if xleft < 0 || xright < 0 || ytop < 0 || ybottom < 0 {
+		return ZeroVector()
+	}
+
+	isright := xleft > xright
+	isbottom := ytop > ybottom
+	isy := math.Min(xleft, xright) > math.Min(ytop, ybottom)
+
+	if isy {
+		if isbottom {
+			return NewVector(0, 1)
+		} else {
+			return NewVector(0, -1)
+		}
+	} else {
+		if isright {
+			return NewVector(1, 0)
+		} else {
+			return NewVector(-1, 0)
+		}
+	}
+}
+
 func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (normal Vector) {
 	p := NewVector(
 		ClampFloat(circle.Origin.X, rectangle.MinX, rectangle.MaxX),
@@ -127,6 +157,7 @@ func IntersectCircleToCircle(circle1 CircleF, circle2 CircleF) (normal Vector) {
 
 /*
 Intersect supports following type combinations
+  - RectangleF -> RectangleF
   - RectangleF -> CircleF
   - CircleF -> RectangleF
   - CircleF -> CircleF
@@ -135,6 +166,8 @@ func Intersect(src Bounder, dst Bounder) (normal Vector) {
 	switch v1 := src.(type) {
 	case RectangleF:
 		switch v2 := dst.(type) {
+		case RectangleF:
+			return IntersectRectangleToRectangle(v1, v2)
 		case CircleF:
 			return IntersectCircleToRectangle(v2, v1).Negate()
 		}

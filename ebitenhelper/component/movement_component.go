@@ -50,7 +50,8 @@ func (c *MovementComponent) Tick() {
 	// Collision test
 	trm := c.velocity.MulF(utility.TickDuration)
 	for i := 0; i < 10; i++ {
-		tr := utility.GetLevel().Trace(c.parent.GetColliderBounds(), trm, c.parent)
+		es := []utility.Collider{c.parent}
+		tr := utility.GetLevel().Trace(c.parent.GetColliderBounds(), trm, es)
 		c.parent.AddLocation(tr.Offset)
 		if !tr.IsHit {
 			break

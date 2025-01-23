@@ -5,14 +5,15 @@ import "github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 type AIControllerComponent struct {
 	AIGridSize utility.Vector
 
-	parent      utility.Transformer
-	target      *MovementComponent
-	pathfinding *utility.AStar
+	parent         utility.Collider
+	target         *MovementComponent
+	pathfinding    *utility.AStar
+	currentExcepts []utility.Collider
 }
 
-func NewAIControllerComponent(parent utility.Transformer, target *MovementComponent) *AIControllerComponent {
+func NewAIControllerComponent(parent utility.Collider, target *MovementComponent) *AIControllerComponent {
 	return &AIControllerComponent{
-		AIGridSize:  utility.NewVector(64, 64),
+		AIGridSize:  utility.NewVector(32, 32),
 		parent:      parent,
 		target:      target,
 		pathfinding: utility.NewAStar(),
@@ -20,21 +21,28 @@ func NewAIControllerComponent(parent utility.Transformer, target *MovementCompon
 }
 
 func (a *AIControllerComponent) AITick() {
-	gl := utility.GetLevel().InputReceivers[0].GetLocation()
-	a.AIMoveTo(gl)
+	t := utility.GetLevel().InputReceivers[0]
+	a.AIMoveTo(t)
 }
 
-func (a *AIControllerComponent) AIMoveTo(goal utility.Vector) {
-	start := a.parent.GetLocation()
-	sp := start.Div(a.AIGridSize).Floor()
-	gp := goal.Div(a.AIGridSize).Floor()
+func (a *AIControllerComponent) AIMoveTo(dest any) {
+	sl := a.parent.GetLocation()
+	gt, ok := dest.(utility.Transformer)
+	if !ok {
+		return
+	}
+	gl := gt.GetLocation()
+
+	sp := sl.Div(a.AIGridSize).Floor()
+	gp := gl.Div(a.AIGridSize).Floor()
+	a.currentExcepts = []utility.Collider{a.parent, dest.(utility.Collider)}
 
 	pr := a.pathfinding.Run(sp, gp, a.IsPointLocationValid)
 	switch c := len(pr); {
 	case c >= 2:
 		// to do
 	case c == 1:
-		a.target.AddInput(goal.Sub(start), 1)
+		a.target.AddInput(gl.Sub(sl), 1)
 	default:
 	}
 
@@ -47,6 +55,6 @@ func (a *AIControllerComponent) AIMoveTo(goal utility.Vector) {
 func (a *AIControllerComponent) IsPointLocationValid(location utility.Point) bool {
 	tl := location.ToVector().Mul(a.AIGridSize)
 	rc := utility.NewRectangleF(tl, a.AIGridSize)
-	tr := utility.GetLevel().Trace(rc, utility.ZeroVector(), nil)
-	return tr.IsHit
+	tr := utility.GetLevel().Trace(rc, utility.ZeroVector(), a.currentExcepts)
+	return !tr.IsHit
 }

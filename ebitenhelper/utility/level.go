@@ -2,6 +2,7 @@ package utility
 
 import (
 	"math"
+	"slices"
 )
 
 type Level struct {
@@ -66,10 +67,10 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector) TraceResult
 	}
 }
 
-func (l *Level) GetActorBounds(except Collider) []Bounder {
+func (l *Level) GetActorBounds(excepts []Collider) []Bounder {
 	ret := []Bounder{}
 	for _, c := range l.Colliders {
-		if c == except {
+		if slices.Contains(excepts, c) {
 			continue
 		}
 
@@ -92,10 +93,10 @@ func (l *Level) GetActorBounds(except Collider) []Bounder {
 	return ret
 }
 
-func (l *Level) Trace(target Bounder, offset Vector, except Collider) TraceResult {
+func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceResult {
 	cnt := math.Ceil(offset.Length())
 	uni := offset.DivF(cnt)
-	bs := l.GetActorBounds(except)
+	bs := l.GetActorBounds(excepts)
 
 	for i := 0.0; i <= cnt; i++ {
 		obj := target.Offset(uni.MulF(i))

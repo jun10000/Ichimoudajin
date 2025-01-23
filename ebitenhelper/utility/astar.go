@@ -45,6 +45,8 @@ func NewAStar() *AStar {
 
 func (a *AStar) Run(start Point, goal Point, isLocationValid func(location Point) bool) []Point {
 	a.currentNode = NewAStarNode(start)
+	clear(a.openedNodes)
+	clear(a.closedNodes)
 
 	for a.currentNode != nil {
 		if a.currentNode.Location == goal {
