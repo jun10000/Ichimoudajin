@@ -21,28 +21,29 @@ func NewAIControllerComponent(parent utility.Collider, target *MovementComponent
 }
 
 func (a *AIControllerComponent) AITick() {
-	t := utility.GetLevel().InputReceivers[0]
-	a.AIMoveTo(t)
+	c, ok := utility.GetLevel().InputReceivers[0].(utility.Collider)
+	if ok {
+		a.AIMoveToActor(c)
+	}
 }
 
-func (a *AIControllerComponent) AIMoveTo(dest any) {
-	sl := a.parent.GetLocation()
-	gt, ok := dest.(utility.Transformer)
-	if !ok {
-		return
-	}
-	gl := gt.GetLocation()
-
+func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
+	src := a.parent
+	sl := src.GetColliderBounds().BoundingBox().CenterLocation()
 	sp := sl.Div(a.AIGridSize).Floor()
-	gp := gl.Div(a.AIGridSize).Floor()
-	a.currentExcepts = []utility.Collider{a.parent, dest.(utility.Collider)}
 
-	pr := a.pathfinding.Run(sp, gp, a.IsPointLocationValid)
+	dl := dst.GetColliderBounds().BoundingBox().CenterLocation()
+	dp := dl.Div(a.AIGridSize).Floor()
+
+	a.currentExcepts = []utility.Collider{src, dst}
+
+	pr := a.pathfinding.Run(sp, dp, a.IsPointLocationValid)
 	switch c := len(pr); {
 	case c >= 2:
-		// to do
+		dl = pr[1].ToVector().Mul(a.AIGridSize).Add(a.AIGridSize.DivF(2))
+		a.target.AddInput(dl.Sub(sl), 1)
 	case c == 1:
-		a.target.AddInput(gl.Sub(sl), 1)
+		a.target.AddInput(dl.Sub(sl), 1)
 	default:
 	}
 
@@ -53,7 +54,12 @@ func (a *AIControllerComponent) AIMoveTo(dest any) {
 }
 
 func (a *AIControllerComponent) IsPointLocationValid(location utility.Point) bool {
+	ss := utility.GetGameInstance().ScreenSize
 	tl := location.ToVector().Mul(a.AIGridSize)
+	if tl.X < 0 || tl.Y < 0 || tl.X > float64(ss.X) || tl.Y > float64(ss.Y) {
+		return false
+	}
+
 	rc := utility.NewRectangleF(tl, a.AIGridSize)
 	tr := utility.GetLevel().Trace(rc, utility.ZeroVector(), a.currentExcepts)
 	return !tr.IsHit

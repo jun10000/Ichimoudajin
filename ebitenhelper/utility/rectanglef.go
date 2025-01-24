@@ -20,6 +20,10 @@ func (r RectangleF) Location() Vector {
 	return NewVector(r.MinX, r.MinY)
 }
 
+func (r RectangleF) CenterLocation() Vector {
+	return NewVector((r.MinX+r.MaxX)/2, (r.MinY+r.MaxY)/2)
+}
+
 func (r RectangleF) Size() Vector {
 	return NewVector(r.MaxX-r.MinX, r.MaxY-r.MinY)
 }
