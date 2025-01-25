@@ -21,7 +21,7 @@ func (r RectangleF) Location() Vector {
 }
 
 func (r RectangleF) CenterLocation() Vector {
-	return NewVector((r.MinX+r.MaxX)/2, (r.MinY+r.MaxY)/2)
+	return ClampLocation(NewVector((r.MinX+r.MaxX)/2, (r.MinY+r.MaxY)/2))
 }
 
 func (r RectangleF) Size() Vector {

@@ -91,6 +91,27 @@ func ClampFloat(value float64, min float64, max float64) float64 {
 	return value
 }
 
+func ClampLocation(location Vector) Vector {
+	r := location
+	lv := GetLevel()
+	gi := GetGameInstance()
+
+	if lv == nil || !lv.IsLooping || gi == nil {
+		return r
+	}
+
+	ss := gi.ScreenSize.ToVector()
+	r = r.Mod(ss)
+	if r.X < 0 {
+		r.X += ss.X
+	}
+	if r.Y < 0 {
+		r.Y += ss.Y
+	}
+
+	return r
+}
+
 func RemoveSliceItem[T comparable](slice []T, item T) []T {
 	r := make([]T, len(slice))
 	for _, v := range slice {
