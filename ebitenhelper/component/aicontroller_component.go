@@ -29,18 +29,14 @@ func (a *AIControllerComponent) AITick() {
 
 func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
 	src := a.parent
-	sl := src.GetColliderBounds().BoundingBox().CenterLocation()
-	sp := sl.Div(a.AIGridSize).Floor()
-
-	dl := dst.GetColliderBounds().BoundingBox().CenterLocation()
-	dp := dl.Div(a.AIGridSize).Floor()
-
 	a.currentExcepts = []utility.Collider{src, dst}
+	sl := src.GetColliderBounds().BoundingBox().CenterLocation()
+	dl := dst.GetColliderBounds().BoundingBox().CenterLocation()
 
-	pr := a.pathfinding.Run(sp, dp, a.IsPointLocationValid)
+	pr := a.pathfinding.Run(a.RealToPFLocation(sl), a.RealToPFLocation(dl), a.IsPointLocationValid)
 	switch c := len(pr); {
 	case c >= 2:
-		dl = pr[1].ToVector().Mul(a.AIGridSize).Add(a.AIGridSize.DivF(2))
+		dl = a.PFToRealLocation(pr[1], true)
 		a.target.AddInput(dl.Sub(sl), 1)
 	case c == 1:
 		a.target.AddInput(dl.Sub(sl), 1)
@@ -49,18 +45,30 @@ func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
 
 	// for debug
 	for _, p := range pr {
-		utility.DrawDebugRectangle(p.ToVector().Mul(a.AIGridSize), a.AIGridSize, utility.ColorGreen)
+		utility.DrawDebugRectangle(a.PFToRealLocation(p, false), a.AIGridSize, utility.ColorGreen)
 	}
 }
 
 func (a *AIControllerComponent) IsPointLocationValid(location utility.Point) bool {
 	ss := utility.GetGameInstance().ScreenSize
-	tl := location.ToVector().Mul(a.AIGridSize)
-	if tl.X < 0 || tl.Y < 0 || tl.X > float64(ss.X) || tl.Y > float64(ss.Y) {
+	tl := a.PFToRealLocation(location, false)
+	if tl.X < 0 || tl.Y < 0 || tl.X >= float64(ss.X) || tl.Y >= float64(ss.Y) {
 		return false
 	}
 
 	rc := utility.NewRectangleF(tl, a.AIGridSize)
 	tr := utility.GetLevel().Trace(rc, utility.ZeroVector(), a.currentExcepts)
 	return !tr.IsHit
+}
+
+func (a *AIControllerComponent) RealToPFLocation(real utility.Vector) utility.Point {
+	return real.Div(a.AIGridSize).Floor()
+}
+
+func (a *AIControllerComponent) PFToRealLocation(pf utility.Point, isCenter bool) utility.Vector {
+	r := pf.ToVector().Mul(a.AIGridSize)
+	if isCenter {
+		r = r.Add(a.AIGridSize.DivF(2))
+	}
+	return r
 }
