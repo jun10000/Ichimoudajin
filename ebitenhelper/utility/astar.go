@@ -30,20 +30,20 @@ func (n *AStarNode) GetAroundLocations() []Point {
 	}
 }
 
-type AStar struct {
+type AStarInstance struct {
 	currentNode *AStarNode
 	openedNodes map[Point]*AStarNode
 	closedNodes map[Point]*AStarNode
 }
 
-func NewAStar() *AStar {
-	return &AStar{
+func NewAStarInstance() *AStarInstance {
+	return &AStarInstance{
 		openedNodes: map[Point]*AStarNode{},
 		closedNodes: map[Point]*AStarNode{},
 	}
 }
 
-func (a *AStar) Run(start Point, goal Point, isLocationValid func(location Point) bool) []Point {
+func (a *AStarInstance) Run(start Point, goal Point, isLocationValid func(location Point) bool) []Point {
 	a.currentNode = NewAStarNode(start)
 	clear(a.openedNodes)
 	clear(a.closedNodes)
@@ -72,7 +72,7 @@ func (a *AStar) Run(start Point, goal Point, isLocationValid func(location Point
 	return []Point{}
 }
 
-func (a *AStar) UpdateNode(node *AStarNode, goal Point) {
+func (a *AStarInstance) UpdateNode(node *AStarNode, goal Point) {
 	gd := a.currentNode.GDistance + a.currentNode.Location.Distance(node.Location)
 	if !node.IsAllInit {
 		node.GDistance = gd
@@ -88,7 +88,7 @@ func (a *AStar) UpdateNode(node *AStarNode, goal Point) {
 	}
 }
 
-func (a *AStar) GetNextOpenNode() *AStarNode {
+func (a *AStarInstance) GetNextOpenNode() *AStarNode {
 	min := math.MaxFloat64
 	var r *AStarNode
 
@@ -107,7 +107,7 @@ func (a *AStar) GetNextOpenNode() *AStarNode {
 	return r
 }
 
-func (a *AStar) GetCurrentPath() []Point {
+func (a *AStarInstance) GetCurrentPath() []Point {
 	r := []Point{a.currentNode.Location}
 	n := a.currentNode.Parent
 
@@ -118,4 +118,38 @@ func (a *AStar) GetCurrentPath() []Point {
 
 	slices.Reverse(r)
 	return r
+}
+
+type AStar struct {
+	isRunning bool
+	savedPath []Point
+}
+
+func NewAStar() *AStar {
+	return &AStar{
+		savedPath: []Point{},
+	}
+}
+
+func (a *AStar) Run(start Point, goal Point, isLocationValid func(location Point) bool) []Point {
+	if a.isRunning {
+		return a.GetPath(start)
+	}
+	a.isRunning = true
+
+	go func(fs Point, fg Point, ff func(location Point) bool) {
+		a.savedPath = NewAStarInstance().Run(fs, fg, ff)
+		a.isRunning = false
+	}(start, goal, isLocationValid)
+
+	return a.GetPath(start)
+}
+
+func (a *AStar) GetPath(start Point) []Point {
+	s := slices.Index(a.savedPath, start)
+	if s == -1 {
+		return a.savedPath
+	}
+
+	return a.savedPath[s:]
 }

@@ -3,7 +3,8 @@ package component
 import "github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 
 type AIControllerComponent struct {
-	AIGridSize utility.Vector
+	AIGridSize      utility.Vector
+	IsDrawDebugPath bool
 
 	parent         utility.Collider
 	target         *MovementComponent
@@ -40,12 +41,12 @@ func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
 		a.target.AddInput(dl.Sub(sl), 1)
 	case c == 1:
 		a.target.AddInput(dl.Sub(sl), 1)
-	default:
 	}
 
-	// for debug
-	for _, p := range pr {
-		utility.DrawDebugRectangle(a.PFToRealLocation(p, false), a.AIGridSize, utility.ColorGreen)
+	if a.IsDrawDebugPath {
+		for _, p := range pr {
+			utility.DrawDebugRectangle(a.PFToRealLocation(p, false), a.AIGridSize, utility.ColorGreen)
+		}
 	}
 }
 
