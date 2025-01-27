@@ -30,7 +30,12 @@ func (a *AIControllerComponent) AITick() {
 
 func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
 	src := a.parent
-	a.currentExcepts = []utility.Collider{src, dst}
+	a.currentExcepts = []utility.Collider{dst}
+	for _, t := range utility.GetLevel().AITickers {
+		if c, ok := t.(utility.Collider); ok {
+			a.currentExcepts = append(a.currentExcepts, c)
+		}
+	}
 	sl := src.GetColliderBounds().BoundingBox().CenterLocation()
 	dl := dst.GetColliderBounds().BoundingBox().CenterLocation()
 
