@@ -28,16 +28,16 @@ func NewStage1() *utility.Level {
 	enemyImage, err := assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
 	utility.ExitIfError(err)
 	enemyLocations := []utility.Vector{
-		utility.NewVector(500, 300),
-		utility.NewVector(400, 300),
 		utility.NewVector(700, 300),
 		utility.NewVector(800, 300),
 		utility.NewVector(900, 300),
 		utility.NewVector(1000, 300),
-		utility.NewVector(500, 300),
-		utility.NewVector(500, 400),
+		utility.NewVector(1100, 300),
+		utility.NewVector(1200, 300),
 		utility.NewVector(500, 500),
-		utility.NewVector(500, 600),
+		utility.NewVector(600, 500),
+		utility.NewVector(700, 500),
+		utility.NewVector(800, 500),
 	}
 	for _, el := range enemyLocations {
 		enemy := actor.NewAIPawn()

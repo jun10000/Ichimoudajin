@@ -7,9 +7,10 @@ import (
 )
 
 type MovementComponent struct {
-	Accel    float64
-	Decel    float64
-	MaxSpeed float64
+	Accel               float64
+	Decel               float64
+	MaxSpeed            float64
+	IsDrawDebugLocation bool
 
 	parent     utility.Collider
 	velocity   utility.Vector
@@ -59,5 +60,12 @@ func (c *MovementComponent) Tick() {
 
 		c.velocity = c.velocity.Reflect(tr.Normal, 0)
 		trm = tr.ROffset.Reflect(tr.Normal, 0)
+	}
+
+	// Draw parent location
+	if c.IsDrawDebugLocation {
+		l := c.parent.GetLocation()
+		o := utility.NewVector(2, -12)
+		utility.DrawDebugText(l.Add(o), l.String())
 	}
 }

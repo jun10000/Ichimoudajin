@@ -1,6 +1,9 @@
 package utility
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type Vector struct {
 	X float64
@@ -83,6 +86,22 @@ func (v Vector) Ceil() Point {
 	return NewPoint(int(math.Ceil(v.X)), int(math.Ceil(v.Y)))
 }
 
+func (v Vector) FloorF(digit int) Vector {
+	d := math.Pow(10, float64(digit))
+	r := v.MulF(d)
+	r.X = math.Floor(r.X)
+	r.Y = math.Floor(r.Y)
+	return r.DivF(d)
+}
+
+func (v Vector) CeilF(digit int) Vector {
+	d := math.Pow(10, float64(digit))
+	r := v.MulF(d)
+	r.X = math.Ceil(r.X)
+	r.Y = math.Ceil(r.Y)
+	return r.DivF(d)
+}
+
 func (v Vector) Negate() Vector {
 	return NewVector(-v.X, -v.Y)
 }
@@ -152,4 +171,8 @@ func (v Vector) Rotate(angle float64) Vector {
 		v.X*math.Cos(angle)+v.Y*math.Sin(angle),
 		-v.X*math.Sin(angle)+v.Y*math.Cos(angle),
 	)
+}
+
+func (v Vector) String() string {
+	return fmt.Sprintf("(%v, %v)", v.X, v.Y)
 }

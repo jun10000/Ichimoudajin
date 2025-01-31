@@ -103,8 +103,12 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 		for _, b := range bs {
 			tr := Intersect(obj, b)
 			if !tr.IsZero() {
-				res := uni.MulF(i - 2)
-				return NewTraceResultHit(res, offset.Sub(res), tr)
+				if i <= 2.0 {
+					return NewTraceResultHit(ZeroVector(), offset, tr)
+				} else {
+					res := uni.MulF(i - 2)
+					return NewTraceResultHit(res, offset.Sub(res), tr)
+				}
 			}
 		}
 	}

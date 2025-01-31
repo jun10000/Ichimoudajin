@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -40,6 +41,15 @@ func DrawDebugRectangle(topleft Vector, size Vector, color color.Color) {
 	if isDebug {
 		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
 			vector.DrawFilledRect(screen, float32(topleft.X), float32(topleft.Y), float32(size.X), float32(size.Y), color, false)
+		})
+	}
+}
+
+func DrawDebugText(topleft Vector, text string) {
+	l := topleft.Floor()
+	if isDebug {
+		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
+			ebitenutil.DebugPrintAt(screen, text, l.X, l.Y)
 		})
 	}
 }
