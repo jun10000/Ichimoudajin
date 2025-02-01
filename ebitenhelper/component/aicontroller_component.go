@@ -56,15 +56,15 @@ func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
 }
 
 func (a *AIControllerComponent) IsPointLocationValid(location utility.Point) bool {
-	ss := utility.GetGameInstance().ScreenSize
-	tl := a.PFToRealLocation(location, false)
-	if tl.X < 0 || tl.Y < 0 || tl.X >= float64(ss.X) || tl.Y >= float64(ss.Y) {
+	s := utility.GetGameInstance().ScreenSize
+	l := a.PFToRealLocation(location, false)
+	if l.X < 0 || l.Y < 0 || l.X >= float64(s.X) || l.Y >= float64(s.Y) {
 		return false
 	}
 
-	rc := utility.NewRectangleF(tl, a.AIGridSize)
-	tr := utility.GetLevel().Trace(rc, utility.ZeroVector(), a.currentExcepts)
-	return !tr.IsHit
+	b := utility.NewRectangleF(l, a.AIGridSize)
+	r, _ := utility.GetLevel().Intersect(b, a.currentExcepts)
+	return !r
 }
 
 func (a *AIControllerComponent) RealToPFLocation(real utility.Vector) utility.Point {

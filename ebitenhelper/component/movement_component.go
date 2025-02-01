@@ -49,18 +49,23 @@ func (c *MovementComponent) Tick() {
 	c.inputAccel = utility.ZeroVector()
 
 	// Collision test
-	trm := c.velocity.MulF(utility.TickDuration)
-	for i := 0; i < 10; i++ {
-		es := []utility.Collider{c.parent}
-		tr := utility.GetLevel().Trace(c.parent.GetColliderBounds(), trm, es)
+	ecs := []utility.Collider{c.parent}
+	vn := c.velocity.Normalize()
+	vl := c.velocity.Length()
+	rl := vl * utility.TickDuration
+	for i := 0; i < 3; i++ {
+		pb := c.parent.GetColliderBounds() // Depending location
+		ro := vn.MulF(rl)
+		tr := utility.GetLevel().Trace(pb, ro, ecs)
 		c.parent.AddLocation(tr.Offset)
 		if !tr.IsHit {
 			break
 		}
 
-		c.velocity = c.velocity.Reflect(tr.Normal, 0)
-		trm = tr.ROffset.Reflect(tr.Normal, 0)
+		rl = tr.ROffset.Length()
+		vn = vn.Reflect(tr.Normal, 0)
 	}
+	c.velocity = vn.MulF(vl)
 
 	// Draw parent location
 	if c.IsDrawDebugLocation {

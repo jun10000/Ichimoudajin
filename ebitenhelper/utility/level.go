@@ -67,48 +67,58 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector) TraceResult
 	}
 }
 
-func (l *Level) GetActorBounds(excepts []Collider) []Bounder {
-	ret := []Bounder{}
+func (l *Level) GetAllBounds(excepts []Collider) []Bounder {
+	r := []Bounder{}
 	for _, c := range l.Colliders {
 		if slices.Contains(excepts, c) {
 			continue
 		}
 
 		b := c.GetColliderBounds()
-		ret = append(ret, b)
+		r = append(r, b)
 		if l.IsLooping {
-			ss := GetGameInstance().ScreenSize.ToVector()
-			ret = append(ret,
-				b.Offset(ss.Mul(NewVector(-1, -1))),
-				b.Offset(ss.Mul(NewVector(0, -1))),
-				b.Offset(ss.Mul(NewVector(1, -1))),
-				b.Offset(ss.Mul(NewVector(-1, 0))),
-				b.Offset(ss.Mul(NewVector(1, 0))),
-				b.Offset(ss.Mul(NewVector(-1, 1))),
-				b.Offset(ss.Mul(NewVector(0, 1))),
-				b.Offset(ss.Mul(NewVector(1, 1))),
+			s := GetGameInstance().ScreenSize.ToVector()
+			r = append(r,
+				b.Offset(s.Mul(NewVector(-1, -1))),
+				b.Offset(s.Mul(NewVector(0, -1))),
+				b.Offset(s.Mul(NewVector(1, -1))),
+				b.Offset(s.Mul(NewVector(-1, 0))),
+				b.Offset(s.Mul(NewVector(1, 0))),
+				b.Offset(s.Mul(NewVector(-1, 1))),
+				b.Offset(s.Mul(NewVector(0, 1))),
+				b.Offset(s.Mul(NewVector(1, 1))),
 			)
 		}
 	}
-	return ret
+	return r
+}
+
+func (l *Level) Intersect(target Bounder, excepts []Collider) (result bool, normal Vector) {
+	for _, b := range l.GetAllBounds(excepts) {
+		r, n := Intersect(target, b)
+		if r {
+			return true, n
+		}
+	}
+
+	return false, ZeroVector()
 }
 
 func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceResult {
-	cnt := math.Ceil(offset.Length())
-	uni := offset.DivF(cnt)
-	bs := l.GetActorBounds(excepts)
+	ol := offset.Length()
+	on := offset.Normalize()
 
-	for i := 0.0; i <= cnt; i++ {
-		obj := target.Offset(uni.MulF(i))
-		for _, b := range bs {
-			tr := Intersect(obj, b)
-			if !tr.IsZero() {
-				if i <= 2.0 {
-					return NewTraceResultHit(ZeroVector(), offset, tr)
-				} else {
-					res := uni.MulF(i - 2)
-					return NewTraceResultHit(res, offset.Sub(res), tr)
-				}
+	for i := 0; i <= int(math.Ceil(ol)); i++ {
+		v := on.MulF(float64(i))
+		t := target.Offset(v)
+		r, n := l.Intersect(t, excepts)
+		if r {
+			if i <= 2 {
+				return NewTraceResultHit(ZeroVector(), offset, n)
+			} else {
+				o := on.MulF(float64(i - 2))
+				ro := offset.Sub(o)
+				return NewTraceResultHit(o, ro, n)
 			}
 		}
 	}
