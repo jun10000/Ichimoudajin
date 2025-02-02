@@ -22,6 +22,7 @@ func NewStage1() *utility.Level {
 	player := actor.NewPawn()
 	player.SetLocation(utility.NewVector(600, 300))
 	player.Image = playerImage
+	player.IsDebugMode = true
 	level.Add(player)
 
 	// Enemy
@@ -44,6 +45,7 @@ func NewStage1() *utility.Level {
 		enemy.SetLocation(el)
 		enemy.Image = enemyImage
 		enemy.MaxSpeed = 150
+		enemy.IsDebugMode = true
 		level.Add(enemy)
 	}
 

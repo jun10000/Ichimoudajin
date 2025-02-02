@@ -45,9 +45,17 @@ func DrawDebugRectangle(topleft Vector, size Vector, color color.Color) {
 	}
 }
 
-func DrawDebugText(topleft Vector, text string) {
-	l := topleft.Floor()
+func DrawDebugCircle(center Vector, radius float64, color color.Color) {
 	if isDebug {
+		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
+			vector.DrawFilledCircle(screen, float32(center.X), float32(center.Y), float32(radius), color, false)
+		})
+	}
+}
+
+func DrawDebugText(topleft Vector, text string) {
+	if isDebug {
+		l := topleft.Floor()
 		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
 			ebitenutil.DebugPrintAt(screen, text, l.X, l.Y)
 		})

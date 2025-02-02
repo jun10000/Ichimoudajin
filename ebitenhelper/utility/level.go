@@ -104,7 +104,7 @@ func (l *Level) Intersect(target Bounder, excepts []Collider) (result bool, norm
 	return false, ZeroVector()
 }
 
-func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceResult {
+func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider, isDebug bool) TraceResult {
 	ol := offset.Length()
 	on := offset.Normalize()
 
@@ -113,10 +113,27 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 		t := target.Offset(v)
 		r, n := l.Intersect(t, excepts)
 		if r {
-			if i <= 2 {
+			if isDebug {
+				dc := ColorGreen
+				switch i {
+				case 0:
+					dc = ColorRed
+				case 1:
+					dc = ColorYellow
+				}
+
+				switch dt := target.(type) {
+				case CircleF:
+					DrawDebugCircle(dt.Origin, dt.Radius, dc)
+				default:
+					db := target.BoundingBox()
+					DrawDebugRectangle(db.Location(), db.Size(), dc)
+				}
+			}
+			if i <= 1 {
 				return NewTraceResultHit(ZeroVector(), offset, n)
 			} else {
-				o := on.MulF(float64(i - 2))
+				o := on.MulF(float64(i - 1))
 				ro := offset.Sub(o)
 				return NewTraceResultHit(o, ro, n)
 			}

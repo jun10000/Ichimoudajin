@@ -15,10 +15,11 @@ const (
 )
 
 var (
-	ColorGray  = color.RGBA{R: 128, G: 128, B: 128}
-	ColorRed   = color.RGBA{R: 255, G: 8}
-	ColorGreen = color.RGBA{G: 255}
-	ColorBlue  = color.RGBA{G: 128, B: 255}
+	ColorGray   = color.RGBA{R: 128, G: 128, B: 128}
+	ColorRed    = color.RGBA{R: 255, G: 8}
+	ColorYellow = color.RGBA{R: 255, G: 255}
+	ColorGreen  = color.RGBA{G: 255}
+	ColorBlue   = color.RGBA{G: 128, B: 255}
 )
 
 type PressState int

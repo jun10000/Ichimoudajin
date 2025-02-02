@@ -7,10 +7,12 @@ import (
 )
 
 type MovementComponent struct {
-	Accel               float64
-	Decel               float64
-	MaxSpeed            float64
-	IsDrawDebugLocation bool
+	Accel              float64
+	Decel              float64
+	MaxSpeed           float64
+	MaxReflectionCount int
+	IsDebugMode        bool
+	DebugTextOffset    utility.Vector
 
 	parent     utility.Collider
 	velocity   utility.Vector
@@ -19,10 +21,12 @@ type MovementComponent struct {
 
 func NewMovementComponent(parent utility.Collider) *MovementComponent {
 	return &MovementComponent{
-		Accel:    8000,
-		Decel:    8000,
-		MaxSpeed: 200,
-		parent:   parent,
+		Accel:              8000,
+		Decel:              8000,
+		MaxSpeed:           200,
+		MaxReflectionCount: 1,
+		DebugTextOffset:    utility.NewVector(3, -12),
+		parent:             parent,
 	}
 }
 
@@ -53,11 +57,11 @@ func (c *MovementComponent) Tick() {
 	vn := c.velocity.Normalize()
 	vl := c.velocity.Length()
 	rl := vl * utility.TickDuration
-	for i := 0; i < 3; i++ {
+	for i := 0; i <= c.MaxReflectionCount; i++ {
 		pb := c.parent.GetColliderBounds() // Depending location
 		ro := vn.MulF(rl)
-		tr := utility.GetLevel().Trace(pb, ro, ecs)
-		c.parent.AddLocation(tr.Offset)
+		tr := utility.GetLevel().Trace(pb, ro, ecs, c.IsDebugMode)
+		c.parent.AddLocation(tr.Offset.FloorF(0))
 		if !tr.IsHit {
 			break
 		}
@@ -68,9 +72,9 @@ func (c *MovementComponent) Tick() {
 	c.velocity = vn.MulF(vl)
 
 	// Draw parent location
-	if c.IsDrawDebugLocation {
+	if c.IsDebugMode {
 		l := c.parent.GetLocation()
-		o := utility.NewVector(2, -12)
+		o := c.DebugTextOffset
 		utility.DrawDebugText(l.Add(o), l.String())
 	}
 }
