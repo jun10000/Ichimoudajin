@@ -21,7 +21,3 @@ func (l *Location) GetLocation() Vector {
 func (l *Location) SetLocation(value Vector) {
 	l.value = ClampLocation(value)
 }
-
-func (l *Location) AddLocation(value Vector) {
-	l.SetLocation(l.value.Add(value))
-}

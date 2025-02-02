@@ -24,7 +24,7 @@ func NewMovementComponent(parent utility.Collider) *MovementComponent {
 		Accel:              8000,
 		Decel:              8000,
 		MaxSpeed:           200,
-		MaxReflectionCount: 1,
+		MaxReflectionCount: 3,
 		DebugTextOffset:    utility.NewVector(3, -12),
 		parent:             parent,
 	}
@@ -32,6 +32,14 @@ func NewMovementComponent(parent utility.Collider) *MovementComponent {
 
 func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.inputAccel = c.inputAccel.Add(normal.Normalize().MulF(scale))
+}
+
+func (c *MovementComponent) AddLocation(offset utility.Vector) utility.TraceResult {
+	b := c.parent.GetColliderBounds()
+	es := []utility.Collider{c.parent}
+	r := utility.GetLevel().Trace(b, offset, es, c.IsDebugMode)
+	c.parent.SetLocation(c.parent.GetLocation().Add(r.Offset))
+	return r
 }
 
 func (c *MovementComponent) Tick() {
@@ -53,19 +61,12 @@ func (c *MovementComponent) Tick() {
 	c.inputAccel = utility.ZeroVector()
 
 	// Collision test
-	ecs := []utility.Collider{c.parent}
 	vn := c.velocity.Normalize()
 	vl := c.velocity.Length()
 	rl := vl * utility.TickDuration
-	lv := utility.GetLevel()
 	for i := 0; i <= c.MaxReflectionCount; i++ {
 		ro := vn.MulF(rl)
-		tr := lv.Trace(c.parent.GetColliderBounds(), ro, ecs, c.IsDebugMode)
-		c.parent.AddLocation(tr.Offset)
-		if tr.IsFirstHit && i == 0 {
-			c.parent.AddLocation(vn.Negate())
-			break
-		}
+		tr := c.AddLocation(ro)
 		if !tr.IsHit {
 			break
 		}

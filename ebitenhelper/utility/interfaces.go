@@ -5,7 +5,6 @@ import "github.com/hajimehoshi/ebiten/v2"
 type Locator interface {
 	GetLocation() Vector
 	SetLocation(value Vector)
-	AddLocation(value Vector)
 }
 
 type Rotator interface {
