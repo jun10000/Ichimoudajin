@@ -57,10 +57,10 @@ func (c *MovementComponent) Tick() {
 	vn := c.velocity.Normalize()
 	vl := c.velocity.Length()
 	rl := vl * utility.TickDuration
+	lv := utility.GetLevel()
 	for i := 0; i <= c.MaxReflectionCount; i++ {
-		pb := c.parent.GetColliderBounds() // Depending location
 		ro := vn.MulF(rl)
-		tr := utility.GetLevel().Trace(pb, ro, ecs, c.IsDebugMode)
+		tr := lv.Trace(c.parent.GetColliderBounds(), ro, ecs, c.IsDebugMode)
 		c.parent.AddLocation(tr.Offset)
 		if tr.IsFirstHit && i == 0 {
 			c.parent.AddLocation(vn.Negate())

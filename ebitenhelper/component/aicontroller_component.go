@@ -1,10 +1,15 @@
 package component
 
-import "github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
+import (
+	"math/rand"
+
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
+)
 
 type AIControllerComponent struct {
-	AIGridSize      utility.Vector
-	IsDrawDebugPath bool
+	AIGridSize        utility.Vector
+	LocationDeviation float64
+	IsDrawDebugPath   bool
 
 	parent         utility.Collider
 	target         *MovementComponent
@@ -14,10 +19,11 @@ type AIControllerComponent struct {
 
 func NewAIControllerComponent(parent utility.Collider, target *MovementComponent) *AIControllerComponent {
 	return &AIControllerComponent{
-		AIGridSize:  utility.NewVector(32, 32),
-		parent:      parent,
-		target:      target,
-		pathfinding: utility.NewAStar(),
+		AIGridSize:        utility.NewVector(32, 32),
+		LocationDeviation: 0.5,
+		parent:            parent,
+		target:            target,
+		pathfinding:       utility.NewAStar(),
 	}
 }
 
@@ -41,8 +47,13 @@ func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
 
 	pr := a.pathfinding.Run(a.RealToPFLocation(sl), a.RealToPFLocation(dl), a.IsPointLocationValid)
 	switch c := len(pr); {
-	case c >= 2:
-		dl = a.PFToRealLocation(pr[1], true)
+	case c > 2:
+		dl1 := a.PFToRealLocation(pr[1], true, a.LocationDeviation)
+		dl2 := a.PFToRealLocation(pr[2], true, a.LocationDeviation)
+		dl = dl1.Add(dl2.Sub(dl1).DivF(2))
+		a.target.AddInput(dl.Sub(sl), 1)
+	case c == 2:
+		dl = a.PFToRealLocation(pr[1], true, a.LocationDeviation)
 		a.target.AddInput(dl.Sub(sl), 1)
 	case c == 1:
 		a.target.AddInput(dl.Sub(sl), 1)
@@ -50,14 +61,14 @@ func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
 
 	if a.IsDrawDebugPath {
 		for _, p := range pr {
-			utility.DrawDebugRectangle(a.PFToRealLocation(p, false), a.AIGridSize, utility.ColorGreen)
+			utility.DrawDebugRectangle(a.PFToRealLocation(p, false, 0), a.AIGridSize, utility.ColorGreen)
 		}
 	}
 }
 
 func (a *AIControllerComponent) IsPointLocationValid(location utility.Point) bool {
 	s := utility.GetGameInstance().ScreenSize
-	l := a.PFToRealLocation(location, false)
+	l := a.PFToRealLocation(location, false, 0)
 	if l.X < 0 || l.Y < 0 || l.X >= float64(s.X) || l.Y >= float64(s.Y) {
 		return false
 	}
@@ -67,12 +78,13 @@ func (a *AIControllerComponent) IsPointLocationValid(location utility.Point) boo
 	return !r
 }
 
-func (a *AIControllerComponent) RealToPFLocation(real utility.Vector) utility.Point {
-	return real.Div(a.AIGridSize).Floor()
+func (a *AIControllerComponent) RealToPFLocation(realLocation utility.Vector) utility.Point {
+	return realLocation.Div(a.AIGridSize).Floor()
 }
 
-func (a *AIControllerComponent) PFToRealLocation(pf utility.Point, isCenter bool) utility.Vector {
-	r := pf.ToVector().Mul(a.AIGridSize)
+func (a *AIControllerComponent) PFToRealLocation(pfLocation utility.Point, isCenter bool, deviation float64) utility.Vector {
+	rr := a.AIGridSize.MulF((rand.Float64() - 0.5) * deviation)
+	r := pfLocation.ToVector().Mul(a.AIGridSize).Add(rr)
 	if isCenter {
 		r = r.Add(a.AIGridSize.DivF(2))
 	}

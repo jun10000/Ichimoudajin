@@ -19,14 +19,10 @@ func NewAStarNode(location Point) *AStarNode {
 
 func (n *AStarNode) GetAroundLocations() []Point {
 	return []Point{
-		n.Location.AddXY(-1, -1),
 		n.Location.AddXY(0, -1),
-		n.Location.AddXY(1, -1),
 		n.Location.AddXY(-1, 0),
 		n.Location.AddXY(1, 0),
-		n.Location.AddXY(-1, 1),
 		n.Location.AddXY(0, 1),
-		n.Location.AddXY(1, 1),
 	}
 }
 
