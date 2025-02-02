@@ -61,7 +61,7 @@ func (c *MovementComponent) Tick() {
 		pb := c.parent.GetColliderBounds() // Depending location
 		ro := vn.MulF(rl)
 		tr := utility.GetLevel().Trace(pb, ro, ecs, c.IsDebugMode)
-		c.parent.AddLocation(tr.Offset.FloorF(0))
+		c.parent.AddLocation(tr.Offset)
 		if !tr.IsHit {
 			break
 		}

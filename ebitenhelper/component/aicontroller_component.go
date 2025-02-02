@@ -62,7 +62,7 @@ func (a *AIControllerComponent) IsPointLocationValid(location utility.Point) boo
 		return false
 	}
 
-	b := utility.NewRectangleF(l, a.AIGridSize)
+	b := utility.NewRectangleF(l, a.AIGridSize.SubF(1))
 	r, _ := utility.GetLevel().Intersect(b, a.currentExcepts)
 	return !r
 }

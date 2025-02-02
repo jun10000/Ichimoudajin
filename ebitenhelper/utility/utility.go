@@ -132,7 +132,7 @@ func IntersectRectangleToRectangle(rectangle1 RectangleF, rectangle2 RectangleF)
 	ytop := rectangle1.MaxY - rectangle2.MinY
 	ybottom := rectangle2.MaxY - rectangle1.MinY
 
-	if xleft <= 0 || xright <= 0 || ytop <= 0 || ybottom <= 0 {
+	if xleft < 0 || xright < 0 || ytop < 0 || ybottom < 0 {
 		return false, ZeroVector()
 	}
 
@@ -161,7 +161,7 @@ func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (result bo
 		ClampFloat(circle.Origin.Y, rectangle.MinY, rectangle.MaxY))
 	r := circle.Origin.Sub(p)
 
-	if r.Length() >= circle.Radius {
+	if r.Length() > circle.Radius {
 		return false, ZeroVector()
 	}
 
@@ -170,7 +170,7 @@ func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (result bo
 
 func IntersectCircleToCircle(circle1 CircleF, circle2 CircleF) (result bool, normal Vector) {
 	d := circle1.Origin.Sub(circle2.Origin)
-	if d.Length() >= circle1.Radius+circle2.Radius {
+	if d.Length() > circle1.Radius+circle2.Radius {
 		return false, ZeroVector()
 	}
 
