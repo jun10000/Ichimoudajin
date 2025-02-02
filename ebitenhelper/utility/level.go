@@ -43,27 +43,30 @@ func (l *Level) AddRange(actors []any) {
 }
 
 type TraceResult struct {
-	IsHit   bool
-	Offset  Vector
-	ROffset Vector
-	Normal  Vector
+	IsHit      bool
+	IsFirstHit bool
+	Offset     Vector
+	ROffset    Vector
+	Normal     Vector
 }
 
 func NewTraceResultNoHit(offset Vector) TraceResult {
 	return TraceResult{
-		IsHit:   false,
-		Offset:  offset,
-		ROffset: ZeroVector(),
-		Normal:  ZeroVector(),
+		IsHit:      false,
+		IsFirstHit: false,
+		Offset:     offset,
+		ROffset:    ZeroVector(),
+		Normal:     ZeroVector(),
 	}
 }
 
-func NewTraceResultHit(offset Vector, roffset Vector, normal Vector) TraceResult {
+func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit bool) TraceResult {
 	return TraceResult{
-		IsHit:   true,
-		Offset:  offset,
-		ROffset: roffset,
-		Normal:  normal.Normalize(),
+		IsHit:      true,
+		IsFirstHit: isFirstHit,
+		Offset:     offset,
+		ROffset:    roffset,
+		Normal:     normal.Normalize(),
 	}
 }
 
@@ -130,12 +133,12 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider, isDebug
 					DrawDebugRectangle(db.Location(), db.Size(), dc)
 				}
 			}
-			if i <= 1 {
-				return NewTraceResultHit(ZeroVector(), offset, n)
+			if i == 0 {
+				return NewTraceResultHit(ZeroVector(), offset, n, true)
 			} else {
 				o := on.MulF(float64(i - 1))
 				ro := offset.Sub(o)
-				return NewTraceResultHit(o, ro, n)
+				return NewTraceResultHit(o, ro, n, false)
 			}
 		}
 	}

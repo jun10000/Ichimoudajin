@@ -62,6 +62,10 @@ func (c *MovementComponent) Tick() {
 		ro := vn.MulF(rl)
 		tr := utility.GetLevel().Trace(pb, ro, ecs, c.IsDebugMode)
 		c.parent.AddLocation(tr.Offset)
+		if tr.IsFirstHit && i == 0 {
+			c.parent.AddLocation(vn.Negate())
+			break
+		}
 		if !tr.IsHit {
 			break
 		}
