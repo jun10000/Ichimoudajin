@@ -78,28 +78,20 @@ func (v Vector) ModF(value float64) Vector {
 	return NewVector(math.Mod(v.X, value), math.Mod(v.Y, value))
 }
 
+func (v Vector) Trunc() Point {
+	return NewPoint(int(math.Trunc(v.X)), int(math.Trunc(v.Y)))
+}
+
+func (v Vector) TruncF(digit int) Vector {
+	d := math.Pow(10, float64(digit))
+	r := v.MulF(d)
+	r.X = math.Trunc(r.X)
+	r.Y = math.Trunc(r.Y)
+	return r.DivF(d)
+}
+
 func (v Vector) Floor() Point {
 	return NewPoint(int(math.Floor(v.X)), int(math.Floor(v.Y)))
-}
-
-func (v Vector) Ceil() Point {
-	return NewPoint(int(math.Ceil(v.X)), int(math.Ceil(v.Y)))
-}
-
-func (v Vector) FloorF(digit int) Vector {
-	d := math.Pow(10, float64(digit))
-	r := v.MulF(d)
-	r.X = math.Floor(r.X)
-	r.Y = math.Floor(r.Y)
-	return r.DivF(d)
-}
-
-func (v Vector) CeilF(digit int) Vector {
-	d := math.Pow(10, float64(digit))
-	r := v.MulF(d)
-	r.X = math.Ceil(r.X)
-	r.Y = math.Ceil(r.Y)
-	return r.DivF(d)
 }
 
 func (v Vector) Negate() Vector {

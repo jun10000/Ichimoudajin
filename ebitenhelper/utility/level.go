@@ -111,7 +111,7 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider, isDebug
 	ol := offset.Length()
 	on := offset.Normalize()
 
-	for i := 0; i <= int(math.Ceil(ol)); i++ {
+	for i := 0; i <= int(math.Trunc(ol)+1); i++ {
 		v := on.MulF(float64(i))
 		t := target.Offset(v)
 		r, n := l.Intersect(t, excepts)
