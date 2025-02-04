@@ -4,9 +4,10 @@
 
 ## クレジット
 
-### ゲームエンジン
+### 開発ツール
 - [Ebitengine](https://ebitengine.org/)
   by [Hajime Hoshi](https://hajimehoshi.com/)
+- [Tiled](https://www.mapeditor.org/)
 
 ### 画像・アニメーション
 - [キャラクターチップ２](https://pipoya.net/sozai/assets/charachip/character-chip-2/)
