@@ -10,8 +10,13 @@ import (
 )
 
 const (
-	TickCount    int     = 60
-	TickDuration float64 = 1.0 / float64(TickCount)
+	TickCount         int     = 60
+	TickDuration      float64 = 1.0 / float64(TickCount)
+	TraceSafeDistance int     = 3
+
+	IsShowDebugMoverLocation bool = false
+	IsShowDebugTraceDistance bool = false
+	IsShowDebugAIPath        bool = false
 )
 
 var (

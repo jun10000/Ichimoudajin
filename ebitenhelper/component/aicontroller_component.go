@@ -9,7 +9,6 @@ import (
 type AIControllerComponent struct {
 	AIGridSize        utility.Vector
 	LocationDeviation float64
-	IsDrawDebugPath   bool
 
 	parent         utility.Collider
 	target         *MovementComponent
@@ -59,7 +58,7 @@ func (a *AIControllerComponent) AIMoveToActor(dst utility.Collider) {
 		a.target.AddInput(dl.Sub(sl), 1)
 	}
 
-	if a.IsDrawDebugPath {
+	if utility.IsShowDebugAIPath {
 		for _, p := range pr {
 			utility.DrawDebugRectangle(a.PFToRealLocation(p, false, 0), a.AIGridSize, utility.ColorGreen)
 		}

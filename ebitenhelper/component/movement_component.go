@@ -11,7 +11,6 @@ type MovementComponent struct {
 	Decel              float64
 	MaxSpeed           float64
 	MaxReflectionCount int
-	IsDebugMode        bool
 	DebugTextOffset    utility.Vector
 
 	parent     utility.Collider
@@ -37,7 +36,7 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 func (c *MovementComponent) AddLocation(offset utility.Vector) utility.TraceResult {
 	b := c.parent.GetColliderBounds()
 	es := []utility.Collider{c.parent}
-	r := utility.GetLevel().Trace(b, offset, es, c.IsDebugMode)
+	r := utility.GetLevel().Trace(b, offset, es)
 	c.parent.SetLocation(c.parent.GetLocation().Add(r.Offset))
 	return r
 }
@@ -77,7 +76,7 @@ func (c *MovementComponent) Tick() {
 	c.velocity = vn.MulF(vl)
 
 	// Draw parent location
-	if c.IsDebugMode {
+	if utility.IsShowDebugMoverLocation {
 		l := c.parent.GetLocation()
 		o := c.DebugTextOffset
 		utility.DrawDebugText(l.Add(o), l.String())

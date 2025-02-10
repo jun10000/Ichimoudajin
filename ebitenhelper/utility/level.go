@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"image/color"
 	"math"
 	"slices"
 )
@@ -107,7 +108,7 @@ func (l *Level) Intersect(target Bounder, excepts []Collider) (result bool, norm
 	return false, ZeroVector()
 }
 
-func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider, isDebug bool) TraceResult {
+func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceResult {
 	ol := offset.Length()
 	on := offset.Normalize()
 
@@ -116,13 +117,19 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider, isDebug
 		t := target.Offset(v)
 		r, n := l.Intersect(t, excepts)
 		if r {
-			if isDebug {
-				dc := ColorGreen
+			if IsShowDebugTraceDistance {
+				var dc color.RGBA
 				switch i {
 				case 0:
 					dc = ColorRed
 				case 1:
 					dc = ColorYellow
+				case 2:
+					dc = ColorGreen
+				case 3:
+					dc = ColorBlue
+				default:
+					dc = ColorGray
 				}
 
 				switch dt := target.(type) {
@@ -133,7 +140,7 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider, isDebug
 					DrawDebugRectangle(db.Location(), db.Size(), dc)
 				}
 			}
-			if i == 0 {
+			if i <= TraceSafeDistance {
 				return NewTraceResultHit(ZeroVector(), offset, n, true)
 			} else {
 				o := on.MulF(float64(i - 1))
