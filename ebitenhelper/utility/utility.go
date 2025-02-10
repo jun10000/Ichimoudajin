@@ -13,6 +13,7 @@ const (
 	TickCount         int     = 60
 	TickDuration      float64 = 1.0 / float64(TickCount)
 	TraceSafeDistance int     = 3
+	AIValidOffset     float64 = 0.5
 
 	IsShowDebugMoverLocation bool = false
 	IsShowDebugTraceDistance bool = false
