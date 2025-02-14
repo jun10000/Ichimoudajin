@@ -19,7 +19,7 @@ func NewAIPawn() *AIPawn {
 
 	a.MovementComponent = component.NewMovementComponent(a)
 	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
-	a.AIControllerComponent = component.NewAIControllerComponent(a, a.MovementComponent)
+	a.AIControllerComponent = component.NewAIControllerComponent(a)
 	return a
 }
 

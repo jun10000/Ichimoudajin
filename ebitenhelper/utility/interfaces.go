@@ -28,6 +28,12 @@ type Collider interface {
 	GetColliderBounds() Bounder
 }
 
+type Mover interface {
+	Collider
+	AddInput(normal Vector, scale float64)
+	AddLocation(offset Vector) TraceResult
+}
+
 type InputReceiver interface {
 	Transformer
 	ReceiveKeyInput(key ebiten.Key, state PressState)

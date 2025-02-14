@@ -3,20 +3,28 @@ package utility
 import (
 	"image/color"
 	"math"
+	"math/rand/v2"
 	"slices"
 )
 
 type Level struct {
-	IsLooping      bool
-	Drawers        []Drawer
-	InputReceivers []InputReceiver
-	AITickers      []AITicker
-	Tickers        []Ticker
-	Colliders      []Collider
+	IsLooping           bool
+	Drawers             []Drawer
+	InputReceivers      []InputReceiver
+	AITickers           []AITicker
+	Tickers             []Ticker
+	Colliders           []Collider
+	AIGridSize          Vector
+	AILocationDeviation float64
+	AIPathfinding       *AStar
 }
 
 func NewLevel() *Level {
-	return &Level{}
+	return &Level{
+		AIGridSize:          NewVector(32, 32),
+		AILocationDeviation: 0.5,
+		AIPathfinding:       StartAStar(),
+	}
 }
 
 func (l *Level) Add(actor any) {
@@ -151,4 +159,67 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 	}
 
 	return NewTraceResultNoHit(offset)
+}
+
+func (l *Level) AIMove(self Mover, target Collider) {
+	sl := self.GetColliderBounds().BoundingBox().CenterLocation()
+	tl := target.GetColliderBounds().BoundingBox().CenterLocation()
+
+	res := l.AIPathfinding.Run(l.RealToPFLocation(sl), l.RealToPFLocation(tl))
+	switch c := len(res); {
+	case c > 2:
+		dl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
+		dl2 := l.PFToRealLocation(res[2], true, l.AILocationDeviation)
+		tl = dl1.Add(dl2.Sub(dl1).DivF(2))
+		self.AddInput(tl.Sub(sl), 1)
+	case c == 2:
+		tl = l.PFToRealLocation(res[1], true, l.AILocationDeviation)
+		self.AddInput(tl.Sub(sl), 1)
+	case c == 1:
+		self.AddInput(tl.Sub(sl), 1)
+	}
+
+	if IsShowDebugAIPath {
+		for _, p := range res {
+			DrawDebugRectangle(l.PFToRealLocation(p, false, 0), l.AIGridSize, ColorGreen)
+		}
+	}
+}
+
+func (l *Level) AIIsPFLocationValid(location Point) bool {
+	s := GetGameInstance().ScreenSize
+	loc := l.PFToRealLocation(location, false, 0)
+	if loc.X < 0 || loc.Y < 0 || loc.X >= float64(s.X) || loc.Y >= float64(s.Y) {
+		return false
+	}
+
+	b := NewRectangleF(loc.AddF(AIValidOffset), l.AIGridSize.SubF(AIValidOffset*2))
+
+	var excepts []Collider
+	for _, t := range l.AITickers {
+		if c, ok := t.(Collider); ok {
+			excepts = append(excepts, c)
+		}
+	}
+	for _, t := range l.InputReceivers {
+		if c, ok := t.(Collider); ok {
+			excepts = append(excepts, c)
+		}
+	}
+
+	r, _ := l.Intersect(b, excepts)
+	return !r
+}
+
+func (l *Level) RealToPFLocation(realLocation Vector) Point {
+	return realLocation.Div(l.AIGridSize).Floor()
+}
+
+func (l *Level) PFToRealLocation(pfLocation Point, isCenter bool, deviation float64) Vector {
+	rr := l.AIGridSize.MulF((rand.Float64() - 0.5) * deviation)
+	r := pfLocation.ToVector().Mul(l.AIGridSize).Add(rr)
+	if isCenter {
+		r = r.Add(l.AIGridSize.DivF(2))
+	}
+	return r
 }

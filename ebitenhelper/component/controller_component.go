@@ -9,13 +9,13 @@ import (
 
 type ControllerComponent struct {
 	DeadZone float64
-	target   *MovementComponent
+	parent   utility.Mover
 }
 
-func NewControllerComponent(target *MovementComponent) *ControllerComponent {
+func NewControllerComponent(parent utility.Mover) *ControllerComponent {
 	return &ControllerComponent{
 		DeadZone: 0.2,
-		target:   target,
+		parent:   parent,
 	}
 }
 
@@ -31,13 +31,13 @@ func (c *ControllerComponent) ReceiveKeyInput(key ebiten.Key, state utility.Pres
 
 	switch key {
 	case ebiten.KeyUp:
-		c.target.AddInput(utility.NewVector(0, -1), 1)
+		c.parent.AddInput(utility.NewVector(0, -1), 1)
 	case ebiten.KeyDown:
-		c.target.AddInput(utility.NewVector(0, 1), 1)
+		c.parent.AddInput(utility.NewVector(0, 1), 1)
 	case ebiten.KeyLeft:
-		c.target.AddInput(utility.NewVector(-1, 0), 1)
+		c.parent.AddInput(utility.NewVector(-1, 0), 1)
 	case ebiten.KeyRight:
-		c.target.AddInput(utility.NewVector(1, 0), 1)
+		c.parent.AddInput(utility.NewVector(1, 0), 1)
 	}
 }
 
@@ -51,8 +51,8 @@ func (c *ControllerComponent) ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.
 
 	switch axis {
 	case ebiten.StandardGamepadAxisLeftStickHorizontal:
-		c.target.AddInput(utility.NewVector(1, 0), value)
+		c.parent.AddInput(utility.NewVector(1, 0), value)
 	case ebiten.StandardGamepadAxisLeftStickVertical:
-		c.target.AddInput(utility.NewVector(0, 1), value)
+		c.parent.AddInput(utility.NewVector(0, 1), value)
 	}
 }

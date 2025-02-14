@@ -5,19 +5,23 @@ import (
 	"image/color"
 	"log"
 	"math"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
-	TickCount         int     = 60
-	TickDuration      float64 = 1.0 / float64(TickCount)
-	TraceSafeDistance int     = 3
-	AIValidOffset     float64 = 0.5
+	TickCount          int           = 60
+	TickDuration       float64       = 1.0 / float64(TickCount)
+	TraceSafeDistance  int           = 3
+	AIValidOffset      float64       = 0.5
+	AIInitialResultCap int           = 1024
+	AIRequestCap       int           = 10
+	AIResponseTimeout  time.Duration = 1 * time.Millisecond
 
 	IsShowDebugMoverLocation bool = false
 	IsShowDebugTraceDistance bool = false
-	IsShowDebugAIPath        bool = false
+	IsShowDebugAIPath        bool = true
 )
 
 var (

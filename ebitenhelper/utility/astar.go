@@ -1,7 +1,11 @@
 package utility
 
 import (
+	"context"
+	"log"
 	"math"
+	"os"
+	"os/signal"
 	"slices"
 )
 
@@ -39,7 +43,7 @@ func NewAStarInstance() *AStarInstance {
 	}
 }
 
-func (a *AStarInstance) Run(start Point, goal Point, isLocationValid func(location Point) bool) []Point {
+func (a *AStarInstance) Run(start Point, goal Point) []Point {
 	a.currentNode = NewAStarNode(start)
 	clear(a.openedNodes)
 	clear(a.closedNodes)
@@ -50,7 +54,7 @@ func (a *AStarInstance) Run(start Point, goal Point, isLocationValid func(locati
 		}
 
 		for _, l := range a.currentNode.GetAroundLocations() {
-			if !isLocationValid(l) || a.closedNodes[l] != nil {
+			if !GetLevel().AIIsPFLocationValid(l) || a.closedNodes[l] != nil {
 				continue
 			}
 
@@ -116,36 +120,99 @@ func (a *AStarInstance) GetCurrentPath() []Point {
 	return r
 }
 
+type AStarResultKey struct {
+	Start Point
+	Goal  Point
+}
+
+func NewAStarResultKey(start Point, goal Point) AStarResultKey {
+	return AStarResultKey{
+		Start: start,
+		Goal:  goal,
+	}
+}
+
+type AStarRequest struct {
+	Request    AStarResultKey
+	ResponseCh chan []Point
+}
+
+func NewAStarRequest(start Point, goal Point, responseCh chan []Point) AStarRequest {
+	return AStarRequest{
+		Request:    NewAStarResultKey(start, goal),
+		ResponseCh: responseCh,
+	}
+}
+
 type AStar struct {
-	isRunning bool
-	savedPath []Point
+	Finish context.CancelFunc
+
+	requestCh chan AStarRequest
 }
 
-func NewAStar() *AStar {
-	return &AStar{
-		savedPath: []Point{},
+func StartAStar() *AStar {
+	a := &AStar{
+		requestCh: make(chan AStarRequest, AIRequestCap),
+	}
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh)
+	ctx, cancel := context.WithCancel(context.Background())
+	a.Finish = cancel
+
+	// Run goroutine
+	go a.loop(signalCh, ctx)
+
+	return a
+}
+
+// Loop uses goroutine
+func (a *AStar) loop(signalCh <-chan os.Signal, ctx context.Context) {
+	results := make(map[AStarResultKey][]Point, AIInitialResultCap)
+
+	for {
+		select {
+		case sig := <-signalCh:
+			log.Printf("Received signal: %s\n", sig)
+			a.Finish()
+		case <-ctx.Done():
+			log.Println("Finishing AStar Pathfinding")
+			return
+		case req := <-a.requestCh:
+			res, ok := results[req.Request]
+			if !ok {
+				res = NewAStarInstance().Run(req.Request.Start, req.Request.Goal)
+				for i := 0; i < len(res); i++ {
+					results[NewAStarResultKey(res[i], req.Request.Goal)] = res[i:]
+				}
+			}
+
+			req.ResponseCh <- res
+			close(req.ResponseCh)
+		}
 	}
 }
 
-func (a *AStar) Run(start Point, goal Point, isLocationValid func(location Point) bool) []Point {
-	if a.isRunning {
-		return a.GetPath(start)
-	}
-	a.isRunning = true
+func (a *AStar) Run(start Point, goal Point) []Point {
+	rch := make(chan []Point, 1)
 
-	go func(fs Point, fg Point, ff func(location Point) bool) {
-		a.savedPath = NewAStarInstance().Run(fs, fg, ff)
-		a.isRunning = false
-	}(start, goal, isLocationValid)
-
-	return a.GetPath(start)
-}
-
-func (a *AStar) GetPath(start Point) []Point {
-	s := slices.Index(a.savedPath, start)
-	if s == -1 {
-		return a.savedPath
+	// Send request
+	select {
+	case a.requestCh <- NewAStarRequest(start, goal, rch):
+	default:
+		return []Point{}
 	}
 
-	return a.savedPath[s:]
+	ctx, cancel := context.WithTimeout(context.Background(), AIResponseTimeout)
+	defer cancel()
+
+	// Receive response
+	for {
+		select {
+		case r := <-rch:
+			return r
+		case <-ctx.Done():
+			return []Point{}
+		}
+	}
 }
