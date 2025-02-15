@@ -183,7 +183,11 @@ func (a *AStar) loop(signalCh <-chan os.Signal, ctx context.Context) {
 			if !ok {
 				res = NewAStarInstance().Run(req.Request.Start, req.Request.Goal)
 				for i := 0; i < len(res); i++ {
-					results[NewAStarResultKey(res[i], req.Request.Goal)] = res[i:]
+					key := NewAStarResultKey(res[i], req.Request.Goal)
+					if _, ok := results[key]; ok {
+						break
+					}
+					results[key] = res[i:]
 				}
 			}
 
