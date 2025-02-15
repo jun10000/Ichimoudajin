@@ -165,23 +165,26 @@ func (l *Level) AIMove(self Mover, target Collider) {
 	sl := self.GetColliderBounds().BoundingBox().CenterLocation()
 	tl := target.GetColliderBounds().BoundingBox().CenterLocation()
 
-	res := l.AIPathfinding.Run(l.RealToPFLocation(sl), l.RealToPFLocation(tl))
-	switch c := len(res); {
-	case c > 2:
-		dl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
-		dl2 := l.PFToRealLocation(res[2], true, l.AILocationDeviation)
-		tl = dl1.Add(dl2.Sub(dl1).DivF(2))
-		self.AddInput(tl.Sub(sl), 1)
-	case c == 2:
-		tl = l.PFToRealLocation(res[1], true, l.AILocationDeviation)
-		self.AddInput(tl.Sub(sl), 1)
-	case c == 1:
-		self.AddInput(tl.Sub(sl), 1)
-	}
+	res, ok := l.AIPathfinding.Run(l.RealToPFLocation(sl), l.RealToPFLocation(tl))
+	switch ok {
+	case AStarResultReasonResponsed:
+		switch c := len(res); {
+		case c > 2:
+			dl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
+			dl2 := l.PFToRealLocation(res[2], true, l.AILocationDeviation)
+			tl = dl1.Add(dl2.Sub(dl1).DivF(2))
+			self.AddInput(tl.Sub(sl), 1)
+		case c == 2:
+			tl = l.PFToRealLocation(res[1], true, l.AILocationDeviation)
+			self.AddInput(tl.Sub(sl), 1)
+		case c == 1:
+			self.AddInput(tl.Sub(sl), 1)
+		}
 
-	if IsShowDebugAIPath {
-		for _, p := range res {
-			DrawDebugRectangle(l.PFToRealLocation(p, false, 0), l.AIGridSize, ColorGreen)
+		if IsShowDebugAIPath {
+			for _, p := range res {
+				DrawDebugRectangle(l.PFToRealLocation(p, false, 0), l.AIGridSize, ColorGreen)
+			}
 		}
 	}
 }
