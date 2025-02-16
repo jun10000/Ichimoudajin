@@ -1,12 +1,9 @@
 package utility
 
 import (
-	"context"
-	"log"
 	"math"
-	"os"
-	"os/signal"
 	"slices"
+	"sync"
 )
 
 type AStarNode struct {
@@ -132,30 +129,6 @@ func NewAStarResultKey(start Point, goal Point) AStarResultKey {
 	}
 }
 
-type AStarResponse struct {
-	Result        []Point
-	IsResultExist bool
-}
-
-func NewAStarResponse(result []Point, isResultExist bool) AStarResponse {
-	return AStarResponse{
-		Result:        result,
-		IsResultExist: isResultExist,
-	}
-}
-
-type AStarRequest struct {
-	Request    AStarResultKey
-	ResponseCh chan AStarResponse
-}
-
-func NewAStarRequest(start Point, goal Point, responseCh chan AStarResponse) AStarRequest {
-	return AStarRequest{
-		Request:    NewAStarResultKey(start, goal),
-		ResponseCh: responseCh,
-	}
-}
-
 type AStarResultReason int
 
 const (
@@ -165,81 +138,54 @@ const (
 )
 
 type AStar struct {
-	Finish context.CancelFunc
-
-	requestCh chan AStarRequest
+	results          sync.Map
+	runningTaskCount int
 }
 
-func StartAStar() *AStar {
-	a := &AStar{
-		requestCh: make(chan AStarRequest, AIRequestCap),
+func NewAStar() *AStar {
+	return &AStar{
+		results:          sync.Map{},
+		runningTaskCount: 0,
 	}
-
-	signalCh := make(chan os.Signal, 1)
-	signal.Notify(signalCh)
-	ctx, cancel := context.WithCancel(context.Background())
-	a.Finish = cancel
-
-	// Run goroutine
-	go a.loop(signalCh, ctx)
-
-	return a
 }
 
-// Loop uses goroutine
-func (a *AStar) loop(signalCh <-chan os.Signal, ctx context.Context) {
-	results := make(map[AStarResultKey][]Point, AIInitialResultCap)
-	resCh := make(chan []Point, 1)
-	rTask := 1
-
-	for {
-		select {
-		case sig := <-signalCh:
-			log.Printf("Received signal: %s\n", sig)
-			a.Finish()
-		case <-ctx.Done():
-			log.Println("Finishing AStar Pathfinding")
-			return
-		case req := <-a.requestCh:
-			res, ok := results[req.Request]
-			req.ResponseCh <- NewAStarResponse(res, ok)
-			close(req.ResponseCh)
-
-			if !ok && rTask > 0 {
-				rTask--
-				go func() {
-					resCh <- NewAStarInstance().Run(req.Request.Start, req.Request.Goal)
-				}()
-			}
-		case res := <-resCh:
-			rTask++
-			reslen := len(res)
-			for i := 0; i < reslen; i++ {
-				key := NewAStarResultKey(res[i], res[reslen-1])
-				if _, ok := results[key]; ok {
-					break
-				}
-				results[key] = res[i:]
-			}
+func (a *AStar) GetResult(start Point, goal Point) (result []Point, ok bool) {
+	if r1, ok := a.results.Load(NewAStarResultKey(start, goal)); ok {
+		if r2, ok := r1.([]Point); ok {
+			return r2, true
 		}
 	}
+
+	return []Point{}, false
+}
+
+func (a *AStar) SetResult(start Point, goal Point, value []Point) {
+	a.results.Store(NewAStarResultKey(start, goal), value)
 }
 
 func (a *AStar) Run(start Point, goal Point) (result []Point, reason AStarResultReason) {
-	rch := make(chan AStarResponse, 1)
+	// Found in cache
+	if r, ok := a.GetResult(start, goal); ok {
+		return r, AStarResultReasonResponsed
+	}
 
-	// Send request
-	select {
-	case a.requestCh <- NewAStarRequest(start, goal, rch):
-	default:
+	// Can't create task
+	if a.runningTaskCount >= AIMaxTaskCount {
 		return []Point{}, AStarResultReasonFailed
 	}
 
-	// Receive response
-	res := <-rch
-	if !res.IsResultExist {
-		return []Point{}, AStarResultReasonRequested
-	}
-
-	return res.Result, AStarResultReasonResponsed
+	// Creating task
+	a.runningTaskCount++
+	go func() {
+		res := NewAStarInstance().Run(start, goal)
+		reslen := len(res)
+		for i := 0; i < reslen; i++ {
+			if _, ok := a.GetResult(res[i], res[reslen-1]); ok {
+				break
+			}
+			a.SetResult(res[i], res[reslen-1], res[i:])
+		}
+		a.runningTaskCount--
+	}()
+	return []Point{}, AStarResultReasonRequested
 }

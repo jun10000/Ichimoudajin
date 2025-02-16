@@ -10,16 +10,15 @@ import (
 )
 
 const (
-	TickCount          int     = 60
-	TickDuration       float64 = 1.0 / float64(TickCount)
-	TraceSafeDistance  int     = 3
-	AIValidOffset      float64 = 0.5
-	AIInitialResultCap int     = 1024
-	AIRequestCap       int     = 1
+	TickCount         = 60
+	TickDuration      = 1.0 / float64(TickCount)
+	TraceSafeDistance = 3
+	AIValidOffset     = 0.5
+	AIMaxTaskCount    = 1
 
-	IsShowDebugMoverLocation bool = false
-	IsShowDebugTraceDistance bool = false
-	IsShowDebugAIPath        bool = true
+	IsShowDebugMoverLocation = false
+	IsShowDebugTraceDistance = false
+	IsShowDebugAIPath        = true
 )
 
 var (

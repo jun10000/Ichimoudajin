@@ -23,7 +23,7 @@ func NewLevel() *Level {
 	return &Level{
 		AIGridSize:          NewVector(32, 32),
 		AILocationDeviation: 0.5,
-		AIPathfinding:       StartAStar(),
+		AIPathfinding:       NewAStar(),
 	}
 }
 
