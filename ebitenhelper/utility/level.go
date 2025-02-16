@@ -2,9 +2,12 @@ package utility
 
 import (
 	"image/color"
+	"log"
 	"math"
 	"math/rand/v2"
+	"runtime"
 	"slices"
+	"sync"
 )
 
 type Level struct {
@@ -21,7 +24,7 @@ type Level struct {
 
 func NewLevel() *Level {
 	return &Level{
-		AIGridSize:          NewVector(32, 32),
+		AIGridSize:          NewVector(128, 128),
 		AILocationDeviation: 0.5,
 		AIPathfinding:       NewAStar(),
 	}
@@ -167,7 +170,7 @@ func (l *Level) AIMove(self Mover, target Collider) {
 
 	res, ok := l.AIPathfinding.Run(l.RealToPFLocation(sl), l.RealToPFLocation(tl))
 	switch ok {
-	case AStarResultReasonResponsed:
+	case AStarResultReasonSucceed:
 		switch c := len(res); {
 		case c > 2:
 			dl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
@@ -225,4 +228,38 @@ func (l *Level) PFToRealLocation(pfLocation Point, isCenter bool, deviation floa
 		r = r.Add(l.AIGridSize.DivF(2))
 	}
 	return r
+}
+
+func (l *Level) BuildPFCache() {
+	pf := l.AIPathfinding
+	sz := l.RealToPFLocation(GetGameInstance().ScreenSize.SubXY(1, 1).ToVector()).AddXY(1, 1)
+	sem := make(chan struct{}, runtime.GOMAXPROCS(0)-1)
+	wg := sync.WaitGroup{}
+
+	log.Println("Started building PF cache")
+	for sx := 0; sx < sz.X; sx++ {
+		for sy := 0; sy < sz.Y; sy++ {
+			for gx := 0; gx < sz.X; gx++ {
+				for gy := 0; gy < sz.Y; gy++ {
+					start := NewPoint(sx, sy)
+					goal := NewPoint(gx, gy)
+					if _, ok := pf.GetCache(start, goal); !ok {
+						sem <- struct{}{}
+						wg.Add(1)
+						go func(start Point, goal Point) {
+							defer wg.Done()
+							defer func() { <-sem }()
+							pf.RunForce(start, goal)
+						}(start, goal)
+					}
+				}
+			}
+			log.Printf("Building PF cache: %.2f%%\n", float32(sx*sz.Y+sy+1)*100/float32(sz.X*sz.Y))
+		}
+	}
+
+	go func() {
+		defer close(sem)
+		wg.Wait()
+	}()
 }

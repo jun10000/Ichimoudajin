@@ -23,6 +23,7 @@ func SetLevel(level *Level) error {
 		return errors.New("loaded level is empty")
 	}
 	currentLevel = level
+	level.BuildPFCache()
 	return nil
 }
 
@@ -146,14 +147,13 @@ func (g *Game) Layout(width int, height int) (int, int) {
 func (g *Game) Play(firstlevel *Level) error {
 	RunDebugServer()
 
+	ebiten.SetWindowSize(g.ScreenSize.X, g.ScreenSize.Y)
+	ebiten.SetWindowTitle(g.WindowTitle)
+	currentGameInstance = g
 	err := SetLevel(firstlevel)
 	if err != nil {
 		return err
 	}
-
-	currentGameInstance = g
-	ebiten.SetWindowSize(g.ScreenSize.X, g.ScreenSize.Y)
-	ebiten.SetWindowTitle(g.WindowTitle)
 
 	err = ebiten.RunGame(g)
 	if err != nil {

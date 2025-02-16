@@ -132,25 +132,25 @@ func NewAStarResultKey(start Point, goal Point) AStarResultKey {
 type AStarResultReason int
 
 const (
-	AStarResultReasonResponsed AStarResultReason = iota
-	AStarResultReasonRequested
-	AStarResultReasonFailed
+	AStarResultReasonSucceed AStarResultReason = iota
+	AStarResultReasonRequest
+	AStarResultReasonFail
 )
 
 type AStar struct {
-	results          sync.Map
+	cache            sync.Map
 	runningTaskCount int
 }
 
 func NewAStar() *AStar {
 	return &AStar{
-		results:          sync.Map{},
+		cache:            sync.Map{},
 		runningTaskCount: 0,
 	}
 }
 
-func (a *AStar) GetResult(start Point, goal Point) (result []Point, ok bool) {
-	if r1, ok := a.results.Load(NewAStarResultKey(start, goal)); ok {
+func (a *AStar) GetCache(start Point, goal Point) (result []Point, ok bool) {
+	if r1, ok := a.cache.Load(NewAStarResultKey(start, goal)); ok {
 		if r2, ok := r1.([]Point); ok {
 			return r2, true
 		}
@@ -159,33 +159,39 @@ func (a *AStar) GetResult(start Point, goal Point) (result []Point, ok bool) {
 	return []Point{}, false
 }
 
-func (a *AStar) SetResult(start Point, goal Point, value []Point) {
-	a.results.Store(NewAStarResultKey(start, goal), value)
+func (a *AStar) setCache(start Point, goal Point, value []Point) {
+	a.cache.Store(NewAStarResultKey(start, goal), value)
+}
+
+func (a *AStar) RunForce(start Point, goal Point) []Point {
+	res := NewAStarInstance().Run(start, goal)
+	reslen := len(res)
+	for i := 0; i < reslen; i++ {
+		if _, ok := a.GetCache(res[i], res[reslen-1]); ok {
+			break
+		}
+		a.setCache(res[i], res[reslen-1], res[i:])
+	}
+
+	return res
 }
 
 func (a *AStar) Run(start Point, goal Point) (result []Point, reason AStarResultReason) {
 	// Found in cache
-	if r, ok := a.GetResult(start, goal); ok {
-		return r, AStarResultReasonResponsed
+	if r, ok := a.GetCache(start, goal); ok {
+		return r, AStarResultReasonSucceed
 	}
 
 	// Can't create task
 	if a.runningTaskCount >= AIMaxTaskCount {
-		return []Point{}, AStarResultReasonFailed
+		return []Point{}, AStarResultReasonFail
 	}
 
 	// Creating task
 	a.runningTaskCount++
 	go func() {
-		res := NewAStarInstance().Run(start, goal)
-		reslen := len(res)
-		for i := 0; i < reslen; i++ {
-			if _, ok := a.GetResult(res[i], res[reslen-1]); ok {
-				break
-			}
-			a.SetResult(res[i], res[reslen-1], res[i:])
-		}
+		a.RunForce(start, goal)
 		a.runningTaskCount--
 	}()
-	return []Point{}, AStarResultReasonRequested
+	return []Point{}, AStarResultReasonRequest
 }
