@@ -1,7 +1,9 @@
 package utility
 
 import (
+	"encoding/gob"
 	"math"
+	"os"
 	"slices"
 	"sync"
 )
@@ -153,6 +155,32 @@ func (a *AStar) GetCache(start Point, goal Point) (result []Point, ok bool) {
 
 func (a *AStar) setCache(start Point, goal Point, value []Point) {
 	a.cache.Store(NewAStarResultKey(start, goal), value)
+}
+
+func (a *AStar) SaveCache(filename string) error {
+	m := map[AStarResultKey][]Point{}
+	a.cache.Range(func(key any, value any) bool {
+		if k, ok := key.(AStarResultKey); ok {
+			if v, ok := value.([]Point); ok {
+				m[k] = v
+			}
+		}
+		return true
+	})
+
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+	e := gob.NewEncoder(f)
+	err = e.Encode(m)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *AStar) GetResultForce(start Point, goal Point) []Point {
