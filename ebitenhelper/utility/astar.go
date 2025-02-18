@@ -129,23 +129,15 @@ func NewAStarResultKey(start Point, goal Point) AStarResultKey {
 	}
 }
 
-type AStarResultReason int
-
-const (
-	AStarResultReasonSucceed AStarResultReason = iota
-	AStarResultReasonRequest
-	AStarResultReasonFail
-)
-
 type AStar struct {
-	cache            sync.Map
-	runningTaskCount int
+	cache     sync.Map
+	taskCount int
 }
 
 func NewAStar() *AStar {
 	return &AStar{
-		cache:            sync.Map{},
-		runningTaskCount: 0,
+		cache:     sync.Map{},
+		taskCount: 0,
 	}
 }
 
@@ -163,7 +155,7 @@ func (a *AStar) setCache(start Point, goal Point, value []Point) {
 	a.cache.Store(NewAStarResultKey(start, goal), value)
 }
 
-func (a *AStar) RunForce(start Point, goal Point) []Point {
+func (a *AStar) GetResultForce(start Point, goal Point) []Point {
 	res := NewAStarInstance().Run(start, goal)
 	reslen := len(res)
 	for i := 0; i < reslen; i++ {
@@ -176,22 +168,22 @@ func (a *AStar) RunForce(start Point, goal Point) []Point {
 	return res
 }
 
-func (a *AStar) Run(start Point, goal Point) (result []Point, reason AStarResultReason) {
+func (a *AStar) GetResult(start Point, goal Point) (result []Point, ok bool) {
 	// Found in cache
 	if r, ok := a.GetCache(start, goal); ok {
-		return r, AStarResultReasonSucceed
+		return r, true
 	}
 
 	// Can't create task
-	if a.runningTaskCount >= AIMaxTaskCount {
-		return []Point{}, AStarResultReasonFail
+	if a.taskCount >= AIMaxTaskCount {
+		return []Point{}, false
 	}
 
 	// Creating task
-	a.runningTaskCount++
+	a.taskCount++
 	go func() {
-		a.RunForce(start, goal)
-		a.runningTaskCount--
+		a.GetResultForce(start, goal)
+		a.taskCount--
 	}()
-	return []Point{}, AStarResultReasonRequest
+	return []Point{}, false
 }

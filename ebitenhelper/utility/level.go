@@ -165,23 +165,23 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 }
 
 func (l *Level) AIMove(self Mover, target Collider) {
-	sl := self.GetColliderBounds().BoundingBox().CenterLocation()
-	tl := target.GetColliderBounds().BoundingBox().CenterLocation()
+	srl := self.GetColliderBounds().BoundingBox().CenterLocation()
+	trl := target.GetColliderBounds().BoundingBox().CenterLocation()
+	spl := l.RealToPFLocation(srl)
+	tpl := l.RealToPFLocation(trl)
 
-	res, ok := l.AIPathfinding.Run(l.RealToPFLocation(sl), l.RealToPFLocation(tl))
-	switch ok {
-	case AStarResultReasonSucceed:
+	if res, ok := l.AIPathfinding.GetResult(spl, tpl); ok {
 		switch c := len(res); {
 		case c > 2:
-			dl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
-			dl2 := l.PFToRealLocation(res[2], true, l.AILocationDeviation)
-			tl = dl1.Add(dl2.Sub(dl1).DivF(2))
-			self.AddInput(tl.Sub(sl), 1)
+			trl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
+			trl2 := l.PFToRealLocation(res[2], true, l.AILocationDeviation)
+			trlave := trl1.Add(trl2.Sub(trl1).DivF(2))
+			self.AddInput(trlave.Sub(srl), 1)
 		case c == 2:
-			tl = l.PFToRealLocation(res[1], true, l.AILocationDeviation)
-			self.AddInput(tl.Sub(sl), 1)
+			trl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
+			self.AddInput(trl1.Sub(srl), 1)
 		case c == 1:
-			self.AddInput(tl.Sub(sl), 1)
+			self.AddInput(trl.Sub(srl), 1)
 		}
 
 		if IsShowDebugAIPath {
@@ -249,7 +249,7 @@ func (l *Level) BuildPFCache() {
 						go func(start Point, goal Point) {
 							defer wg.Done()
 							defer func() { <-sem }()
-							pf.RunForce(start, goal)
+							pf.GetResultForce(start, goal)
 						}(start, goal)
 					}
 				}
