@@ -157,7 +157,35 @@ func (a *AStar) setCache(start Point, goal Point, value []Point) {
 	a.cache.Store(NewAStarResultKey(start, goal), value)
 }
 
+func (a *AStar) LoadCache(filename string) error {
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+	d := gob.NewDecoder(f)
+	m := map[AStarResultKey][]Point{}
+	err = d.Decode(&m)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range m {
+		a.cache.Store(k, v)
+	}
+
+	return nil
+}
+
 func (a *AStar) SaveCache(filename string) error {
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+	e := gob.NewEncoder(f)
 	m := map[AStarResultKey][]Point{}
 	a.cache.Range(func(key any, value any) bool {
 		if k, ok := key.(AStarResultKey); ok {
@@ -167,14 +195,6 @@ func (a *AStar) SaveCache(filename string) error {
 		}
 		return true
 	})
-
-	f, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-
-	defer f.Close()
-	e := gob.NewEncoder(f)
 	err = e.Encode(m)
 	if err != nil {
 		return err
