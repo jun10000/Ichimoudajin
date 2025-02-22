@@ -6,6 +6,8 @@ import (
 	"os"
 	"slices"
 	"sync"
+
+	"github.com/jun10000/Ichimoudajin/assets"
 )
 
 type AStarNode struct {
@@ -158,7 +160,7 @@ func (a *AStar) setCache(start Point, goal Point, value []Point) {
 }
 
 func (a *AStar) LoadCache(filename string) error {
-	f, err := os.Open(filename)
+	f, err := assets.Assets.Open(filename)
 	if err != nil {
 		return err
 	}
@@ -179,7 +181,7 @@ func (a *AStar) LoadCache(filename string) error {
 }
 
 func (a *AStar) SaveCache(filename string) error {
-	f, err := os.Create(filename)
+	f, err := os.Create("assets/" + filename)
 	if err != nil {
 		return err
 	}

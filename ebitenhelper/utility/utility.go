@@ -7,6 +7,8 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/jun10000/Ichimoudajin/assets"
 )
 
 const (
@@ -39,6 +41,15 @@ const (
 
 func NewRectangle(location Point, size Point) image.Rectangle {
 	return image.Rect(location.X, location.Y, location.X+size.X, location.Y+size.Y)
+}
+
+func GetImageFile(filename string) (*ebiten.Image, error) {
+	image, _, err := ebitenutil.NewImageFromFileSystem(assets.Assets, filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return image, nil
 }
 
 func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.Image {

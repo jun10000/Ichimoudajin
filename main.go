@@ -1,23 +1,22 @@
 package main
 
 import (
-	"github.com/jun10000/Ichimoudajin/assets"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 func NewStage1() *utility.Level {
 	// Level
-	level := utility.NewLevel()
+	level := utility.NewLevel("Stage1")
 	level.IsLooping = true
 
 	// Map actors
-	mapData, err := assets.GetMapData("stage1.tmx")
+	mapData, err := actor.GetMapData("stage1.tmx")
 	utility.ExitIfError(err)
 	level.AddRange(mapData.GetActors())
 
 	// Player
-	playerImage, err := assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
+	playerImage, err := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
 	utility.ExitIfError(err)
 	player := actor.NewPawn()
 	player.SetLocation(utility.NewVector(600, 300))
@@ -25,7 +24,7 @@ func NewStage1() *utility.Level {
 	level.Add(player)
 
 	// Enemy
-	enemyImage, err := assets.GetImage("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
+	enemyImage, err := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
 	utility.ExitIfError(err)
 	enemyLocations := []utility.Vector{
 		utility.NewVector(700, 300),

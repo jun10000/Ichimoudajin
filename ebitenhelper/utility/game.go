@@ -22,9 +22,9 @@ func SetLevel(level *Level) error {
 	if level == nil {
 		return errors.New("loaded level is empty")
 	}
+
 	currentLevel = level
-	level.BuildPFCache()
-	return nil
+	return level.LoadOrBuildPFCache()
 }
 
 type GamepadAxisKey struct {

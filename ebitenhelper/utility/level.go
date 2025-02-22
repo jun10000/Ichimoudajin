@@ -1,7 +1,9 @@
 package utility
 
 import (
+	"errors"
 	"image/color"
+	"io/fs"
 	"log"
 	"math"
 	"math/rand/v2"
@@ -11,6 +13,7 @@ import (
 )
 
 type Level struct {
+	Name                string
 	IsLooping           bool
 	Drawers             []Drawer
 	InputReceivers      []InputReceiver
@@ -22,8 +25,9 @@ type Level struct {
 	AIPathfinding       *AStar
 }
 
-func NewLevel() *Level {
+func NewLevel(name string) *Level {
 	return &Level{
+		Name:                name,
 		AIGridSize:          NewVector(128, 128),
 		AILocationDeviation: 0.5,
 		AIPathfinding:       NewAStar(),
@@ -230,12 +234,23 @@ func (l *Level) PFToRealLocation(pfLocation Point, isCenter bool, deviation floa
 	return r
 }
 
-func (l *Level) BuildPFCache() {
+func (l *Level) LoadOrBuildPFCache() error {
+	n := l.Name + ".pfd"
+	err := l.AIPathfinding.LoadCache(n)
+	if errors.Is(err, fs.ErrNotExist) {
+		return l.BuildPFCache()
+	}
+
+	return err
+}
+
+func (l *Level) BuildPFCache() error {
 	pf := l.AIPathfinding
 	sz := l.RealToPFLocation(GetGameInstance().ScreenSize.SubXY(1, 1).ToVector()).AddXY(1, 1)
 	sem := make(chan struct{}, runtime.GOMAXPROCS(0)-1)
 	wg := sync.WaitGroup{}
 
+	defer close(sem)
 	log.Println("Started building PF cache")
 	for sx := 0; sx < sz.X; sx++ {
 		for sy := 0; sy < sz.Y; sy++ {
@@ -258,8 +273,6 @@ func (l *Level) BuildPFCache() {
 		}
 	}
 
-	go func() {
-		defer close(sem)
-		wg.Wait()
-	}()
+	wg.Wait()
+	return pf.SaveCache(l.Name + ".pfd")
 }
