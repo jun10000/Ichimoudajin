@@ -11,9 +11,9 @@ func NewStage1() *utility.Level {
 	level.IsLooping = true
 
 	// Map actors
-	mapData, err := actor.GetMapData("stage1.tmx")
+	mapActors, err := actor.GetActorsFromMapFile("stage1.tmx")
 	utility.ExitIfError(err)
-	level.AddRange(mapData.GetActors())
+	level.AddRange(mapActors)
 
 	// Player
 	playerImage, err := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")

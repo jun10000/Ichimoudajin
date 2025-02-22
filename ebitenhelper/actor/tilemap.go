@@ -193,8 +193,8 @@ func (m *MapInfo) GetActors() []any {
 	return result
 }
 
-func GetMapData(mapfile string) (*MapInfo, error) {
-	data, err := assets.Assets.ReadFile(mapfile)
+func GetMapInfo(filename string) (*MapInfo, error) {
+	data, err := assets.Assets.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -206,4 +206,13 @@ func GetMapData(mapfile string) (*MapInfo, error) {
 	}
 
 	return data2, nil
+}
+
+func GetActorsFromMapFile(filename string) ([]any, error) {
+	mi, err := GetMapInfo(filename)
+	if err != nil {
+		return []any{}, err
+	}
+
+	return mi.GetActors(), nil
 }
