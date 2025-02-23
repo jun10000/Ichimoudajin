@@ -13,7 +13,11 @@ func NewCircleF(origin Vector, radius float64) CircleF {
 }
 
 func (c CircleF) BoundingBox() RectangleF {
-	return NewRectangleF(c.Origin.SubF(c.Radius), NewVector(c.Radius*2, c.Radius*2))
+	return NewRectangleF(
+		c.Origin.X-c.Radius,
+		c.Origin.Y-c.Radius,
+		c.Origin.X+c.Radius,
+		c.Origin.Y+c.Radius)
 }
 
 func (c CircleF) Offset(value Vector) Bounder {

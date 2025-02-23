@@ -17,5 +17,7 @@ func NewBlockingArea() *BlockingArea {
 }
 
 func (a *BlockingArea) GetColliderBounds() utility.Bounder {
-	return utility.NewRectangleF(a.GetLocation(), a.Size)
+	l := a.GetLocation()
+	s := a.Size
+	return utility.NewRectangleF(l.X, l.Y, l.X+s.X, l.Y+s.Y)
 }

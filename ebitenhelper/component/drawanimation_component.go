@@ -68,9 +68,9 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
 }
 
 func (c *DrawAnimationComponent) GetRectangleBounds() utility.RectangleF {
-	s := c.FrameSize.ToVector().Mul(c.parent.GetScale())
 	l := c.parent.GetLocation()
-	return utility.NewRectangleF(l, s)
+	s := c.FrameSize.ToVector().Mul(c.parent.GetScale())
+	return utility.NewRectangleF(l.X, l.Y, l.X+s.X, l.Y+s.Y)
 }
 
 func (c *DrawAnimationComponent) GetCircleBounds() utility.CircleF {

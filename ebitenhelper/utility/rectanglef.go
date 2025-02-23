@@ -7,12 +7,12 @@ type RectangleF struct {
 	MaxY float64
 }
 
-func NewRectangleF(location Vector, size Vector) RectangleF {
+func NewRectangleF(minX, minY, maxX, maxY float64) RectangleF {
 	return RectangleF{
-		MinX: location.X,
-		MinY: location.Y,
-		MaxX: location.X + size.X,
-		MaxY: location.Y + size.Y,
+		MinX: minX,
+		MinY: minY,
+		MaxX: maxX,
+		MaxY: maxY,
 	}
 }
 
@@ -33,5 +33,9 @@ func (r RectangleF) BoundingBox() RectangleF {
 }
 
 func (r RectangleF) Offset(value Vector) Bounder {
-	return NewRectangleF(r.Location().Add(value), r.Size())
+	return NewRectangleF(
+		r.MinX+value.X,
+		r.MinY+value.Y,
+		r.MaxX+value.X,
+		r.MaxY+value.Y)
 }

@@ -204,7 +204,11 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 		return false
 	}
 
-	b := NewRectangleF(loc.AddF(AIValidOffset), l.AIGridSize.SubF(AIValidOffset*2))
+	b := NewRectangleF(
+		loc.X+AIValidOffset,
+		loc.Y+AIValidOffset,
+		loc.X+l.AIGridSize.X-AIValidOffset,
+		loc.Y+l.AIGridSize.Y-AIValidOffset)
 
 	var excepts []Collider
 	for _, t := range l.AITickers {
