@@ -12,11 +12,12 @@ import (
 )
 
 const (
-	TickCount         = 60
-	TickDuration      = 1.0 / float64(TickCount)
-	TraceSafeDistance = 3
-	AIValidOffset     = 0.5
-	AIMaxTaskCount    = 1
+	TickCount          = 60
+	TickDuration       = 1.0 / float64(TickCount)
+	TraceSafeDistance  = 3
+	AIValidOffset      = 0.5
+	AIMaxTaskCount     = 1
+	AIIsUsePFCacheFile = true
 
 	IsShowDebugMoverLocation = false
 	IsShowDebugTraceDistance = false

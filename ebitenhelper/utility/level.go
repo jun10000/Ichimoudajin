@@ -29,7 +29,7 @@ type Level struct {
 func NewLevel(name string) *Level {
 	return &Level{
 		Name:                name,
-		AIGridSize:          NewVector(128, 128),
+		AIGridSize:          NewVector(64, 64),
 		AILocationDeviation: 0.5,
 		AIPathfinding:       NewAStar(),
 	}
