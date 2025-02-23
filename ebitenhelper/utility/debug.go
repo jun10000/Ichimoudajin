@@ -12,17 +12,17 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-var isDebug = false
+var IsDebugMode = false
 
 func init() {
-	_, isDebug = os.LookupEnv("debug")
-	if isDebug {
+	_, IsDebugMode = os.LookupEnv("debug")
+	if IsDebugMode {
 		log.Println("Running in debug mode")
 	}
 }
 
 func RunDebugServer() {
-	if isDebug {
+	if IsDebugMode {
 		go func() {
 			log.Println(http.ListenAndServe(":6060", nil))
 		}()
@@ -30,7 +30,7 @@ func RunDebugServer() {
 }
 
 func DrawDebugLine(start Vector, end Vector, color color.Color) {
-	if isDebug {
+	if IsDebugMode {
 		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
 			vector.StrokeLine(screen, float32(start.X), float32(start.Y), float32(end.X), float32(end.Y), 2, color, false)
 		})
@@ -38,7 +38,7 @@ func DrawDebugLine(start Vector, end Vector, color color.Color) {
 }
 
 func DrawDebugRectangle(topleft Vector, size Vector, color color.Color) {
-	if isDebug {
+	if IsDebugMode {
 		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
 			vector.DrawFilledRect(screen, float32(topleft.X), float32(topleft.Y), float32(size.X), float32(size.Y), color, false)
 		})
@@ -46,7 +46,7 @@ func DrawDebugRectangle(topleft Vector, size Vector, color color.Color) {
 }
 
 func DrawDebugCircle(center Vector, radius float64, color color.Color) {
-	if isDebug {
+	if IsDebugMode {
 		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
 			vector.DrawFilledCircle(screen, float32(center.X), float32(center.Y), float32(radius), color, false)
 		})
@@ -54,7 +54,7 @@ func DrawDebugCircle(center Vector, radius float64, color color.Color) {
 }
 
 func DrawDebugText(topleft Vector, text string) {
-	if isDebug {
+	if IsDebugMode {
 		l := topleft.Floor()
 		GetGameInstance().AddDrawEvent(func(screen *ebiten.Image) {
 			ebitenutil.DebugPrintAt(screen, text, l.X, l.Y)

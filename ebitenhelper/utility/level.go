@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"slices"
 	"sync"
+	"time"
 )
 
 type Level struct {
@@ -234,9 +235,16 @@ func (l *Level) PFToRealLocation(pfLocation Point, isCenter bool, deviation floa
 	return r
 }
 
+func (l *Level) GetPFCacheFileName() string {
+	return l.Name + ".pfd"
+}
+
+func (l *Level) LoadPFCache() error {
+	return l.AIPathfinding.LoadCache(l.GetPFCacheFileName())
+}
+
 func (l *Level) LoadOrBuildPFCache() error {
-	n := l.Name + ".pfd"
-	err := l.AIPathfinding.LoadCache(n)
+	err := l.LoadPFCache()
 	if errors.Is(err, fs.ErrNotExist) {
 		return l.BuildPFCache()
 	}
@@ -249,6 +257,7 @@ func (l *Level) BuildPFCache() error {
 	sz := l.RealToPFLocation(GetGameInstance().ScreenSize.SubXY(1, 1).ToVector()).AddXY(1, 1)
 	sem := make(chan struct{}, runtime.GOMAXPROCS(0)-1)
 	wg := sync.WaitGroup{}
+	stime := time.Now()
 
 	defer close(sem)
 	log.Println("Started building PF cache")
@@ -274,5 +283,6 @@ func (l *Level) BuildPFCache() error {
 	}
 
 	wg.Wait()
-	return pf.SaveCache(l.Name + ".pfd")
+	log.Printf("Completed building PF cache, %.1fs elapsed.\n", time.Since(stime).Seconds())
+	return pf.SaveCache(l.GetPFCacheFileName())
 }

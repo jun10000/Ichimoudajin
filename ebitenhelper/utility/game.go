@@ -24,7 +24,11 @@ func SetLevel(level *Level) error {
 	}
 
 	currentLevel = level
-	return level.LoadOrBuildPFCache()
+	if IsDebugMode {
+		return level.LoadOrBuildPFCache()
+	}
+
+	return level.LoadPFCache()
 }
 
 type GamepadAxisKey struct {
