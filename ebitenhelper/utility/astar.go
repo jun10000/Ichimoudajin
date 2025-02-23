@@ -173,6 +173,7 @@ func (a *AStar) LoadCache(filename string) error {
 		return err
 	}
 
+	a.cache.Clear()
 	for k, v := range m {
 		a.cache.Store(k, v)
 	}
