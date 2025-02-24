@@ -14,13 +14,14 @@ import (
 )
 
 type Level struct {
+	colliders []Collider
+
 	Name                string
 	IsLooping           bool
 	Drawers             []Drawer
 	InputReceivers      []InputReceiver
 	AITickers           []AITicker
 	Tickers             []Ticker
-	Colliders           []Collider
 	AIGridSize          Vector
 	AILocationDeviation float64
 	AIPathfinding       *AStar
@@ -49,7 +50,7 @@ func (l *Level) Add(actor any) {
 		l.Tickers = append(l.Tickers, a)
 	}
 	if a, ok := actor.(Collider); ok {
-		l.Colliders = append(l.Colliders, a)
+		l.colliders = append(l.colliders, a)
 	}
 }
 
@@ -87,34 +88,45 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit 
 	}
 }
 
-func (l *Level) GetAllBounds(excepts []Collider) []Bounder {
-	r := []Bounder{}
-	for _, c := range l.Colliders {
+func (l *Level) GetAllColliders(excepts []Collider) []Collider {
+	r := []Collider{}
+	for _, c := range l.colliders {
 		if slices.Contains(excepts, c) {
 			continue
 		}
+		r = append(r, c)
+	}
 
+	return r
+}
+
+func (l *Level) GetAllColliderBounds(excepts []Collider) []Bounder {
+	r := []Bounder{}
+	s := GetGameInstance().ScreenSize.ToVector()
+
+	for _, c := range l.GetAllColliders(excepts) {
 		b := c.GetColliderBounds()
 		r = append(r, b)
-		if l.IsLooping {
-			s := GetGameInstance().ScreenSize.ToVector()
-			r = append(r,
-				b.Offset(-s.X, -s.Y),
-				b.Offset(0, -s.Y),
-				b.Offset(s.X, -s.Y),
-				b.Offset(-s.X, 0),
-				b.Offset(s.X, 0),
-				b.Offset(-s.X, s.Y),
-				b.Offset(0, s.Y),
-				b.Offset(s.X, s.Y),
-			)
+		if !l.IsLooping {
+			continue
 		}
+
+		r = append(r,
+			b.Offset(-s.X, -s.Y),
+			b.Offset(0, -s.Y),
+			b.Offset(s.X, -s.Y),
+			b.Offset(-s.X, 0),
+			b.Offset(s.X, 0),
+			b.Offset(-s.X, s.Y),
+			b.Offset(0, s.Y),
+			b.Offset(s.X, s.Y))
 	}
+
 	return r
 }
 
 func (l *Level) Intersect(target Bounder, excepts []Collider) (result bool, normal Vector) {
-	for _, b := range l.GetAllBounds(excepts) {
+	for _, b := range l.GetAllColliderBounds(excepts) {
 		r, n := Intersect(target, b)
 		if r {
 			return true, n

@@ -7,7 +7,7 @@ import (
 
 func NewStage1() *utility.Level {
 	// Level
-	level := utility.NewLevel("Stage1")
+	level := utility.NewLevel("stage1")
 	level.IsLooping = true
 
 	// Map actors
