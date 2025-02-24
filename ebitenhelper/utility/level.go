@@ -99,14 +99,14 @@ func (l *Level) GetAllBounds(excepts []Collider) []Bounder {
 		if l.IsLooping {
 			s := GetGameInstance().ScreenSize.ToVector()
 			r = append(r,
-				b.Offset(s.Mul(NewVector(-1, -1))),
-				b.Offset(s.Mul(NewVector(0, -1))),
-				b.Offset(s.Mul(NewVector(1, -1))),
-				b.Offset(s.Mul(NewVector(-1, 0))),
-				b.Offset(s.Mul(NewVector(1, 0))),
-				b.Offset(s.Mul(NewVector(-1, 1))),
-				b.Offset(s.Mul(NewVector(0, 1))),
-				b.Offset(s.Mul(NewVector(1, 1))),
+				b.Offset(-s.X, -s.Y),
+				b.Offset(0, -s.Y),
+				b.Offset(s.X, -s.Y),
+				b.Offset(-s.X, 0),
+				b.Offset(s.X, 0),
+				b.Offset(-s.X, s.Y),
+				b.Offset(0, s.Y),
+				b.Offset(s.X, s.Y),
 			)
 		}
 	}
@@ -130,7 +130,7 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 
 	for i := 0; i <= int(math.Trunc(ol)+1); i++ {
 		v := on.MulF(float64(i))
-		t := target.Offset(v)
+		t := target.Offset(v.X, v.Y)
 		r, n := l.Intersect(t, excepts)
 		if r {
 			if IsShowDebugTraceDistance {
@@ -150,7 +150,7 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 
 				switch dt := target.(type) {
 				case CircleF:
-					DrawDebugCircle(dt.Origin, dt.Radius, dc)
+					DrawDebugCircle(NewVector(dt.OrgX, dt.OrgY), dt.Radius, dc)
 				default:
 					db := target.BoundingBox()
 					DrawDebugRectangle(db.Location(), db.Size(), dc)

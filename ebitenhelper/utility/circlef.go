@@ -1,25 +1,27 @@
 package utility
 
 type CircleF struct {
-	Origin Vector
+	OrgX   float64
+	OrgY   float64
 	Radius float64
 }
 
-func NewCircleF(origin Vector, radius float64) CircleF {
+func NewCircleF(orgX, orgY, radius float64) CircleF {
 	return CircleF{
-		Origin: origin,
+		OrgX:   orgX,
+		OrgY:   orgY,
 		Radius: radius,
 	}
 }
 
 func (c CircleF) BoundingBox() RectangleF {
 	return NewRectangleF(
-		c.Origin.X-c.Radius,
-		c.Origin.Y-c.Radius,
-		c.Origin.X+c.Radius,
-		c.Origin.Y+c.Radius)
+		c.OrgX-c.Radius,
+		c.OrgY-c.Radius,
+		c.OrgX+c.Radius,
+		c.OrgY+c.Radius)
 }
 
-func (c CircleF) Offset(value Vector) Bounder {
-	return NewCircleF(c.Origin.Add(value), c.Radius)
+func (c CircleF) Offset(x, y float64) Bounder {
+	return NewCircleF(c.OrgX+x, c.OrgY+y, c.Radius)
 }

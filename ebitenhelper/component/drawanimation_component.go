@@ -76,5 +76,5 @@ func (c *DrawAnimationComponent) GetRectangleBounds() utility.RectangleF {
 func (c *DrawAnimationComponent) GetCircleBounds() utility.CircleF {
 	hs := c.FrameSize.ToVector().Mul(c.parent.GetScale()).DivF(2)
 	cl := c.parent.GetLocation().Add(hs)
-	return utility.NewCircleF(cl, math.Max(hs.X, hs.Y))
+	return utility.NewCircleF(cl.X, cl.Y, math.Max(hs.X, hs.Y))
 }

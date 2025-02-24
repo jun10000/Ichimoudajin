@@ -176,9 +176,9 @@ func IntersectRectangleToRectangle(rectangle1 RectangleF, rectangle2 RectangleF)
 
 func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (result bool, normal Vector) {
 	p := NewVector(
-		ClampFloat(circle.Origin.X, rectangle.MinX, rectangle.MaxX),
-		ClampFloat(circle.Origin.Y, rectangle.MinY, rectangle.MaxY))
-	r := circle.Origin.Sub(p)
+		ClampFloat(circle.OrgX, rectangle.MinX, rectangle.MaxX),
+		ClampFloat(circle.OrgY, rectangle.MinY, rectangle.MaxY))
+	r := NewVector(circle.OrgX-p.X, circle.OrgY-p.Y)
 
 	if r.Length() > circle.Radius {
 		return false, ZeroVector()
@@ -188,7 +188,7 @@ func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (result bo
 }
 
 func IntersectCircleToCircle(circle1 CircleF, circle2 CircleF) (result bool, normal Vector) {
-	d := circle1.Origin.Sub(circle2.Origin)
+	d := NewVector(circle1.OrgX-circle2.OrgX, circle1.OrgY-circle2.OrgY)
 	if d.Length() > circle1.Radius+circle2.Radius {
 		return false, ZeroVector()
 	}

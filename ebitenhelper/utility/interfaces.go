@@ -55,5 +55,5 @@ type Drawer interface {
 
 type Bounder interface {
 	BoundingBox() RectangleF
-	Offset(value Vector) Bounder
+	Offset(x, y float64) Bounder
 }
