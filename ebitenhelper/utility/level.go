@@ -101,7 +101,11 @@ func (l *Level) GetAllColliders(excepts []Collider) []Collider {
 }
 
 func (l *Level) GetAllColliderBounds(excepts []Collider) []Bounder {
-	r := []Bounder{}
+	rCap := len(l.colliders) - len(excepts)
+	if l.IsLooping {
+		rCap *= 9
+	}
+	r := make([]Bounder, 0, rCap)
 	s := GetGameInstance().ScreenSize.ToVector()
 
 	for _, c := range l.GetAllColliders(excepts) {
