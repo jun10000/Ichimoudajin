@@ -89,7 +89,7 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit 
 }
 
 func (l *Level) GetAllColliders(excepts []Collider) []Collider {
-	r := []Collider{}
+	r := make([]Collider, 0, len(l.colliders)-len(excepts))
 	for _, c := range l.colliders {
 		if slices.Contains(excepts, c) {
 			continue
@@ -226,7 +226,7 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 		loc.X+l.AIGridSize.X-AIValidOffset,
 		loc.Y+l.AIGridSize.Y-AIValidOffset)
 
-	var excepts []Collider
+	excepts := make([]Collider, 0, len(l.AITickers)+len(l.InputReceivers))
 	for _, t := range l.AITickers {
 		if c, ok := t.(Collider); ok {
 			excepts = append(excepts, c)

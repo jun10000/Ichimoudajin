@@ -19,6 +19,9 @@ const (
 	AIMaxTaskCount     = 1
 	AIIsUsePFCacheFile = true
 
+	InitialPFResultCap  = 128
+	InitialDrawEventCap = 32
+
 	IsShowDebugMoverLocation = false
 	IsShowDebugTraceDistance = false
 	IsShowDebugAIPath        = true
@@ -70,10 +73,13 @@ func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform Transformer) {
 	tr := transform.GetRotation()
 	ts := transform.GetScale()
 
-	ls := []Vector{tl}
-	if GetLevel().IsLooping {
+	var ls []Vector
+	if !GetLevel().IsLooping {
+		ls = []Vector{tl}
+	} else {
 		ss := GetGameInstance().ScreenSize.ToVector()
-		ls = append(ls,
+		ls = []Vector{
+			tl,
 			tl.Add(ss.Mul(NewVector(-1, -1))),
 			tl.Add(ss.Mul(NewVector(0, -1))),
 			tl.Add(ss.Mul(NewVector(1, -1))),
@@ -82,7 +88,7 @@ func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform Transformer) {
 			tl.Add(ss.Mul(NewVector(-1, 1))),
 			tl.Add(ss.Mul(NewVector(0, 1))),
 			tl.Add(ss.Mul(NewVector(1, 1))),
-		)
+		}
 	}
 
 	for _, l := range ls {

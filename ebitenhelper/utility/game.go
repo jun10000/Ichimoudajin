@@ -70,6 +70,7 @@ func NewGame() *Game {
 		releasedButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
 		pressingButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
 		axisValues:      map[GamepadAxisKey]float64{},
+		drawEvents:      make([]func(screen *ebiten.Image), 0, InitialDrawEventCap),
 	}
 }
 

@@ -109,7 +109,8 @@ func (a *AStarInstance) GetNextOpenNode() *AStarNode {
 }
 
 func (a *AStarInstance) GetCurrentPath() []Point {
-	r := []Point{a.currentNode.Location}
+	r := make([]Point, 0, InitialPFResultCap)
+	r = append(r, a.currentNode.Location)
 	n := a.currentNode.Parent
 
 	for n != nil {
