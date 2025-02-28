@@ -17,7 +17,7 @@ const (
 	TraceSafeDistance  = 3
 	AIValidOffset      = 0.5
 	AIMaxTaskCount     = 1
-	AIIsUsePFCacheFile = false
+	AIIsUsePFCacheFile = true
 
 	InitialPFResultCap  = 128
 	InitialDrawEventCap = 32

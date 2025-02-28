@@ -67,23 +67,23 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
 	))
 }
 
-func (c *DrawAnimationComponent) GetRectangleBounds(input *utility.RectangleF) {
+func (c *DrawAnimationComponent) GetRectangleBounds(output *utility.RectangleF) {
 	loc := c.parent.GetLocation()
 	scale := c.parent.GetScale()
 
-	input.MinX = loc.X
-	input.MinY = loc.Y
-	input.MaxX = loc.X + float64(c.FrameSize.X)*scale.X
-	input.MaxY = loc.Y + float64(c.FrameSize.Y)*scale.Y
+	output.MinX = loc.X
+	output.MinY = loc.Y
+	output.MaxX = loc.X + float64(c.FrameSize.X)*scale.X
+	output.MaxY = loc.Y + float64(c.FrameSize.Y)*scale.Y
 }
 
-func (c *DrawAnimationComponent) GetCircleBounds(input *utility.CircleF) {
+func (c *DrawAnimationComponent) GetCircleBounds(output *utility.CircleF) {
 	loc := c.parent.GetLocation()
 	scale := c.parent.GetScale()
 	hsx := float64(c.FrameSize.X) * scale.X / 2
 	hsy := float64(c.FrameSize.Y) * scale.Y / 2
 
-	input.OrgX = loc.X + hsx
-	input.OrgY = loc.Y + hsy
-	input.Radius = math.Max(hsx, hsy)
+	output.OrgX = loc.X + hsx
+	output.OrgY = loc.Y + hsy
+	output.Radius = math.Max(hsx, hsy)
 }

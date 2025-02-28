@@ -22,11 +22,11 @@ func NewBlockingArea() *BlockingArea {
 	return a
 }
 
-func (a *BlockingArea) getBounds(input *utility.RectangleF) {
+func (a *BlockingArea) getBounds(output *utility.RectangleF) {
 	l := a.GetLocation()
 
-	input.MinX = l.X
-	input.MinY = l.Y
-	input.MaxX = l.X + a.Size.X
-	input.MaxY = l.Y + a.Size.Y
+	output.MinX = l.X
+	output.MinY = l.Y
+	output.MaxX = l.X + a.Size.X
+	output.MaxY = l.Y + a.Size.Y
 }

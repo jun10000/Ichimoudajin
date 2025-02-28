@@ -22,6 +22,13 @@ func (c CircleF) BoundingBox() RectangleF {
 		c.OrgY+c.Radius)
 }
 
-func (c CircleF) Offset(x, y float64) Bounder {
-	return NewCircleF(c.OrgX+x, c.OrgY+y, c.Radius)
+func (c CircleF) Offset(x, y float64, output Bounder) Bounder {
+	if o, ok := output.(*CircleF); ok {
+		o.OrgX = c.OrgX + x
+		o.OrgY = c.OrgY + y
+		o.Radius = c.Radius
+		return o
+	} else {
+		return NewCircleF(c.OrgX+x, c.OrgY+y, c.Radius)
+	}
 }

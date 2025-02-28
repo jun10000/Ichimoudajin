@@ -32,10 +32,14 @@ func (r RectangleF) BoundingBox() RectangleF {
 	return r
 }
 
-func (r RectangleF) Offset(x, y float64) Bounder {
-	return NewRectangleF(
-		r.MinX+x,
-		r.MinY+y,
-		r.MaxX+x,
-		r.MaxY+y)
+func (r RectangleF) Offset(x, y float64, output Bounder) Bounder {
+	if o, ok := output.(*RectangleF); ok {
+		o.MinX = r.MinX + x
+		o.MinY = r.MinY + y
+		o.MaxX = r.MaxX + x
+		o.MaxY = r.MaxY + y
+		return o
+	} else {
+		return NewRectangleF(r.MinX+x, r.MinY+y, r.MaxX+x, r.MaxY+y)
+	}
 }

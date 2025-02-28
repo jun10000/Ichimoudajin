@@ -106,24 +106,9 @@ func (l *Level) GetAllColliderBounds(excepts []Collider) []Bounder {
 		rCap *= 9
 	}
 	r := make([]Bounder, 0, rCap)
-	s := GetGameInstance().ScreenSize.ToVector()
 
 	for _, c := range l.GetAllColliders(excepts) {
-		b := c.GetColliderBounds()
-		r = append(r, b)
-		if !l.IsLooping {
-			continue
-		}
-
-		r = append(r,
-			b.Offset(-s.X, -s.Y),
-			b.Offset(0, -s.Y),
-			b.Offset(s.X, -s.Y),
-			b.Offset(-s.X, 0),
-			b.Offset(s.X, 0),
-			b.Offset(-s.X, s.Y),
-			b.Offset(0, s.Y),
-			b.Offset(s.X, s.Y))
+		r = append(r, c.GetColliderBounds()...)
 	}
 
 	return r
@@ -143,11 +128,12 @@ func (l *Level) Intersect(target Bounder, excepts []Collider) (result bool, norm
 func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceResult {
 	ol := offset.Length()
 	on := offset.Normalize()
+	var bo Bounder
 
 	for i := 0; i <= int(math.Trunc(ol)+1); i++ {
 		v := on.MulF(float64(i))
-		t := target.Offset(v.X, v.Y)
-		r, n := l.Intersect(t, excepts)
+		bo = target.Offset(v.X, v.Y, bo)
+		r, n := l.Intersect(bo, excepts)
 		if r {
 			if IsShowDebugTraceDistance {
 				var dc color.RGBA
@@ -188,8 +174,8 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 }
 
 func (l *Level) AIMove(self Mover, target Collider) {
-	srl := self.GetColliderBounds().BoundingBox().CenterLocation()
-	trl := target.GetColliderBounds().BoundingBox().CenterLocation()
+	srl := self.GetColliderBounds()[0].BoundingBox().CenterLocation()
+	trl := target.GetColliderBounds()[0].BoundingBox().CenterLocation()
 	spl := l.RealToPFLocation(srl)
 	tpl := l.RealToPFLocation(trl)
 

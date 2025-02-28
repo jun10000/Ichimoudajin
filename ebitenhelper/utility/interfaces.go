@@ -25,7 +25,7 @@ type Transformer interface {
 
 type Collider interface {
 	Transformer
-	GetColliderBounds() Bounder
+	GetColliderBounds() []Bounder
 }
 
 type Mover interface {
@@ -55,5 +55,5 @@ type Drawer interface {
 
 type Bounder interface {
 	BoundingBox() RectangleF
-	Offset(x, y float64) Bounder
+	Offset(x, y float64, output Bounder) Bounder
 }
