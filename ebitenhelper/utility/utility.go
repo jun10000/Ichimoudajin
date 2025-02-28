@@ -17,7 +17,7 @@ const (
 	TraceSafeDistance  = 3
 	AIValidOffset      = 0.5
 	AIMaxTaskCount     = 1
-	AIIsUsePFCacheFile = true
+	AIIsUsePFCacheFile = false
 
 	InitialPFResultCap  = 128
 	InitialDrawEventCap = 32
@@ -218,6 +218,11 @@ func Intersect(src Bounder, dst Bounder) (result bool, normal Vector) {
 		case CircleF:
 			r, n := IntersectCircleToRectangle(v2, v1)
 			return r, n.Negate()
+		case *RectangleF:
+			return IntersectRectangleToRectangle(v1, *v2)
+		case *CircleF:
+			r, n := IntersectCircleToRectangle(*v2, v1)
+			return r, n.Negate()
 		}
 	case CircleF:
 		switch v2 := dst.(type) {
@@ -225,6 +230,34 @@ func Intersect(src Bounder, dst Bounder) (result bool, normal Vector) {
 			return IntersectCircleToRectangle(v1, v2)
 		case CircleF:
 			return IntersectCircleToCircle(v1, v2)
+		case *RectangleF:
+			return IntersectCircleToRectangle(v1, *v2)
+		case *CircleF:
+			return IntersectCircleToCircle(v1, *v2)
+		}
+	case *RectangleF:
+		switch v2 := dst.(type) {
+		case RectangleF:
+			return IntersectRectangleToRectangle(*v1, v2)
+		case CircleF:
+			r, n := IntersectCircleToRectangle(v2, *v1)
+			return r, n.Negate()
+		case *RectangleF:
+			return IntersectRectangleToRectangle(*v1, *v2)
+		case *CircleF:
+			r, n := IntersectCircleToRectangle(*v2, *v1)
+			return r, n.Negate()
+		}
+	case *CircleF:
+		switch v2 := dst.(type) {
+		case RectangleF:
+			return IntersectCircleToRectangle(*v1, v2)
+		case CircleF:
+			return IntersectCircleToCircle(*v1, v2)
+		case *RectangleF:
+			return IntersectCircleToRectangle(*v1, *v2)
+		case *CircleF:
+			return IntersectCircleToCircle(*v1, *v2)
 		}
 	}
 

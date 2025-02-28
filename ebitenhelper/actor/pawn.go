@@ -10,6 +10,7 @@ type Pawn struct {
 	*component.MovementComponent
 	*component.DrawAnimationComponent
 	*component.ControllerComponent
+	*component.CircleColliderComponent
 }
 
 func NewPawn() *Pawn {
@@ -20,14 +21,11 @@ func NewPawn() *Pawn {
 	a.MovementComponent = component.NewMovementComponent(a)
 	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
 	a.ControllerComponent = component.NewControllerComponent(a)
+	a.CircleColliderComponent = component.NewCircleColliderComponent(a.GetCircleBounds)
 	return a
 }
 
 func (p *Pawn) Tick() {
 	p.MovementComponent.Tick()
 	p.DrawAnimationComponent.Tick()
-}
-
-func (p *Pawn) GetColliderBounds() utility.Bounder {
-	return p.GetCircleBounds()
 }

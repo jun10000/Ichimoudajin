@@ -67,14 +67,23 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
 	))
 }
 
-func (c *DrawAnimationComponent) GetRectangleBounds() utility.RectangleF {
-	l := c.parent.GetLocation()
-	s := c.FrameSize.ToVector().Mul(c.parent.GetScale())
-	return utility.NewRectangleF(l.X, l.Y, l.X+s.X, l.Y+s.Y)
+func (c *DrawAnimationComponent) GetRectangleBounds(input *utility.RectangleF) {
+	loc := c.parent.GetLocation()
+	scale := c.parent.GetScale()
+
+	input.MinX = loc.X
+	input.MinY = loc.Y
+	input.MaxX = loc.X + float64(c.FrameSize.X)*scale.X
+	input.MaxY = loc.Y + float64(c.FrameSize.Y)*scale.Y
 }
 
-func (c *DrawAnimationComponent) GetCircleBounds() utility.CircleF {
-	hs := c.FrameSize.ToVector().Mul(c.parent.GetScale()).DivF(2)
-	cl := c.parent.GetLocation().Add(hs)
-	return utility.NewCircleF(cl.X, cl.Y, math.Max(hs.X, hs.Y))
+func (c *DrawAnimationComponent) GetCircleBounds(input *utility.CircleF) {
+	loc := c.parent.GetLocation()
+	scale := c.parent.GetScale()
+	hsx := float64(c.FrameSize.X) * scale.X / 2
+	hsy := float64(c.FrameSize.Y) * scale.Y / 2
+
+	input.OrgX = loc.X + hsx
+	input.OrgY = loc.Y + hsy
+	input.Radius = math.Max(hsx, hsy)
 }

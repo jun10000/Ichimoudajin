@@ -167,6 +167,8 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 				switch dt := target.(type) {
 				case CircleF:
 					DrawDebugCircle(NewVector(dt.OrgX, dt.OrgY), dt.Radius, dc)
+				case *CircleF:
+					DrawDebugCircle(NewVector(dt.OrgX, dt.OrgY), dt.Radius, dc)
 				default:
 					db := target.BoundingBox()
 					DrawDebugRectangle(db.Location(), db.Size(), dc)
