@@ -4,32 +4,33 @@ import "github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 
 type CircleColliderComponent struct {
 	getBounds   func(*utility.CircleF)
-	boundsCache []utility.Bounder
+	loopOffsets []utility.Vector
+	mainCache   *utility.CircleF
+	offsetCache *utility.CircleF
 }
 
 func NewCircleColliderComponent(getBounds func(*utility.CircleF)) *CircleColliderComponent {
-	c := &CircleColliderComponent{
+	s := utility.ScreenSize.ToVector()
+	return &CircleColliderComponent{
 		getBounds: getBounds,
-		boundsCache: []utility.Bounder{
-			&utility.CircleF{},
-			&utility.CircleF{},
-			&utility.CircleF{},
-			&utility.CircleF{},
-			&utility.CircleF{},
-			&utility.CircleF{},
-			&utility.CircleF{},
-			&utility.CircleF{},
-			&utility.CircleF{},
+		loopOffsets: []utility.Vector{
+			utility.NewVector(-s.X, -s.Y),
+			utility.NewVector(0, -s.Y),
+			utility.NewVector(s.X, -s.Y),
+			utility.NewVector(-s.X, 0),
+			utility.NewVector(s.X, 0),
+			utility.NewVector(-s.X, s.Y),
+			utility.NewVector(0, s.Y),
+			utility.NewVector(s.X, s.Y),
 		},
+		mainCache:   &utility.CircleF{},
+		offsetCache: &utility.CircleF{},
 	}
-
-	return c
 }
 
 func (c *CircleColliderComponent) GetMainColliderBounds() utility.Bounder {
-	b := c.boundsCache[0].(*utility.CircleF)
-	c.getBounds(b)
-	return b
+	c.getBounds(c.mainCache)
+	return c.mainCache
 }
 
 func (c *CircleColliderComponent) GetColliderBounds() func(yield func(utility.Bounder) bool) {
@@ -38,43 +39,15 @@ func (c *CircleColliderComponent) GetColliderBounds() func(yield func(utility.Bo
 		if !yield(b) {
 			return
 		}
-
 		if !utility.GetLevel().IsLooping {
 			return
 		}
 
-		s := utility.GetGameInstance().ScreenSize.ToVector()
-		b.Offset(-s.X, -s.Y, c.boundsCache[1])
-		if !yield(c.boundsCache[1]) {
-			return
-		}
-		b.Offset(0, -s.Y, c.boundsCache[2])
-		if !yield(c.boundsCache[2]) {
-			return
-		}
-		b.Offset(s.X, -s.Y, c.boundsCache[3])
-		if !yield(c.boundsCache[3]) {
-			return
-		}
-		b.Offset(-s.X, 0, c.boundsCache[4])
-		if !yield(c.boundsCache[4]) {
-			return
-		}
-		b.Offset(s.X, 0, c.boundsCache[5])
-		if !yield(c.boundsCache[5]) {
-			return
-		}
-		b.Offset(-s.X, s.Y, c.boundsCache[6])
-		if !yield(c.boundsCache[6]) {
-			return
-		}
-		b.Offset(0, s.Y, c.boundsCache[7])
-		if !yield(c.boundsCache[7]) {
-			return
-		}
-		b.Offset(s.X, s.Y, c.boundsCache[8])
-		if !yield(c.boundsCache[8]) {
-			return
+		for _, v := range c.loopOffsets {
+			b.Offset(v.X, v.Y, c.offsetCache)
+			if !yield(*c.offsetCache) {
+				return
+			}
 		}
 	}
 }

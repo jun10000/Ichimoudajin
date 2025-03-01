@@ -17,7 +17,7 @@ const (
 	TraceSafeDistance  = 3
 	AIValidOffset      = 0.5
 	AIMaxTaskCount     = 1
-	AIIsUsePFCacheFile = true
+	AIIsUsePFCacheFile = false
 
 	InitialPFResultCap  = 128
 	InitialDrawEventCap = 32
@@ -77,7 +77,7 @@ func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform Transformer) {
 	if !GetLevel().IsLooping {
 		ls = []Vector{tl}
 	} else {
-		ss := GetGameInstance().ScreenSize.ToVector()
+		ss := ScreenSize.ToVector()
 		ls = []Vector{
 			tl,
 			tl.Add(ss.Mul(NewVector(-1, -1))),
@@ -120,13 +120,12 @@ func ClampFloat(value float64, min float64, max float64) float64 {
 func ClampLocation(location Vector) Vector {
 	r := location
 	lv := GetLevel()
-	gi := GetGameInstance()
 
-	if lv == nil || !lv.IsLooping || gi == nil {
+	if lv == nil || !lv.IsLooping {
 		return r
 	}
 
-	ss := gi.ScreenSize.ToVector()
+	ss := ScreenSize.ToVector()
 	r = r.Mod(ss)
 	if r.X < 0 {
 		r.X += ss.X

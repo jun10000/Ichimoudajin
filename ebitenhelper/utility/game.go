@@ -7,8 +7,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-var currentGameInstance *Game
-var currentLevel *Level
+var (
+	currentGameInstance *Game
+	currentLevel        *Level
+
+	WindowTitle = "Game"
+	ScreenSize  = NewPoint(1280, 720)
+)
 
 func GetGameInstance() *Game {
 	return currentGameInstance
@@ -48,9 +53,6 @@ func NewGamepadAxisKey(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis) Gam
 }
 
 type Game struct {
-	WindowTitle string
-	ScreenSize  Point
-
 	pressedKeys     []ebiten.Key
 	releasedKeys    []ebiten.Key
 	pressingKeys    []ebiten.Key
@@ -64,8 +66,6 @@ type Game struct {
 
 func NewGame() *Game {
 	return &Game{
-		WindowTitle:     "Game",
-		ScreenSize:      NewPoint(1280, 720),
 		pressedButtons:  map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
 		releasedButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
 		pressingButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
@@ -150,14 +150,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(width int, height int) (int, int) {
-	return g.ScreenSize.X, g.ScreenSize.Y
+	return ScreenSize.X, ScreenSize.Y
 }
 
 func (g *Game) Play(firstlevel *Level) error {
 	RunDebugServer()
 
-	ebiten.SetWindowSize(g.ScreenSize.X, g.ScreenSize.Y)
-	ebiten.SetWindowTitle(g.WindowTitle)
+	ebiten.SetWindowSize(ScreenSize.X, ScreenSize.Y)
+	ebiten.SetWindowTitle(WindowTitle)
 	currentGameInstance = g
 	err := SetLevel(firstlevel)
 	if err != nil {

@@ -52,9 +52,7 @@ func NewStage1() *utility.Level {
 }
 
 func main() {
-	g := utility.NewGame()
-	g.WindowTitle = "Ichimoudajin"
-	g.ScreenSize = utility.NewPoint(32*40, 32*22)
-
-	utility.ExitIfError(g.Play(NewStage1()))
+	utility.WindowTitle = "Ichimoudajin"
+	utility.ScreenSize = utility.NewPoint(32*40, 32*22)
+	utility.ExitIfError(utility.NewGame().Play(NewStage1()))
 }
