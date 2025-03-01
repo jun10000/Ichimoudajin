@@ -54,12 +54,6 @@ func (l *Level) Add(actor any) {
 	}
 }
 
-func (l *Level) AddRange(actors []any) {
-	for _, a := range actors {
-		l.Add(a)
-	}
-}
-
 type TraceResult struct {
 	IsHit      bool
 	IsFirstHit bool
@@ -88,34 +82,34 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit 
 	}
 }
 
-func (l *Level) GetAllColliders(excepts []Collider) []Collider {
-	r := make([]Collider, 0, len(l.colliders)-len(excepts))
-	for _, c := range l.colliders {
-		if slices.Contains(excepts, c) {
-			continue
-		}
-		r = append(r, c)
-	}
+func (l *Level) GetAllColliders(excepts []Collider) func(yield func(Collider) bool) {
+	return func(yield func(Collider) bool) {
+		for _, c := range l.colliders {
+			if slices.Contains(excepts, c) {
+				continue
+			}
 
-	return r
+			if !yield(c) {
+				return
+			}
+		}
+	}
 }
 
-func (l *Level) GetAllColliderBounds(excepts []Collider) []Bounder {
-	rCap := len(l.colliders) - len(excepts)
-	if l.IsLooping {
-		rCap *= 9
+func (l *Level) GetAllColliderBounds(excepts []Collider) func(yield func(Bounder) bool) {
+	return func(yield func(Bounder) bool) {
+		for c := range l.GetAllColliders(excepts) {
+			for b := range c.GetColliderBounds() {
+				if !yield(b) {
+					return
+				}
+			}
+		}
 	}
-	r := make([]Bounder, 0, rCap)
-
-	for _, c := range l.GetAllColliders(excepts) {
-		r = append(r, c.GetColliderBounds()...)
-	}
-
-	return r
 }
 
 func (l *Level) Intersect(target Bounder, excepts []Collider) (result bool, normal Vector) {
-	for _, b := range l.GetAllColliderBounds(excepts) {
+	for b := range l.GetAllColliderBounds(excepts) {
 		r, n := Intersect(target, b)
 		if r {
 			return true, n
@@ -174,8 +168,8 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceRe
 }
 
 func (l *Level) AIMove(self Mover, target Collider) {
-	srl := self.GetColliderBounds()[0].BoundingBox().CenterLocation()
-	trl := target.GetColliderBounds()[0].BoundingBox().CenterLocation()
+	srl := self.GetMainColliderBounds().BoundingBox().CenterLocation()
+	trl := target.GetMainColliderBounds().BoundingBox().CenterLocation()
 	spl := l.RealToPFLocation(srl)
 	tpl := l.RealToPFLocation(trl)
 

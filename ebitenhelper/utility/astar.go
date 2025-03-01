@@ -22,12 +22,20 @@ func NewAStarNode(location Point) *AStarNode {
 	return &AStarNode{Location: location}
 }
 
-func (n *AStarNode) GetAroundLocations() []Point {
-	return []Point{
-		n.Location.AddXY(0, -1),
-		n.Location.AddXY(-1, 0),
-		n.Location.AddXY(1, 0),
-		n.Location.AddXY(0, 1),
+func (n *AStarNode) GetAroundLocations() func(yield func(Point) bool) {
+	return func(yield func(Point) bool) {
+		if !yield(n.Location.AddXY(0, -1)) {
+			return
+		}
+		if !yield(n.Location.AddXY(-1, 0)) {
+			return
+		}
+		if !yield(n.Location.AddXY(1, 0)) {
+			return
+		}
+		if !yield(n.Location.AddXY(0, 1)) {
+			return
+		}
 	}
 }
 
@@ -54,7 +62,7 @@ func (a *AStarInstance) Run(start Point, goal Point) []Point {
 			return a.GetCurrentPath()
 		}
 
-		for _, l := range a.currentNode.GetAroundLocations() {
+		for l := range a.currentNode.GetAroundLocations() {
 			if !GetLevel().AIIsPFLocationValid(l) || a.closedNodes[l] != nil {
 				continue
 			}

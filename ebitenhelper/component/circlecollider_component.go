@@ -26,21 +26,55 @@ func NewCircleColliderComponent(getBounds func(*utility.CircleF)) *CircleCollide
 	return c
 }
 
-func (c *CircleColliderComponent) GetColliderBounds() []utility.Bounder {
+func (c *CircleColliderComponent) GetMainColliderBounds() utility.Bounder {
 	b := c.boundsCache[0].(*utility.CircleF)
 	c.getBounds(b)
-	if !utility.GetLevel().IsLooping {
-		return c.boundsCache[:1]
-	}
+	return b
+}
 
-	s := utility.GetGameInstance().ScreenSize.ToVector()
-	b.Offset(-s.X, -s.Y, c.boundsCache[1])
-	b.Offset(0, -s.Y, c.boundsCache[2])
-	b.Offset(s.X, -s.Y, c.boundsCache[3])
-	b.Offset(-s.X, 0, c.boundsCache[4])
-	b.Offset(s.X, 0, c.boundsCache[5])
-	b.Offset(-s.X, s.Y, c.boundsCache[6])
-	b.Offset(0, s.Y, c.boundsCache[7])
-	b.Offset(s.X, s.Y, c.boundsCache[8])
-	return c.boundsCache
+func (c *CircleColliderComponent) GetColliderBounds() func(yield func(utility.Bounder) bool) {
+	return func(yield func(utility.Bounder) bool) {
+		b := c.GetMainColliderBounds()
+		if !yield(b) {
+			return
+		}
+
+		if !utility.GetLevel().IsLooping {
+			return
+		}
+
+		s := utility.GetGameInstance().ScreenSize.ToVector()
+		b.Offset(-s.X, -s.Y, c.boundsCache[1])
+		if !yield(c.boundsCache[1]) {
+			return
+		}
+		b.Offset(0, -s.Y, c.boundsCache[2])
+		if !yield(c.boundsCache[2]) {
+			return
+		}
+		b.Offset(s.X, -s.Y, c.boundsCache[3])
+		if !yield(c.boundsCache[3]) {
+			return
+		}
+		b.Offset(-s.X, 0, c.boundsCache[4])
+		if !yield(c.boundsCache[4]) {
+			return
+		}
+		b.Offset(s.X, 0, c.boundsCache[5])
+		if !yield(c.boundsCache[5]) {
+			return
+		}
+		b.Offset(-s.X, s.Y, c.boundsCache[6])
+		if !yield(c.boundsCache[6]) {
+			return
+		}
+		b.Offset(0, s.Y, c.boundsCache[7])
+		if !yield(c.boundsCache[7]) {
+			return
+		}
+		b.Offset(s.X, s.Y, c.boundsCache[8])
+		if !yield(c.boundsCache[8]) {
+			return
+		}
+	}
 }

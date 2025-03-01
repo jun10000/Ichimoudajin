@@ -25,7 +25,8 @@ type Transformer interface {
 
 type Collider interface {
 	Transformer
-	GetColliderBounds() []Bounder
+	GetMainColliderBounds() Bounder
+	GetColliderBounds() func(yield func(Bounder) bool)
 }
 
 type Mover interface {

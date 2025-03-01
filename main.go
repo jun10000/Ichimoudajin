@@ -13,7 +13,9 @@ func NewStage1() *utility.Level {
 	// Map actors
 	mapActors, err := actor.GetActorsFromMapFile("stage1.tmx")
 	utility.ExitIfError(err)
-	level.AddRange(mapActors)
+	for a := range mapActors {
+		level.Add(a)
+	}
 
 	// Player
 	playerImage, err := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")

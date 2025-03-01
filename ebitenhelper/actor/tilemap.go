@@ -150,47 +150,51 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	return nil
 }
 
-func (m *MapInfo) GetActors() []any {
-	mapimage := ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
-	mapactor := NewActor()
-	mapactor.Image = mapimage
-	result := []any{mapactor}
+func (m *MapInfo) GetActors() func(yield func(any) bool) {
+	return func(yield func(any) bool) {
+		mapimage := ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
+		mapactor := NewActor()
+		mapactor.Image = mapimage
+		if !yield(mapactor) {
+			return
+		}
 
-	for _, l := range m.Layers {
-		if l.IsCollision {
-			for ci, c := range l.Cells {
-				if c.TileIndex < 0 {
-					continue
+		for _, l := range m.Layers {
+			if l.IsCollision {
+				for ci, c := range l.Cells {
+					if c.TileIndex < 0 {
+						continue
+					}
+
+					b := NewBlockingArea()
+					b.SetLocation(utility.NewVector(
+						float64((ci%m.MapSize.X)*m.TileSize.X),
+						float64(ci/m.MapSize.X*m.TileSize.Y)))
+					b.Size = m.TileSize.ToVector()
+					if !yield(b) {
+						return
+					}
 				}
+			} else {
+				for ci, c := range l.Cells {
+					if c.Tileset == nil {
+						continue
+					}
 
-				b := NewBlockingArea()
-				b.SetLocation(utility.NewVector(
-					float64((ci%m.MapSize.X)*m.TileSize.X),
-					float64(ci/m.MapSize.X*m.TileSize.Y)))
-				b.Size = m.TileSize.ToVector()
-				result = append(result, b)
-			}
-		} else {
-			for ci, c := range l.Cells {
-				if c.Tileset == nil {
-					continue
+					o := &ebiten.DrawImageOptions{}
+					o.GeoM.Translate(
+						float64((ci%m.MapSize.X)*m.TileSize.X),
+						float64(ci/m.MapSize.X*m.TileSize.Y))
+					mapimage.DrawImage(utility.GetSubImage(
+						c.Tileset.Image,
+						utility.NewPoint(
+							c.TileIndex%c.Tileset.ColumnCount*m.TileSize.X,
+							c.TileIndex/c.Tileset.ColumnCount*m.TileSize.Y),
+						m.TileSize), o)
 				}
-
-				o := &ebiten.DrawImageOptions{}
-				o.GeoM.Translate(
-					float64((ci%m.MapSize.X)*m.TileSize.X),
-					float64(ci/m.MapSize.X*m.TileSize.Y))
-				mapimage.DrawImage(utility.GetSubImage(
-					c.Tileset.Image,
-					utility.NewPoint(
-						c.TileIndex%c.Tileset.ColumnCount*m.TileSize.X,
-						c.TileIndex/c.Tileset.ColumnCount*m.TileSize.Y),
-					m.TileSize), o)
 			}
 		}
 	}
-
-	return result
 }
 
 func GetMapInfo(filename string) (*MapInfo, error) {
@@ -208,10 +212,10 @@ func GetMapInfo(filename string) (*MapInfo, error) {
 	return data2, nil
 }
 
-func GetActorsFromMapFile(filename string) ([]any, error) {
+func GetActorsFromMapFile(filename string) (func(yield func(any) bool), error) {
 	mi, err := GetMapInfo(filename)
 	if err != nil {
-		return []any{}, err
+		return nil, err
 	}
 
 	return mi.GetActors(), nil
