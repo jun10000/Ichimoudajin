@@ -7,7 +7,7 @@ import (
 
 type BlockingArea struct {
 	utility.Transform
-	*component.RectangleColliderComponent
+	*component.ColliderComponent[*utility.RectangleF]
 
 	Size utility.Vector
 }
@@ -18,7 +18,7 @@ func NewBlockingArea() *BlockingArea {
 		Size:      utility.NewVector(32, 32),
 	}
 
-	a.RectangleColliderComponent = component.NewRectangleColliderComponent(a.getBounds)
+	a.ColliderComponent = component.NewColliderComponent(a.getBounds)
 	return a
 }
 

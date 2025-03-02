@@ -10,7 +10,7 @@ type AIPawn struct {
 	*component.MovementComponent
 	*component.DrawAnimationComponent
 	*component.AIControllerComponent
-	*component.CircleColliderComponent
+	*component.ColliderComponent[*utility.CircleF]
 }
 
 func NewAIPawn() *AIPawn {
@@ -21,7 +21,7 @@ func NewAIPawn() *AIPawn {
 	a.MovementComponent = component.NewMovementComponent(a)
 	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
 	a.AIControllerComponent = component.NewAIControllerComponent(a)
-	a.CircleColliderComponent = component.NewCircleColliderComponent(a.GetCircleBounds)
+	a.ColliderComponent = component.NewColliderComponent(a.GetCircleBounds)
 	return a
 }
 
