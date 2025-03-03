@@ -100,7 +100,9 @@ func (g *Game) Update() error {
 		}
 	}
 
-	for r := range GetLevel().InputReceivers {
+	lv := GetLevel()
+
+	for r := range lv.InputReceivers {
 		for _, k := range g.pressedKeys {
 			r.ReceiveKeyInput(k, PressStatePressed)
 		}
@@ -127,11 +129,11 @@ func (g *Game) Update() error {
 		}
 	}
 
-	for t := range GetLevel().AITickers {
+	for t := range lv.AITickers {
 		t.AITick()
 	}
 
-	for t := range GetLevel().Tickers {
+	for t := range lv.Tickers {
 		t.Tick()
 	}
 

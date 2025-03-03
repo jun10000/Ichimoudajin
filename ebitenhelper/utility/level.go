@@ -41,30 +41,32 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit 
 }
 
 type Level struct {
-	Colliders      Set[Collider]
-	InputReceivers Set[InputReceiver]
-	AITickers      Set[AITicker]
-	Tickers        Set[Ticker]
-	Drawers        []Drawer
-
 	Name                string
 	IsLooping           bool
 	AIGridSize          Vector
 	AILocationDeviation float64
 	AIPathfinding       *AStar
+
+	Colliders      Set[Collider]
+	InputReceivers Set[InputReceiver]
+	AITickers      Set[AITicker]
+	Tickers        Set[Ticker]
+	Drawers        []Drawer
 }
 
 func NewLevel(name string) *Level {
 	return &Level{
-		Colliders:           make(Set[Collider]),
-		InputReceivers:      make(Set[InputReceiver]),
-		AITickers:           make(Set[AITicker]),
-		Tickers:             make(Set[Ticker]),
-		Drawers:             make([]Drawer, 0, InitialDrawerCap),
 		Name:                name,
+		IsLooping:           false,
 		AIGridSize:          NewVector(32, 32),
 		AILocationDeviation: 0.5,
 		AIPathfinding:       NewAStar(),
+
+		Colliders:      make(Set[Collider]),
+		InputReceivers: make(Set[InputReceiver]),
+		AITickers:      make(Set[AITicker]),
+		Tickers:        make(Set[Ticker]),
+		Drawers:        make([]Drawer, 0, InitialDrawerCap),
 	}
 }
 
