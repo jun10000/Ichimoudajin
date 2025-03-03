@@ -13,10 +13,9 @@ import (
 )
 
 type Level struct {
-	colliders Set[Collider]
-
 	Name                string
 	IsLooping           bool
+	Colliders           Set[Collider]
 	Drawers             []Drawer
 	InputReceivers      []InputReceiver
 	AITickers           []AITicker
@@ -28,9 +27,9 @@ type Level struct {
 
 func NewLevel(name string) *Level {
 	return &Level{
-		colliders:           make(Set[Collider]),
 		Name:                name,
-		AIGridSize:          NewVector(64, 64),
+		Colliders:           make(Set[Collider]),
+		AIGridSize:          NewVector(32, 32),
 		AILocationDeviation: 0.5,
 		AIPathfinding:       NewAStar(),
 	}
@@ -50,7 +49,7 @@ func (l *Level) Add(actor any) {
 		l.Tickers = append(l.Tickers, a)
 	}
 	if a, ok := actor.(Collider); ok {
-		l.colliders.Add(a)
+		l.Colliders.Add(a)
 	}
 }
 
@@ -84,7 +83,7 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit 
 
 func (l *Level) GetColliderBounds(excepts Set[Collider]) func(yield func(Bounder) bool) {
 	return func(yield func(Bounder) bool) {
-		for c := range l.colliders.SubRange(excepts) {
+		for c := range l.Colliders.SubRange(excepts) {
 			for b := range c.GetColliderBounds() {
 				if !yield(b) {
 					return
