@@ -46,10 +46,6 @@ const (
 
 type Empty struct{}
 
-func NewRectangle(location Point, size Point) image.Rectangle {
-	return image.Rect(location.X, location.Y, location.X+size.X, location.Y+size.Y)
-}
-
 func GetImageFile(filename string) (*ebiten.Image, error) {
 	image, _, err := ebitenutil.NewImageFromFileSystem(assets.Assets, filename)
 	if err != nil {
@@ -64,7 +60,8 @@ func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.
 		return nil
 	}
 
-	return parentimage.SubImage(NewRectangle(location, size)).(*ebiten.Image)
+	r := image.Rect(location.X, location.Y, location.X+size.X, location.Y+size.Y)
+	return parentimage.SubImage(r).(*ebiten.Image)
 }
 
 func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform Transformer) {
