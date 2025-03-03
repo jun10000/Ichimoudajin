@@ -6,16 +6,6 @@ func (s Set[T]) Add(value T) {
 	s[value] = Empty{}
 }
 
-func (s Set[T]) Range() func(yield func(T) bool) {
-	return func(yield func(T) bool) {
-		for v := range s {
-			if !yield(v) {
-				return
-			}
-		}
-	}
-}
-
 func (s Set[T]) UnionRange(s2 Set[T]) func(yield func(T) bool) {
 	return func(yield func(T) bool) {
 		for v := range s {

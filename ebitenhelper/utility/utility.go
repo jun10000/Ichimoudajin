@@ -20,6 +20,7 @@ const (
 	AIIsUsePFCacheFile = false
 
 	InitialPFResultCap  = 128
+	InitialDrawerCap    = 128
 	InitialDrawEventCap = 32
 
 	IsShowDebugMoverLocation = false

@@ -12,47 +12,6 @@ import (
 	"time"
 )
 
-type Level struct {
-	Name                string
-	IsLooping           bool
-	Colliders           Set[Collider]
-	Drawers             []Drawer
-	InputReceivers      []InputReceiver
-	AITickers           []AITicker
-	Tickers             []Ticker
-	AIGridSize          Vector
-	AILocationDeviation float64
-	AIPathfinding       *AStar
-}
-
-func NewLevel(name string) *Level {
-	return &Level{
-		Name:                name,
-		Colliders:           make(Set[Collider]),
-		AIGridSize:          NewVector(32, 32),
-		AILocationDeviation: 0.5,
-		AIPathfinding:       NewAStar(),
-	}
-}
-
-func (l *Level) Add(actor any) {
-	if a, ok := actor.(Drawer); ok {
-		l.Drawers = append(l.Drawers, a)
-	}
-	if a, ok := actor.(InputReceiver); ok {
-		l.InputReceivers = append(l.InputReceivers, a)
-	}
-	if a, ok := actor.(AITicker); ok {
-		l.AITickers = append(l.AITickers, a)
-	}
-	if a, ok := actor.(Ticker); ok {
-		l.Tickers = append(l.Tickers, a)
-	}
-	if a, ok := actor.(Collider); ok {
-		l.Colliders.Add(a)
-	}
-}
-
 type TraceResult struct {
 	IsHit      bool
 	IsFirstHit bool
@@ -78,6 +37,52 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit 
 		Offset:     offset,
 		ROffset:    roffset,
 		Normal:     normal.Normalize(),
+	}
+}
+
+type Level struct {
+	Colliders      Set[Collider]
+	InputReceivers Set[InputReceiver]
+	AITickers      Set[AITicker]
+	Tickers        Set[Ticker]
+	Drawers        []Drawer
+
+	Name                string
+	IsLooping           bool
+	AIGridSize          Vector
+	AILocationDeviation float64
+	AIPathfinding       *AStar
+}
+
+func NewLevel(name string) *Level {
+	return &Level{
+		Colliders:           make(Set[Collider]),
+		InputReceivers:      make(Set[InputReceiver]),
+		AITickers:           make(Set[AITicker]),
+		Tickers:             make(Set[Ticker]),
+		Drawers:             make([]Drawer, 0, InitialDrawerCap),
+		Name:                name,
+		AIGridSize:          NewVector(32, 32),
+		AILocationDeviation: 0.5,
+		AIPathfinding:       NewAStar(),
+	}
+}
+
+func (l *Level) Add(actor any) {
+	if a, ok := actor.(Drawer); ok {
+		l.Drawers = append(l.Drawers, a)
+	}
+	if a, ok := actor.(InputReceiver); ok {
+		l.InputReceivers.Add(a)
+	}
+	if a, ok := actor.(AITicker); ok {
+		l.AITickers.Add(a)
+	}
+	if a, ok := actor.(Ticker); ok {
+		l.Tickers.Add(a)
+	}
+	if a, ok := actor.(Collider); ok {
+		l.Colliders.Add(a)
 	}
 }
 
@@ -193,12 +198,12 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 		loc.Y+l.AIGridSize.Y-AIValidOffset)
 
 	excepts := make(Set[Collider])
-	for _, t := range l.AITickers {
+	for t := range l.AITickers {
 		if c, ok := t.(Collider); ok {
 			excepts.Add(c)
 		}
 	}
-	for _, t := range l.InputReceivers {
+	for t := range l.InputReceivers {
 		if c, ok := t.(Collider); ok {
 			excepts.Add(c)
 		}
