@@ -33,7 +33,7 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.inputAccel = c.inputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) AddLocation(offset utility.Vector) utility.TraceResult {
+func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceResult {
 	bounds := c.parent.GetMainColliderBounds()
 	excepts := make(utility.Set[utility.Collider])
 	excepts.Add(c.parent)

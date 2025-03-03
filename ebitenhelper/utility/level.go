@@ -20,8 +20,8 @@ type TraceResult struct {
 	Normal     Vector
 }
 
-func NewTraceResultNoHit(offset Vector) TraceResult {
-	return TraceResult{
+func NewTraceResultNoHit(offset Vector) *TraceResult {
+	return &TraceResult{
 		IsHit:      false,
 		IsFirstHit: false,
 		Offset:     offset,
@@ -30,8 +30,8 @@ func NewTraceResultNoHit(offset Vector) TraceResult {
 	}
 }
 
-func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit bool) TraceResult {
-	return TraceResult{
+func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit bool) *TraceResult {
+	return &TraceResult{
 		IsHit:      true,
 		IsFirstHit: isFirstHit,
 		Offset:     offset,
@@ -111,7 +111,7 @@ func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, n
 	return false, ZeroVector()
 }
 
-func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) TraceResult {
+func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) *TraceResult {
 	ol := offset.Length()
 	on := offset.Normalize()
 	var bo Bounder

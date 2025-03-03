@@ -32,7 +32,7 @@ type Collider interface {
 type Mover interface {
 	Collider
 	AddInput(normal Vector, scale float64)
-	AddLocation(offset Vector) TraceResult
+	AddLocation(offset Vector) *TraceResult
 }
 
 type InputReceiver interface {
