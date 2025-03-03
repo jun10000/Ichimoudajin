@@ -8,13 +8,12 @@ import (
 	"math"
 	"math/rand/v2"
 	"runtime"
-	"slices"
 	"sync"
 	"time"
 )
 
 type Level struct {
-	colliders []Collider
+	colliders Set[Collider]
 
 	Name                string
 	IsLooping           bool
@@ -29,6 +28,7 @@ type Level struct {
 
 func NewLevel(name string) *Level {
 	return &Level{
+		colliders:           make(Set[Collider]),
 		Name:                name,
 		AIGridSize:          NewVector(64, 64),
 		AILocationDeviation: 0.5,
@@ -50,7 +50,7 @@ func (l *Level) Add(actor any) {
 		l.Tickers = append(l.Tickers, a)
 	}
 	if a, ok := actor.(Collider); ok {
-		l.colliders = append(l.colliders, a)
+		l.colliders.Add(a)
 	}
 }
 
@@ -82,23 +82,9 @@ func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit 
 	}
 }
 
-func (l *Level) GetAllColliders(excepts []Collider) func(yield func(Collider) bool) {
-	return func(yield func(Collider) bool) {
-		for _, c := range l.colliders {
-			if slices.Contains(excepts, c) {
-				continue
-			}
-
-			if !yield(c) {
-				return
-			}
-		}
-	}
-}
-
-func (l *Level) GetAllColliderBounds(excepts []Collider) func(yield func(Bounder) bool) {
+func (l *Level) GetColliderBounds(excepts Set[Collider]) func(yield func(Bounder) bool) {
 	return func(yield func(Bounder) bool) {
-		for c := range l.GetAllColliders(excepts) {
+		for c := range l.colliders.SubRange(excepts) {
 			for b := range c.GetColliderBounds() {
 				if !yield(b) {
 					return
@@ -108,8 +94,8 @@ func (l *Level) GetAllColliderBounds(excepts []Collider) func(yield func(Bounder
 	}
 }
 
-func (l *Level) Intersect(target Bounder, excepts []Collider) (result bool, normal Vector) {
-	for b := range l.GetAllColliderBounds(excepts) {
+func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, normal Vector) {
+	for b := range l.GetColliderBounds(excepts) {
 		r, n := Intersect(target, b)
 		if r {
 			return true, n
@@ -119,7 +105,7 @@ func (l *Level) Intersect(target Bounder, excepts []Collider) (result bool, norm
 	return false, ZeroVector()
 }
 
-func (l *Level) Trace(target Bounder, offset Vector, excepts []Collider) TraceResult {
+func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) TraceResult {
 	ol := offset.Length()
 	on := offset.Normalize()
 	var bo Bounder
@@ -207,15 +193,15 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 		loc.X+l.AIGridSize.X-AIValidOffset,
 		loc.Y+l.AIGridSize.Y-AIValidOffset)
 
-	excepts := make([]Collider, 0, len(l.AITickers)+len(l.InputReceivers))
+	excepts := make(Set[Collider])
 	for _, t := range l.AITickers {
 		if c, ok := t.(Collider); ok {
-			excepts = append(excepts, c)
+			excepts.Add(c)
 		}
 	}
 	for _, t := range l.InputReceivers {
 		if c, ok := t.(Collider); ok {
-			excepts = append(excepts, c)
+			excepts.Add(c)
 		}
 	}
 
@@ -256,7 +242,7 @@ func (l *Level) LoadOrBuildPFCache() error {
 func (l *Level) BuildPFCache() error {
 	pf := l.AIPathfinding
 	sz := l.RealToPFLocation(ScreenSize.SubXY(1, 1).ToVector()).AddXY(1, 1)
-	sem := make(chan struct{}, runtime.GOMAXPROCS(0)-1)
+	sem := make(chan Empty, runtime.GOMAXPROCS(0)-1)
 	wg := sync.WaitGroup{}
 	stime := time.Now()
 
@@ -269,7 +255,7 @@ func (l *Level) BuildPFCache() error {
 					start := NewPoint(sx, sy)
 					goal := NewPoint(gx, gy)
 					if _, ok := pf.GetCache(start, goal); !ok {
-						sem <- struct{}{}
+						sem <- Empty{}
 						wg.Add(1)
 						go func(start Point, goal Point) {
 							defer wg.Done()
