@@ -90,22 +90,13 @@ func NewGame() *Game {
 	}
 }
 
-func PlayGame(firstlevel *Level) error {
+func PlayGame(firstlevel *Level) {
 	RunDebugServer()
 
-	err := SetLevel(firstlevel)
-	if err != nil {
-		return err
-	}
-
+	PanicIfError(SetLevel(firstlevel))
 	ebiten.SetWindowSize(ScreenSize.X, ScreenSize.Y)
 	ebiten.SetWindowTitle(WindowTitle)
-	err = ebiten.RunGame(NewGame())
-	if err != nil {
-		return err
-	}
-
-	return nil
+	PanicIfError(ebiten.RunGame(NewGame()))
 }
 
 func (g *Game) Update() error {

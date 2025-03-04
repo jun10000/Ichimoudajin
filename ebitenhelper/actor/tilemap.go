@@ -92,11 +92,7 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 
 	// Add MapTilesets
 	for _, v := range mxml.Tilesets {
-		image, err := utility.GetImageFile(v.Image.Source)
-		if err != nil {
-			return err
-		}
-
+		image := utility.GetImageFile(v.Image.Source)
 		tileset := MapTileset{
 			Image:       image,
 			ColumnCount: v.Columns,
@@ -197,7 +193,7 @@ func (m *MapInfo) GetActors() func(yield func(any) bool) {
 	}
 }
 
-func GetMapInfo(filename string) (*MapInfo, error) {
+func getMapInfo(filename string) (*MapInfo, error) {
 	data, err := assets.Assets.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -212,11 +208,8 @@ func GetMapInfo(filename string) (*MapInfo, error) {
 	return data2, nil
 }
 
-func GetActorsFromMapFile(filename string) (func(yield func(any) bool), error) {
-	mi, err := GetMapInfo(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	return mi.GetActors(), nil
+func GetActorsFromMapFile(filename string) func(yield func(any) bool) {
+	mi, err := getMapInfo(filename)
+	utility.PanicIfError(err)
+	return mi.GetActors()
 }

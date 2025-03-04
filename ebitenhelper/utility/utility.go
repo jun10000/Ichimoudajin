@@ -21,13 +21,10 @@ const (
 
 type Empty struct{}
 
-func GetImageFile(filename string) (*ebiten.Image, error) {
+func GetImageFile(filename string) *ebiten.Image {
 	image, _, err := ebitenutil.NewImageFromFileSystem(assets.Assets, filename)
-	if err != nil {
-		return nil, err
-	}
-
-	return image, nil
+	PanicIfError(err)
+	return image
 }
 
 func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.Image {
@@ -76,9 +73,9 @@ func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform Transformer) {
 	}
 }
 
-func ExitIfError(err error) {
+func PanicIfError(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 }
 

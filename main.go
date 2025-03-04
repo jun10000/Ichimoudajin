@@ -11,23 +11,19 @@ func NewStage1() *utility.Level {
 	level.IsLooping = true
 
 	// Map actors
-	mapActors, err := actor.GetActorsFromMapFile("stage1.tmx")
-	utility.ExitIfError(err)
-	for a := range mapActors {
+	for a := range actor.GetActorsFromMapFile("stage1.tmx") {
 		level.Add(a)
 	}
 
 	// Player
-	playerImage, err := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
-	utility.ExitIfError(err)
+	playerImage := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
 	player := actor.NewPawn()
 	player.SetLocation(utility.NewVector(600, 300))
 	player.Image = playerImage
 	level.Add(player)
 
 	// Enemy
-	enemyImage, err := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
-	utility.ExitIfError(err)
+	enemyImage := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
 	enemyLocations := []utility.Vector{
 		utility.NewVector(700, 300),
 		utility.NewVector(800, 300),
@@ -54,5 +50,5 @@ func NewStage1() *utility.Level {
 func main() {
 	utility.WindowTitle = "Ichimoudajin"
 	utility.ScreenSize = utility.NewPoint(32*40, 32*22)
-	utility.ExitIfError(utility.PlayGame(NewStage1()))
+	utility.PlayGame(NewStage1())
 }

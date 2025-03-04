@@ -21,7 +21,7 @@ type ColliderComponent[T utility.Bounder] struct {
 func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderComponent[T] {
 	t := reflect.TypeOf(getBounds).In(0)
 	if t.Kind() != reflect.Ptr {
-		log.Panicln("Failed to create ColliderComponent: T is not pointer")
+		log.Panic("failed to create ColliderComponent: T is not pointer")
 	}
 
 	s := utility.ScreenSize.ToVector()
