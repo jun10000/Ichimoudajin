@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"log"
 	"math"
+	"slices"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -138,16 +139,12 @@ func ClampLocation(location Vector) Vector {
 }
 
 func RemoveSliceItem[T comparable](slice []T, item T) []T {
-	r := make([]T, len(slice))
-	for _, v := range slice {
-		if v == item {
-			continue
-		}
-
-		r = append(r, v)
+	i := slices.Index(slice, item)
+	if i == -1 {
+		return slice
 	}
 
-	return r
+	return append(slice[:i], slice[i+1:]...)
 }
 
 func IntersectRectangleToRectangle(rectangle1 RectangleF, rectangle2 RectangleF) (result bool, normal Vector) {
