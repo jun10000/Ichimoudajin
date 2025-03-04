@@ -17,13 +17,12 @@ var (
 	WindowTitle = "Game"
 	ScreenSize  = NewPoint(1280, 720)
 
-	TraceSafeDistance   = 3
-	AIValidOffset       = 0.5
-	AIMaxTaskCount      = 1
-	AIIsUsePFCacheFile  = false
-	InitialPFResultCap  = 128
-	InitialDrawerCap    = 128
-	InitialDrawEventCap = 32
+	TraceSafeDistance  = 3
+	AIValidOffset      = 0.5
+	AIMaxTaskCount     = 1
+	AIIsUsePFCacheFile = false
+	InitialPFResultCap = 128
+	InitialDrawerCap   = 128
 
 	DebugIsShowMoverLocation = false
 	DebugIsShowTraceDistance = false
@@ -33,13 +32,8 @@ var (
 	DebugColorYellow         = color.RGBA{R: 255, G: 255}
 	DebugColorGreen          = color.RGBA{G: 255}
 	DebugColorBlue           = color.RGBA{G: 128, B: 255}
+	DebugInitialDrawsCap     = 32
 )
-
-var currentGameInstance *Game
-
-func GetGameInstance() *Game {
-	return currentGameInstance
-}
 
 var currentLevel *Level
 
@@ -85,7 +79,6 @@ type Game struct {
 	releasedButtons map[ebiten.GamepadID][]ebiten.StandardGamepadButton
 	pressingButtons map[ebiten.GamepadID][]ebiten.StandardGamepadButton
 	axisValues      map[GamepadAxisKey]float64
-	drawEvents      []func(screen *ebiten.Image)
 }
 
 func NewGame() *Game {
@@ -94,7 +87,6 @@ func NewGame() *Game {
 		releasedButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
 		pressingButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
 		axisValues:      map[GamepadAxisKey]float64{},
-		drawEvents:      make([]func(screen *ebiten.Image), 0, InitialDrawEventCap),
 	}
 }
 
@@ -108,18 +100,12 @@ func PlayGame(firstlevel *Level) error {
 
 	ebiten.SetWindowSize(ScreenSize.X, ScreenSize.Y)
 	ebiten.SetWindowTitle(WindowTitle)
-	currentGameInstance = NewGame()
-
-	err = ebiten.RunGame(currentGameInstance)
+	err = ebiten.RunGame(NewGame())
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (g *Game) AddDrawEvent(event func(*ebiten.Image)) {
-	g.drawEvents = append(g.drawEvents, event)
 }
 
 func (g *Game) Update() error {
@@ -185,14 +171,15 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	for _, d := range GetLevel().Drawers {
+	lv := GetLevel()
+
+	for _, d := range lv.Drawers {
 		d.Draw(screen)
 	}
-
-	for _, d := range g.drawEvents {
+	for _, d := range lv.DebugDraws {
 		d(screen)
 	}
-	g.drawEvents = g.drawEvents[:0]
+	lv.ClearDebugDraw()
 }
 
 func (g *Game) Layout(width int, height int) (int, int) {

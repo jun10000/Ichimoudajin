@@ -10,6 +10,8 @@ import (
 	"runtime"
 	"sync"
 	"time"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type TraceResult struct {
@@ -52,6 +54,7 @@ type Level struct {
 	AITickers      Set[AITicker]
 	Tickers        Set[Ticker]
 	Drawers        []Drawer
+	DebugDraws     []func(screen *ebiten.Image)
 }
 
 func NewLevel(name string) *Level {
@@ -67,6 +70,7 @@ func NewLevel(name string) *Level {
 		AITickers:      make(Set[AITicker]),
 		Tickers:        make(Set[Ticker]),
 		Drawers:        make([]Drawer, 0, InitialDrawerCap),
+		DebugDraws:     make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
 	}
 }
 
@@ -278,4 +282,12 @@ func (l *Level) BuildPFCache() error {
 	wg.Wait()
 	log.Printf("Completed building PF cache, %.1fs elapsed.\n", time.Since(stime).Seconds())
 	return pf.SaveCache(l.GetPFCacheFileName())
+}
+
+func (l *Level) AddDebugDraw(event func(*ebiten.Image)) {
+	l.DebugDraws = append(l.DebugDraws, event)
+}
+
+func (l *Level) ClearDebugDraw() {
+	l.DebugDraws = l.DebugDraws[:0]
 }
