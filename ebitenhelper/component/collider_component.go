@@ -2,16 +2,14 @@ package component
 
 import (
 	"log"
+	"reflect"
 
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 /*
 ColliderComponent gives actors collider.
-
-Available T types:
-  - *utility.RectangleF
-  - *utility.CircleF
+Available T type is pointer.
 */
 type ColliderComponent[T utility.Bounder] struct {
 	getBounds   func(T)
@@ -21,8 +19,14 @@ type ColliderComponent[T utility.Bounder] struct {
 }
 
 func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderComponent[T] {
+	t := reflect.TypeOf(getBounds).In(0)
+	if t.Kind() != reflect.Ptr {
+		log.Panicln("Failed to create ColliderComponent: T is not pointer")
+	}
+
 	s := utility.ScreenSize.ToVector()
-	c := &ColliderComponent[T]{
+
+	return &ColliderComponent[T]{
 		getBounds: getBounds,
 		loopOffsets: []utility.Vector{
 			utility.NewVector(-s.X, -s.Y),
@@ -34,22 +38,8 @@ func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderCompone
 			utility.NewVector(0, s.Y),
 			utility.NewVector(s.X, s.Y),
 		},
-	}
-
-	c.ClearCache()
-	return c
-}
-
-func (c *ColliderComponent[T]) ClearCache() {
-	switch any(c.mainCache).(type) {
-	case *utility.RectangleF:
-		c.mainCache = any(new(utility.RectangleF)).(T)
-		c.offsetCache = any(new(utility.RectangleF)).(T)
-	case *utility.CircleF:
-		c.mainCache = any(new(utility.CircleF)).(T)
-		c.offsetCache = any(new(utility.CircleF)).(T)
-	default:
-		log.Panicln("Failed to clear ColliderComponent cache.")
+		mainCache:   reflect.New(t.Elem()).Interface().(T),
+		offsetCache: reflect.New(t.Elem()).Interface().(T),
 	}
 }
 
