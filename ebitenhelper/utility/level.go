@@ -121,19 +121,19 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) *Tra
 		bo = target.Offset(v.X, v.Y, bo)
 		r, n := l.Intersect(bo, excepts)
 		if r {
-			if IsShowDebugTraceDistance {
+			if DebugIsShowTraceDistance {
 				var dc color.RGBA
 				switch i {
 				case 0:
-					dc = ColorRed
+					dc = DebugColorRed
 				case 1:
-					dc = ColorYellow
+					dc = DebugColorYellow
 				case 2:
-					dc = ColorGreen
+					dc = DebugColorGreen
 				case 3:
-					dc = ColorBlue
+					dc = DebugColorBlue
 				default:
-					dc = ColorGray
+					dc = DebugColorGray
 				}
 
 				switch dt := target.(type) {
@@ -179,9 +179,9 @@ func (l *Level) AIMove(self Mover, target Collider) {
 			self.AddInput(trl.Sub(srl), 1)
 		}
 
-		if IsShowDebugAIPath {
+		if DebugIsShowAIPath {
 			for _, p := range res {
-				DrawDebugRectangle(l.PFToRealLocation(p, false, 0), l.AIGridSize, ColorGreen)
+				DrawDebugRectangle(l.PFToRealLocation(p, false, 0), l.AIGridSize, DebugColorGreen)
 			}
 		}
 	}

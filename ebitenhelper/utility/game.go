@@ -2,22 +2,46 @@ package utility
 
 import (
 	"errors"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-var (
-	currentGameInstance *Game
-	currentLevel        *Level
+const (
+	TickCount    = 60
+	TickDuration = 1.0 / float64(TickCount)
+)
 
+var (
 	WindowTitle = "Game"
 	ScreenSize  = NewPoint(1280, 720)
+
+	TraceSafeDistance   = 3
+	AIValidOffset       = 0.5
+	AIMaxTaskCount      = 1
+	AIIsUsePFCacheFile  = false
+	InitialPFResultCap  = 128
+	InitialDrawerCap    = 128
+	InitialDrawEventCap = 32
+
+	DebugIsShowMoverLocation = false
+	DebugIsShowTraceDistance = false
+	DebugIsShowAIPath        = false
+	DebugColorGray           = color.RGBA{R: 128, G: 128, B: 128}
+	DebugColorRed            = color.RGBA{R: 255, G: 8}
+	DebugColorYellow         = color.RGBA{R: 255, G: 255}
+	DebugColorGreen          = color.RGBA{G: 255}
+	DebugColorBlue           = color.RGBA{G: 128, B: 255}
 )
+
+var currentGameInstance *Game
 
 func GetGameInstance() *Game {
 	return currentGameInstance
 }
+
+var currentLevel *Level
 
 func GetLevel() *Level {
 	return currentLevel
@@ -30,7 +54,7 @@ func SetLevel(level *Level) error {
 
 	currentLevel = level
 	if AIIsUsePFCacheFile {
-		if IsDebugMode {
+		if IsDebugMode() {
 			return level.LoadOrBuildPFCache()
 		} else {
 			return level.LoadPFCache()

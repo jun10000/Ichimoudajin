@@ -77,7 +77,7 @@ func (c *MovementComponent) Tick() {
 	c.velocity = vn.MulF(vl)
 
 	// Draw parent location
-	if utility.IsShowDebugMoverLocation {
+	if utility.DebugIsShowMoverLocation {
 		l := c.parent.GetLocation()
 		o := c.DebugTextOffset
 		utility.DrawDebugText(l.Add(o), l.String())

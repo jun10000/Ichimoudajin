@@ -2,7 +2,6 @@ package utility
 
 import (
 	"image"
-	"image/color"
 	"log"
 	"math"
 	"slices"
@@ -10,31 +9,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/jun10000/Ichimoudajin/assets"
-)
-
-const (
-	TickCount          = 60
-	TickDuration       = 1.0 / float64(TickCount)
-	TraceSafeDistance  = 3
-	AIValidOffset      = 0.5
-	AIMaxTaskCount     = 1
-	AIIsUsePFCacheFile = false
-
-	InitialPFResultCap  = 128
-	InitialDrawerCap    = 128
-	InitialDrawEventCap = 32
-
-	IsShowDebugMoverLocation = false
-	IsShowDebugTraceDistance = false
-	IsShowDebugAIPath        = false
-)
-
-var (
-	ColorGray   = color.RGBA{R: 128, G: 128, B: 128}
-	ColorRed    = color.RGBA{R: 255, G: 8}
-	ColorYellow = color.RGBA{R: 255, G: 255}
-	ColorGreen  = color.RGBA{G: 255}
-	ColorBlue   = color.RGBA{G: 128, B: 255}
 )
 
 type PressState int
