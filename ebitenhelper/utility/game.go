@@ -98,6 +98,26 @@ func NewGame() *Game {
 	}
 }
 
+func PlayGame(firstlevel *Level) error {
+	RunDebugServer()
+
+	err := SetLevel(firstlevel)
+	if err != nil {
+		return err
+	}
+
+	ebiten.SetWindowSize(ScreenSize.X, ScreenSize.Y)
+	ebiten.SetWindowTitle(WindowTitle)
+	currentGameInstance = NewGame()
+
+	err = ebiten.RunGame(currentGameInstance)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (g *Game) AddDrawEvent(event func(*ebiten.Image)) {
 	g.drawEvents = append(g.drawEvents, event)
 }
@@ -177,23 +197,4 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 func (g *Game) Layout(width int, height int) (int, int) {
 	return ScreenSize.X, ScreenSize.Y
-}
-
-func (g *Game) Play(firstlevel *Level) error {
-	RunDebugServer()
-
-	ebiten.SetWindowSize(ScreenSize.X, ScreenSize.Y)
-	ebiten.SetWindowTitle(WindowTitle)
-	currentGameInstance = g
-	err := SetLevel(firstlevel)
-	if err != nil {
-		return err
-	}
-
-	err = ebiten.RunGame(g)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
