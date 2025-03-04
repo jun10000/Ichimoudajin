@@ -14,9 +14,6 @@ const (
 )
 
 var (
-	WindowTitle = "Game"
-	ScreenSize  = NewPoint(1280, 720)
-
 	TraceSafeDistance  = 3
 	AIValidOffset      = 0.5
 	AIMaxTaskCount     = 1
@@ -34,6 +31,29 @@ var (
 	DebugColorBlue           = color.RGBA{G: 128, B: 255}
 	DebugInitialDrawsCap     = 32
 )
+
+var windowTitle = "Game"
+
+func GetWindowTitle() string {
+	return windowTitle
+}
+
+func SetWindowTitle(title string) {
+	windowTitle = title
+	ebiten.SetWindowTitle(title)
+}
+
+var screenSize = NewPoint(1280, 720)
+
+func GetScreenSize() Point {
+	return screenSize
+}
+
+func SetScreenSize(width int, height int) {
+	screenSize.X = width
+	screenSize.Y = height
+	ebiten.SetWindowSize(width, height)
+}
 
 var currentLevel *Level
 
@@ -94,8 +114,6 @@ func PlayGame(firstlevel *Level) {
 	RunDebugServer()
 
 	PanicIfError(SetLevel(firstlevel))
-	ebiten.SetWindowSize(ScreenSize.X, ScreenSize.Y)
-	ebiten.SetWindowTitle(WindowTitle)
 	PanicIfError(ebiten.RunGame(NewGame()))
 }
 
@@ -174,5 +192,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(width int, height int) (int, int) {
-	return ScreenSize.X, ScreenSize.Y
+	s := GetScreenSize()
+	return s.X, s.Y
 }

@@ -49,7 +49,7 @@ func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform Transformer) {
 	if !GetLevel().IsLooping {
 		ls = []Vector{tl}
 	} else {
-		ss := ScreenSize.ToVector()
+		ss := GetScreenSize().ToVector()
 		ls = []Vector{
 			tl,
 			tl.Add(ss.Mul(NewVector(-1, -1))),
@@ -97,7 +97,7 @@ func ClampLocation(location Vector) Vector {
 		return r
 	}
 
-	ss := ScreenSize.ToVector()
+	ss := GetScreenSize().ToVector()
 	r = r.Mod(ss)
 	if r.X < 0 {
 		r.X += ss.X

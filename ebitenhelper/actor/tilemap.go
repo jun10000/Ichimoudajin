@@ -208,8 +208,18 @@ func getMapInfo(filename string) (*MapInfo, error) {
 	return data2, nil
 }
 
-func GetActorsFromMapFile(filename string) func(yield func(any) bool) {
+func getActorsFromMapFile(filename string) (func(yield func(any) bool), error) {
 	mi, err := getMapInfo(filename)
+	if err != nil {
+		return nil, err
+	}
+	return mi.GetActors(), nil
+}
+
+func AddActorsToLevelFromMapFile(level *utility.Level, filename string) {
+	as, err := getActorsFromMapFile(filename)
 	utility.PanicIfError(err)
-	return mi.GetActors()
+	for a := range as {
+		level.Add(a)
+	}
 }

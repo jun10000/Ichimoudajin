@@ -9,11 +9,7 @@ func NewStage1() *utility.Level {
 	// Level
 	level := utility.NewLevel("stage1")
 	level.IsLooping = true
-
-	// Map actors
-	for a := range actor.GetActorsFromMapFile("stage1.tmx") {
-		level.Add(a)
-	}
+	actor.AddActorsToLevelFromMapFile(level, "stage1.tmx")
 
 	// Player
 	playerImage := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
@@ -48,7 +44,7 @@ func NewStage1() *utility.Level {
 }
 
 func main() {
-	utility.WindowTitle = "Ichimoudajin"
-	utility.ScreenSize = utility.NewPoint(32*40, 32*22)
+	utility.SetWindowTitle("Ichimoudajin")
+	utility.SetScreenSize(32*40, 32*22)
 	utility.PlayGame(NewStage1())
 }

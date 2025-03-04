@@ -24,7 +24,7 @@ func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderCompone
 		log.Panic("failed to create ColliderComponent: T is not pointer")
 	}
 
-	s := utility.ScreenSize.ToVector()
+	s := utility.GetScreenSize().ToVector()
 
 	return &ColliderComponent[T]{
 		getBounds: getBounds,

@@ -193,7 +193,8 @@ func (l *Level) AIMove(self Mover, target Collider) {
 
 func (l *Level) AIIsPFLocationValid(location Point) bool {
 	loc := l.PFToRealLocation(location, false, 0)
-	if loc.X < 0 || loc.Y < 0 || loc.X >= float64(ScreenSize.X) || loc.Y >= float64(ScreenSize.Y) {
+	s := GetScreenSize()
+	if loc.X < 0 || loc.Y < 0 || loc.X >= float64(s.X) || loc.Y >= float64(s.Y) {
 		return false
 	}
 
@@ -251,7 +252,7 @@ func (l *Level) LoadOrBuildPFCache() error {
 
 func (l *Level) BuildPFCache() error {
 	pf := l.AIPathfinding
-	sz := l.RealToPFLocation(ScreenSize.SubXY(1, 1).ToVector()).AddXY(1, 1)
+	sz := l.RealToPFLocation(GetScreenSize().SubXY(1, 1).ToVector()).AddXY(1, 1)
 	sem := make(chan Empty, runtime.GOMAXPROCS(0)-1)
 	wg := sync.WaitGroup{}
 	stime := time.Now()
