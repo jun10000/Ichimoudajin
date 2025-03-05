@@ -71,7 +71,7 @@ func (c *MovementComponent) Tick() {
 			break
 		}
 
-		rl = tr.ROffset.Length()
+		rl = ro.Sub(tr.Offset).Length()
 		vn = vn.Reflect(tr.Normal, 0)
 	}
 	c.velocity = vn.MulF(vl)

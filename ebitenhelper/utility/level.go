@@ -15,30 +15,24 @@ import (
 )
 
 type TraceResult struct {
-	IsHit      bool
-	IsFirstHit bool
-	Offset     Vector
-	ROffset    Vector
-	Normal     Vector
+	IsHit  bool
+	Offset Vector
+	Normal Vector
 }
 
 func NewTraceResultNoHit(offset Vector) *TraceResult {
 	return &TraceResult{
-		IsHit:      false,
-		IsFirstHit: false,
-		Offset:     offset,
-		ROffset:    ZeroVector(),
-		Normal:     ZeroVector(),
+		IsHit:  false,
+		Offset: offset,
+		Normal: ZeroVector(),
 	}
 }
 
-func NewTraceResultHit(offset Vector, roffset Vector, normal Vector, isFirstHit bool) *TraceResult {
+func NewTraceResultHit(offset Vector, normal Vector) *TraceResult {
 	return &TraceResult{
-		IsHit:      true,
-		IsFirstHit: isFirstHit,
-		Offset:     offset,
-		ROffset:    roffset,
-		Normal:     normal.Normalize(),
+		IsHit:  true,
+		Offset: offset,
+		Normal: normal,
 	}
 }
 
@@ -151,11 +145,10 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) *Tra
 				}
 			}
 			if i <= TraceSafeDistance {
-				return NewTraceResultHit(ZeroVector(), offset, n, true)
+				return NewTraceResultHit(ZeroVector(), n)
 			} else {
 				o := on.MulF(float64(i - 1))
-				ro := offset.Sub(o)
-				return NewTraceResultHit(o, ro, n, false)
+				return NewTraceResultHit(o, n)
 			}
 		}
 	}
