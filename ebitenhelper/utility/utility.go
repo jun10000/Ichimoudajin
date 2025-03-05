@@ -21,22 +21,6 @@ const (
 
 type Empty struct{}
 
-func GetUpVector() Vector {
-	return NewVector(0, -1)
-}
-
-func GetDownVector() Vector {
-	return NewVector(0, 1)
-}
-
-func GetLeftVector() Vector {
-	return NewVector(-1, 0)
-}
-
-func GetRightVector() Vector {
-	return NewVector(1, 0)
-}
-
 func GetImageFile(filename string) *ebiten.Image {
 	image, _, err := ebitenutil.NewImageFromFileSystem(assets.Assets, filename)
 	PanicIfError(err)
@@ -150,15 +134,15 @@ func IntersectRectangleToRectangle(rectangle1 RectangleF, rectangle2 RectangleF)
 
 	if isy {
 		if isbottom {
-			return true, GetDownVector()
+			return true, DownVector()
 		} else {
-			return true, GetUpVector()
+			return true, UpVector()
 		}
 	} else {
 		if isright {
-			return true, GetRightVector()
+			return true, RightVector()
 		} else {
-			return true, GetLeftVector()
+			return true, LeftVector()
 		}
 	}
 }

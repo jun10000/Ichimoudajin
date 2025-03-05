@@ -31,13 +31,13 @@ func (c *ControllerComponent) ReceiveKeyInput(key ebiten.Key, state utility.Pres
 
 	switch key {
 	case ebiten.KeyUp:
-		c.parent.AddInput(utility.GetUpVector(), 1)
+		c.parent.AddInput(utility.UpVector(), 1)
 	case ebiten.KeyDown:
-		c.parent.AddInput(utility.GetDownVector(), 1)
+		c.parent.AddInput(utility.DownVector(), 1)
 	case ebiten.KeyLeft:
-		c.parent.AddInput(utility.GetLeftVector(), 1)
+		c.parent.AddInput(utility.LeftVector(), 1)
 	case ebiten.KeyRight:
-		c.parent.AddInput(utility.GetRightVector(), 1)
+		c.parent.AddInput(utility.RightVector(), 1)
 	}
 }
 
@@ -51,8 +51,8 @@ func (c *ControllerComponent) ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.
 
 	switch axis {
 	case ebiten.StandardGamepadAxisLeftStickHorizontal:
-		c.parent.AddInput(utility.GetRightVector(), value)
+		c.parent.AddInput(utility.RightVector(), value)
 	case ebiten.StandardGamepadAxisLeftStickVertical:
-		c.parent.AddInput(utility.GetDownVector(), value)
+		c.parent.AddInput(utility.DownVector(), value)
 	}
 }

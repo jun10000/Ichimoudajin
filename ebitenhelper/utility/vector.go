@@ -18,6 +18,22 @@ func ZeroVector() Vector {
 	return NewVector(0, 0)
 }
 
+func UpVector() Vector {
+	return NewVector(0, -1)
+}
+
+func DownVector() Vector {
+	return NewVector(0, 1)
+}
+
+func LeftVector() Vector {
+	return NewVector(-1, 0)
+}
+
+func RightVector() Vector {
+	return NewVector(1, 0)
+}
+
 func (v Vector) IsZero() bool {
 	return (v.X == 0 && v.Y == 0)
 }

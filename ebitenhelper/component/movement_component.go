@@ -54,7 +54,7 @@ func (c *MovementComponent) Tick() {
 		}
 
 		c.velocity = c.velocity.Add(av).Add(dv).ClampMax(c.MaxSpeed)
-		c.parent.SetRotation(utility.GetDownVector().CrossingAngle(ia))
+		c.parent.SetRotation(utility.DownVector().CrossingAngle(ia))
 	} else {
 		vl, vn := c.velocity.Decompose()
 		dv := vn.MulF(utility.ClampFloat(c.Decel*utility.TickDuration, 0, vl))
