@@ -155,14 +155,14 @@ func (v Vector) Dot(value Vector) float64 {
 	return v.X*value.X + v.Y*value.Y
 }
 
-func (v Vector) Cross(value Vector) Vector3 {
-	return NewVector3(0, 0, v.X*value.Y-v.Y*value.X)
+func (v Vector) CrossZ(value Vector) float64 {
+	return v.X*value.Y - v.Y*value.X
 }
 
 func (v Vector) CrossingAngle(value Vector) float64 {
 	d1, d2 := v.Normalize(), value.Normalize()
 	angle := math.Acos(d1.Dot(d2))
-	if d1.Cross(d2).Dot(NewVector3(0, 0, 1)) < 0 {
+	if d1.CrossZ(d2) < 0 {
 		angle *= -1
 	}
 

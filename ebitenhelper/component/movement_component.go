@@ -46,7 +46,7 @@ func (c *MovementComponent) Tick() {
 	// Update movement from input
 	if !c.inputAccel.IsZero() {
 		av := c.inputAccel.Normalize().MulF(c.Accel * utility.TickDuration)
-		cr := c.inputAccel.Normalize().Cross(c.velocity).Dot(utility.NewVector3(0, 0, 1))
+		cr := c.inputAccel.Normalize().CrossZ(c.velocity)
 		dv := c.inputAccel.Rotate(math.Pi / 2).Normalize().MulF(c.Decel * utility.TickDuration).ClampMax(math.Abs(cr))
 		if cr < 0 {
 			dv = dv.Negate()
