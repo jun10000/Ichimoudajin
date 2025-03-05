@@ -22,34 +22,6 @@ func (v Vector) IsZero() bool {
 	return (v.X == 0 && v.Y == 0)
 }
 
-func (v Vector) Add(value Vector) Vector {
-	return NewVector(v.X+value.X, v.Y+value.Y)
-}
-
-func (v Vector) Sub(value Vector) Vector {
-	return NewVector(v.X-value.X, v.Y-value.Y)
-}
-
-func (v Vector) Mul(value Vector) Vector {
-	return NewVector(v.X*value.X, v.Y*value.Y)
-}
-
-func (v Vector) Div(value Vector) Vector {
-	if value.X == 0 || value.Y == 0 {
-		return ZeroVector()
-	}
-
-	return NewVector(v.X/value.X, v.Y/value.Y)
-}
-
-func (v Vector) Mod(value Vector) Vector {
-	if value.X == 0 || value.Y == 0 {
-		return ZeroVector()
-	}
-
-	return NewVector(math.Mod(v.X, value.X), math.Mod(v.Y, value.Y))
-}
-
 func (v Vector) AddF(value float64) Vector {
 	return NewVector(v.X+value, v.Y+value)
 }
@@ -76,6 +48,62 @@ func (v Vector) ModF(value float64) Vector {
 	}
 
 	return NewVector(math.Mod(v.X, value), math.Mod(v.Y, value))
+}
+
+func (v Vector) AddXY(x, y float64) Vector {
+	return NewVector(v.X+x, v.Y+y)
+}
+
+func (v Vector) SubXY(x, y float64) Vector {
+	return NewVector(v.X-x, v.Y-y)
+}
+
+func (v Vector) MulXY(x, y float64) Vector {
+	return NewVector(v.X*x, v.Y*y)
+}
+
+func (v Vector) DivXY(x, y float64) Vector {
+	if x == 0 || y == 0 {
+		return ZeroVector()
+	}
+
+	return NewVector(v.X/x, v.Y/y)
+}
+
+func (v Vector) ModXY(x, y float64) Vector {
+	if x == 0 || y == 0 {
+		return ZeroVector()
+	}
+
+	return NewVector(math.Mod(v.X, x), math.Mod(v.Y, y))
+}
+
+func (v Vector) Add(value Vector) Vector {
+	return NewVector(v.X+value.X, v.Y+value.Y)
+}
+
+func (v Vector) Sub(value Vector) Vector {
+	return NewVector(v.X-value.X, v.Y-value.Y)
+}
+
+func (v Vector) Mul(value Vector) Vector {
+	return NewVector(v.X*value.X, v.Y*value.Y)
+}
+
+func (v Vector) Div(value Vector) Vector {
+	if value.X == 0 || value.Y == 0 {
+		return ZeroVector()
+	}
+
+	return NewVector(v.X/value.X, v.Y/value.Y)
+}
+
+func (v Vector) Mod(value Vector) Vector {
+	if value.X == 0 || value.Y == 0 {
+		return ZeroVector()
+	}
+
+	return NewVector(math.Mod(v.X, value.X), math.Mod(v.Y, value.Y))
 }
 
 func (v Vector) Trunc() Point {

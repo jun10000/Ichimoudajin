@@ -52,14 +52,14 @@ func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform Transformer) {
 		ss := GetScreenSize().ToVector()
 		ls = []Vector{
 			tl,
-			tl.Add(ss.Mul(NewVector(-1, -1))),
-			tl.Add(ss.Mul(NewVector(0, -1))),
-			tl.Add(ss.Mul(NewVector(1, -1))),
-			tl.Add(ss.Mul(NewVector(-1, 0))),
-			tl.Add(ss.Mul(NewVector(1, 0))),
-			tl.Add(ss.Mul(NewVector(-1, 1))),
-			tl.Add(ss.Mul(NewVector(0, 1))),
-			tl.Add(ss.Mul(NewVector(1, 1))),
+			tl.AddXY(-ss.X, -ss.Y),
+			tl.AddXY(0, -ss.Y),
+			tl.AddXY(ss.X, -ss.Y),
+			tl.AddXY(-ss.X, 0),
+			tl.AddXY(ss.X, 0),
+			tl.AddXY(-ss.X, ss.Y),
+			tl.AddXY(0, ss.Y),
+			tl.AddXY(ss.X, ss.Y),
 		}
 	}
 
