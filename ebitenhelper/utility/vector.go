@@ -114,41 +114,44 @@ func (v Vector) Negate() Vector {
 	return NewVector(-v.X, -v.Y)
 }
 
+func (v Vector) Length2() float64 {
+	return v.X*v.X + v.Y*v.Y
+}
+
+func (v Vector) Length() float64 {
+	return math.Sqrt(v.Length2())
+}
+
 func (v Vector) ClampMin(min float64) Vector {
-	if v.Length() >= min {
+	vll := v.Length2()
+	if vll >= (min * min) {
 		return v
 	}
 
-	return v.Normalize().MulF(min)
+	return v.DivF(math.Sqrt(vll)).MulF(min)
 }
 
 func (v Vector) ClampMax(max float64) Vector {
-	if v.Length() <= max {
+	vll := v.Length2()
+	if vll <= (max * max) {
 		return v
 	}
 
-	return v.Normalize().MulF(max)
+	return v.DivF(math.Sqrt(vll)).MulF(max)
 }
 
 func (v Vector) Clamp(min float64, max float64) Vector {
 	return v.ClampMin(min).ClampMax(max)
 }
 
-func (v Vector) Length() float64 {
-	return math.Sqrt(v.X*v.X + v.Y*v.Y)
-}
-
 func (v Vector) Normalize() Vector {
-	l := v.Length()
-	if l <= 0 {
+	ll := v.Length2()
+	if ll == 0 {
 		return ZeroVector()
 	}
 
+	l := math.Sqrt(ll)
 	return NewVector(v.X/l, v.Y/l)
-}
-
-func (v Vector) Distance(value Vector) float64 {
-	return value.Sub(v).Length()
 }
 
 func (v Vector) Dot(value Vector) float64 {

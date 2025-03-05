@@ -152,21 +152,23 @@ func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (result bo
 		ClampFloat(circle.OrgX, rectangle.MinX, rectangle.MaxX),
 		ClampFloat(circle.OrgY, rectangle.MinY, rectangle.MaxY))
 	r := NewVector(circle.OrgX-p.X, circle.OrgY-p.Y)
+	rll := r.Length2()
 
-	if r.Length() > circle.Radius {
+	if rll > (circle.Radius * circle.Radius) {
 		return false, ZeroVector()
 	}
 
-	return true, r.Normalize()
+	return true, r.DivF(math.Sqrt(rll))
 }
 
 func IntersectCircleToCircle(circle1 CircleF, circle2 CircleF) (result bool, normal Vector) {
 	d := NewVector(circle1.OrgX-circle2.OrgX, circle1.OrgY-circle2.OrgY)
-	if d.Length() > circle1.Radius+circle2.Radius {
+	dll := d.Length2()
+	if dll > ((circle1.Radius + circle2.Radius) * (circle1.Radius + circle2.Radius)) {
 		return false, ZeroVector()
 	}
 
-	return true, d.Normalize()
+	return true, d.DivF(math.Sqrt(dll))
 }
 
 /*
