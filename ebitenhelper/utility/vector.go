@@ -122,6 +122,21 @@ func (v Vector) Length() float64 {
 	return math.Sqrt(v.Length2())
 }
 
+func (v Vector) Normalize() Vector {
+	ll := v.Length2()
+	if ll == 0 {
+		return ZeroVector()
+	}
+
+	l := math.Sqrt(ll)
+	return NewVector(v.X/l, v.Y/l)
+}
+
+func (v Vector) Decompose() (length float64, normal Vector) {
+	l := v.Length()
+	return l, v.DivF(l)
+}
+
 func (v Vector) ClampMin(min float64) Vector {
 	vll := v.Length2()
 	if vll >= (min * min) {
@@ -142,16 +157,6 @@ func (v Vector) ClampMax(max float64) Vector {
 
 func (v Vector) Clamp(min float64, max float64) Vector {
 	return v.ClampMin(min).ClampMax(max)
-}
-
-func (v Vector) Normalize() Vector {
-	ll := v.Length2()
-	if ll == 0 {
-		return ZeroVector()
-	}
-
-	l := math.Sqrt(ll)
-	return NewVector(v.X/l, v.Y/l)
 }
 
 func (v Vector) Dot(value Vector) float64 {

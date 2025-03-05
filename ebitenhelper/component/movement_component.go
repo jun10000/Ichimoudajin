@@ -45,24 +45,25 @@ func (c *MovementComponent) AddLocation(offset utility.Vector) (rOffset utility.
 func (c *MovementComponent) Tick() {
 	// Update movement from input
 	if !c.inputAccel.IsZero() {
-		av := c.inputAccel.Normalize().MulF(c.Accel * utility.TickDuration)
-		cr := c.inputAccel.Normalize().CrossZ(c.velocity)
-		dv := c.inputAccel.Rotate(math.Pi / 2).Normalize().MulF(c.Decel * utility.TickDuration).ClampMax(math.Abs(cr))
+		ia := c.inputAccel.Normalize()
+		av := ia.MulF(c.Accel * utility.TickDuration)
+		cr := ia.CrossZ(c.velocity)
+		dv := ia.Rotate(math.Pi / 2).MulF(c.Decel * utility.TickDuration).ClampMax(math.Abs(cr))
 		if cr < 0 {
 			dv = dv.Negate()
 		}
 
 		c.velocity = c.velocity.Add(av).Add(dv).ClampMax(c.MaxSpeed)
-		c.parent.SetRotation(utility.NewVector(0, 1).CrossingAngle(c.inputAccel))
+		c.parent.SetRotation(utility.NewVector(0, 1).CrossingAngle(ia))
 	} else {
-		dv := c.velocity.Normalize().MulF(utility.ClampFloat(c.Decel*utility.TickDuration, 0, c.velocity.Length()))
+		vl, vn := c.velocity.Decompose()
+		dv := vn.MulF(utility.ClampFloat(c.Decel*utility.TickDuration, 0, vl))
 		c.velocity = c.velocity.Sub(dv)
 	}
 	c.inputAccel = utility.ZeroVector()
 
 	// Collision test
-	vn := c.velocity.Normalize()
-	vl := c.velocity.Length()
+	vl, vn := c.velocity.Decompose()
 	rl := vl * utility.TickDuration
 	for i := 0; i <= c.MaxReflectionCount; i++ {
 		ro := vn.MulF(rl)

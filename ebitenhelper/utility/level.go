@@ -88,8 +88,7 @@ func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, n
 }
 
 func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOffset Vector, rNormal Vector, rIsHit bool) {
-	ol := offset.Length()
-	on := offset.Normalize()
+	ol, on := offset.Decompose()
 	var bo Bounder
 
 	for i := 0; i <= int(math.Trunc(ol)+1); i++ {
