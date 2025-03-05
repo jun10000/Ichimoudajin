@@ -14,28 +14,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type TraceResult struct {
-	IsHit  bool
-	Offset Vector
-	Normal Vector
-}
-
-func NewTraceResultNoHit(offset Vector) *TraceResult {
-	return &TraceResult{
-		IsHit:  false,
-		Offset: offset,
-		Normal: ZeroVector(),
-	}
-}
-
-func NewTraceResultHit(offset Vector, normal Vector) *TraceResult {
-	return &TraceResult{
-		IsHit:  true,
-		Offset: offset,
-		Normal: normal,
-	}
-}
-
 type Level struct {
 	Name                string
 	IsLooping           bool
@@ -109,7 +87,7 @@ func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, n
 	return false, ZeroVector()
 }
 
-func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) *TraceResult {
+func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOffset Vector, rNormal Vector, rIsHit bool) {
 	ol := offset.Length()
 	on := offset.Normalize()
 	var bo Bounder
@@ -145,15 +123,15 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) *Tra
 				}
 			}
 			if i <= TraceSafeDistance {
-				return NewTraceResultHit(ZeroVector(), n)
+				return ZeroVector(), n, true
 			} else {
 				o := on.MulF(float64(i - 1))
-				return NewTraceResultHit(o, n)
+				return o, n, true
 			}
 		}
 	}
 
-	return NewTraceResultNoHit(offset)
+	return offset, ZeroVector(), false
 }
 
 func (l *Level) AIMove(self Mover, target Collider) {

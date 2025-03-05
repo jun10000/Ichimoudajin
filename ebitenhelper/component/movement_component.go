@@ -33,13 +33,13 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.inputAccel = c.inputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceResult {
+func (c *MovementComponent) AddLocation(offset utility.Vector) (rOffset utility.Vector, rNormal utility.Vector, rIsHit bool) {
 	bounds := c.parent.GetMainColliderBounds()
 	excepts := make(utility.Set[utility.Collider])
 	excepts.Add(c.parent)
-	r := utility.GetLevel().Trace(bounds, offset, excepts)
-	c.parent.SetLocation(c.parent.GetLocation().Add(r.Offset))
-	return r
+	o, n, ok := utility.GetLevel().Trace(bounds, offset, excepts)
+	c.parent.SetLocation(c.parent.GetLocation().Add(o))
+	return o, n, ok
 }
 
 func (c *MovementComponent) Tick() {
@@ -66,13 +66,13 @@ func (c *MovementComponent) Tick() {
 	rl := vl * utility.TickDuration
 	for i := 0; i <= c.MaxReflectionCount; i++ {
 		ro := vn.MulF(rl)
-		tr := c.AddLocation(ro)
-		if !tr.IsHit {
+		tro, trn, trok := c.AddLocation(ro)
+		if !trok {
 			break
 		}
 
-		rl = ro.Sub(tr.Offset).Length()
-		vn = vn.Reflect(tr.Normal, 0)
+		rl = ro.Sub(tro).Length()
+		vn = vn.Reflect(trn, 0)
 	}
 	c.velocity = vn.MulF(vl)
 
