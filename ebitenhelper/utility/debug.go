@@ -63,7 +63,7 @@ func DrawDebugCircle(center Vector, radius float64, color color.Color) {
 
 func DrawDebugText(topleft Vector, text string) {
 	if isDebugMode {
-		l := topleft.Floor()
+		l := topleft.Trunc()
 		AddDebugDraw(func(screen *ebiten.Image) {
 			ebitenutil.DebugPrintAt(screen, text, l.X, l.Y)
 		})

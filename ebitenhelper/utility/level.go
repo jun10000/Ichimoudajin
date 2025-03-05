@@ -221,7 +221,7 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 }
 
 func (l *Level) RealToPFLocation(realLocation Vector) Point {
-	return realLocation.Div(l.AIGridSize).Floor()
+	return realLocation.Div(l.AIGridSize).Trunc()
 }
 
 func (l *Level) PFToRealLocation(pfLocation Point, isCenter bool, deviation float64) Vector {

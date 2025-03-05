@@ -110,18 +110,6 @@ func (v Vector) Trunc() Point {
 	return NewPoint(int(math.Trunc(v.X)), int(math.Trunc(v.Y)))
 }
 
-func (v Vector) TruncF(digit int) Vector {
-	d := math.Pow(10, float64(digit))
-	r := v.MulF(d)
-	r.X = math.Trunc(r.X)
-	r.Y = math.Trunc(r.Y)
-	return r.DivF(d)
-}
-
-func (v Vector) Floor() Point {
-	return NewPoint(int(math.Floor(v.X)), int(math.Floor(v.Y)))
-}
-
 func (v Vector) Negate() Vector {
 	return NewVector(-v.X, -v.Y)
 }
