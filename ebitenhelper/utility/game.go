@@ -199,10 +199,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, d := range lv.Drawers {
 		d.Draw(screen)
 	}
-	for _, d := range lv.DebugDraws {
-		d(screen)
+
+	if IsDebugMode() {
+		for _, d := range lv.DebugDraws {
+			d(screen)
+		}
+		lv.ClearDebugDraw()
 	}
-	lv.ClearDebugDraw()
 }
 
 func (g *Game) Layout(width int, height int) (int, int) {
