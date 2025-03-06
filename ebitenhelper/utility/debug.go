@@ -34,7 +34,9 @@ func RunDebugServer() {
 }
 
 func AddDebugDraw(event func(*ebiten.Image)) {
-	GetLevel().AddDebugDraw(event)
+	if isDebugMode {
+		GetLevel().AddDebugDraw(event)
+	}
 }
 
 func DrawDebugLine(start Vector, end Vector, color color.Color) {
@@ -67,5 +69,44 @@ func DrawDebugText(topleft Vector, text string) {
 		AddDebugDraw(func(screen *ebiten.Image) {
 			ebitenutil.DebugPrintAt(screen, text, l.X, l.Y)
 		})
+	}
+}
+
+func DrawDebugLocation(location Vector) {
+	if isDebugMode && DebugIsShowLocation {
+		DrawDebugText(location.Add(DebugLocationTextOffset), location.String())
+	}
+}
+
+func DrawDebugTraceDistance(target Bounder, distance int) {
+	if isDebugMode && DebugIsShowTraceDistance {
+		dc, ok := DebugTraceDistanceColors[distance]
+		if !ok {
+			dc = DebugTraceDistanceColors[-1]
+		}
+
+		switch dt := target.(type) {
+		case RectangleF:
+			DrawDebugRectangle(dt.Location(), dt.Size(), dc)
+		case *RectangleF:
+			DrawDebugRectangle(dt.Location(), dt.Size(), dc)
+		case CircleF:
+			DrawDebugCircle(dt.CenterLocation(), dt.Radius, dc)
+		case *CircleF:
+			DrawDebugCircle(dt.CenterLocation(), dt.Radius, dc)
+		default:
+			db := target.BoundingBox()
+			DrawDebugRectangle(db.Location(), db.Size(), dc)
+			log.Println("Drawing unknown bounder type")
+		}
+	}
+}
+
+func DrawDebugAIPath(path []Point) {
+	if isDebugMode && DebugIsShowAIPath {
+		l := GetLevel()
+		for _, p := range path {
+			DrawDebugRectangle(l.PFToRealLocation(p, false, 0), l.AIGridSize, DebugAIPathColor)
+		}
 	}
 }

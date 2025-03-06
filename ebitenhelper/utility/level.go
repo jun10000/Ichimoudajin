@@ -2,7 +2,6 @@ package utility
 
 import (
 	"errors"
-	"image/color"
 	"io/fs"
 	"log"
 	"math"
@@ -96,31 +95,7 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOf
 		bo = target.Offset(v.X, v.Y, bo)
 		r, n := l.Intersect(bo, excepts)
 		if r {
-			if DebugIsShowTraceDistance {
-				var dc color.RGBA
-				switch i {
-				case 0:
-					dc = DebugColorRed
-				case 1:
-					dc = DebugColorYellow
-				case 2:
-					dc = DebugColorGreen
-				case 3:
-					dc = DebugColorBlue
-				default:
-					dc = DebugColorGray
-				}
-
-				switch dt := target.(type) {
-				case CircleF:
-					DrawDebugCircle(NewVector(dt.OrgX, dt.OrgY), dt.Radius, dc)
-				case *CircleF:
-					DrawDebugCircle(NewVector(dt.OrgX, dt.OrgY), dt.Radius, dc)
-				default:
-					db := target.BoundingBox()
-					DrawDebugRectangle(db.Location(), db.Size(), dc)
-				}
-			}
+			DrawDebugTraceDistance(target, i)
 			if i <= TraceSafeDistance {
 				return ZeroVector(), n, true
 			} else {
@@ -153,11 +128,7 @@ func (l *Level) AIMove(self Mover, target Collider) {
 			self.AddInput(trl.Sub(srl), 1)
 		}
 
-		if DebugIsShowAIPath {
-			for _, p := range res {
-				DrawDebugRectangle(l.PFToRealLocation(p, false, 0), l.AIGridSize, DebugColorGreen)
-			}
-		}
+		DrawDebugAIPath(res)
 	}
 }
 

@@ -20,16 +20,30 @@ var (
 	AIIsUsePFCacheFile = false
 	InitialPFResultCap = 128
 	InitialDrawerCap   = 128
+)
 
-	DebugIsShowMoverLocation = false
+var (
+	DebugColorRed        = color.RGBA{R: 255, G: 8}
+	DebugColorYellow     = color.RGBA{R: 255, G: 255}
+	DebugColorGreen      = color.RGBA{G: 255}
+	DebugColorBlue       = color.RGBA{G: 128, B: 255}
+	DebugColorGray       = color.RGBA{R: 128, G: 128, B: 128}
+	DebugInitialDrawsCap = 32
+
+	DebugIsShowLocation     = false
+	DebugLocationTextOffset = NewVector(3, -12)
+
 	DebugIsShowTraceDistance = false
-	DebugIsShowAIPath        = false
-	DebugColorGray           = color.RGBA{R: 128, G: 128, B: 128}
-	DebugColorRed            = color.RGBA{R: 255, G: 8}
-	DebugColorYellow         = color.RGBA{R: 255, G: 255}
-	DebugColorGreen          = color.RGBA{G: 255}
-	DebugColorBlue           = color.RGBA{G: 128, B: 255}
-	DebugInitialDrawsCap     = 32
+	DebugTraceDistanceColors = map[int]color.RGBA{
+		0:  DebugColorRed,
+		1:  DebugColorYellow,
+		2:  DebugColorGreen,
+		3:  DebugColorBlue,
+		-1: DebugColorGray,
+	}
+
+	DebugIsShowAIPath = false
+	DebugAIPathColor  = DebugColorGreen
 )
 
 var windowTitle = "Game"

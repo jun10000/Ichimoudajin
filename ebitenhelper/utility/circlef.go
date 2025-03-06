@@ -14,6 +14,10 @@ func NewCircleF(orgX, orgY, radius float64) CircleF {
 	}
 }
 
+func (c CircleF) CenterLocation() Vector {
+	return NewVector(c.OrgX, c.OrgY)
+}
+
 func (c CircleF) BoundingBox() RectangleF {
 	return NewRectangleF(
 		c.OrgX-c.Radius,
