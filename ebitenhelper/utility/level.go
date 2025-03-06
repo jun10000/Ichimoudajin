@@ -193,7 +193,7 @@ func (l *Level) LoadOrBuildPFCache() error {
 
 func (l *Level) BuildPFCache() error {
 	pf := l.AIPathfinding
-	sz := l.RealToPFLocation(GetScreenSize().SubXY(1, 1).ToVector()).AddXY(1, 1)
+	sz := l.RealToPFLocation(GetScreenSize().ToVector())
 	sem := make(chan Empty, runtime.GOMAXPROCS(0)-1)
 	wg := sync.WaitGroup{}
 	stime := time.Now()
