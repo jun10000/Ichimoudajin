@@ -13,8 +13,8 @@ import (
 type AStarNode struct {
 	Location  Point
 	IsAllInit bool
-	GDistance float64
-	HDistance float64
+	GDistance int
+	HDistance int
 	Parent    *AStarNode
 }
 
@@ -82,23 +82,20 @@ func (a *AStarInstance) Run(start Point, goal Point) []Point {
 }
 
 func (a *AStarInstance) UpdateNode(node *AStarNode, goal Point) {
-	gd := a.currentNode.GDistance + a.currentNode.Location.Distance(node.Location)
+	gd := a.currentNode.GDistance + a.currentNode.Location.Distance2(node.Location)
 	if !node.IsAllInit {
 		node.GDistance = gd
-		node.HDistance = node.Location.Distance(goal)
+		node.HDistance = node.Location.Distance2(goal)
 		node.Parent = a.currentNode
 		node.IsAllInit = true
-	} else {
-		if gd < node.GDistance {
-			node.GDistance = gd
-			node.Parent = a.currentNode
-		} /* else {
-		}*/
+	} else if gd < node.GDistance {
+		node.GDistance = gd
+		node.Parent = a.currentNode
 	}
 }
 
 func (a *AStarInstance) GetNextOpenNode() *AStarNode {
-	min := math.MaxFloat64
+	min := math.MaxInt
 	var r *AStarNode
 
 	for _, n := range a.openedNodes {
