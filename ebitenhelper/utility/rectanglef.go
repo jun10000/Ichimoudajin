@@ -53,14 +53,14 @@ Intersect supports following bounder type
 */
 func (r RectangleF) Intersect(target Bounder) (result bool, normal *Vector) {
 	switch t := target.(type) {
-	case RectangleF:
-		return IntersectRectangleToRectangle(r, t)
 	case *RectangleF:
 		return IntersectRectangleToRectangle(r, *t)
-	case CircleF:
-		return IntersectCircleToRectangle(t, r, true)
 	case *CircleF:
 		return IntersectCircleToRectangle(*t, r, true)
+	case RectangleF:
+		return IntersectRectangleToRectangle(r, t)
+	case CircleF:
+		return IntersectCircleToRectangle(t, r, true)
 	}
 
 	log.Println("Detected unsupported intersection type")
