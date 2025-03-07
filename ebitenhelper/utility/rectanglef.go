@@ -18,24 +18,16 @@ func NewRectangleF(minX, minY, maxX, maxY float64) *RectangleF {
 	}
 }
 
-func (r *RectangleF) Clone() *RectangleF {
-	return NewRectangleF(r.MinX, r.MinY, r.MaxX, r.MaxY)
-}
-
-func (r *RectangleF) Location() Vector {
+func (r *RectangleF) TopLeftLocation() Vector {
 	return NewVector(r.MinX, r.MinY)
-}
-
-func (r *RectangleF) CenterLocation() Vector {
-	return ClampLocation(NewVector((r.MinX+r.MaxX)/2, (r.MinY+r.MaxY)/2))
 }
 
 func (r *RectangleF) Size() Vector {
 	return NewVector(r.MaxX-r.MinX, r.MaxY-r.MinY)
 }
 
-func (r *RectangleF) BoundingBox() *RectangleF {
-	return r.Clone()
+func (r *RectangleF) CenterLocation() Vector {
+	return ClampLocation(NewVector((r.MinX+r.MaxX)/2, (r.MinY+r.MaxY)/2))
 }
 
 func (r *RectangleF) Offset(x, y float64, output Bounder) Bounder {

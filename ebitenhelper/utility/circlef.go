@@ -17,15 +17,7 @@ func NewCircleF(orgX, orgY, radius float64) *CircleF {
 }
 
 func (c *CircleF) CenterLocation() Vector {
-	return NewVector(c.OrgX, c.OrgY)
-}
-
-func (c *CircleF) BoundingBox() *RectangleF {
-	return NewRectangleF(
-		c.OrgX-c.Radius,
-		c.OrgY-c.Radius,
-		c.OrgX+c.Radius,
-		c.OrgY+c.Radius)
+	return ClampLocation(NewVector(c.OrgX, c.OrgY))
 }
 
 func (c *CircleF) Offset(x, y float64, output Bounder) Bounder {

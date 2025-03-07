@@ -88,11 +88,10 @@ func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, n
 
 func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOffset Vector, rNormal *Vector, rIsHit bool) {
 	ol, on := offset.Decompose()
-	var bo Bounder
 
 	for i := 0; i <= int(math.Trunc(ol)+1); i++ {
 		v := on.MulF(float64(i))
-		bo = target.Offset(v.X, v.Y, bo)
+		bo := target.Offset(v.X, v.Y, nil)
 		r, n := l.Intersect(bo, excepts)
 		if r {
 			DrawDebugTraceDistance(target, i)
@@ -109,8 +108,8 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOf
 }
 
 func (l *Level) AIMove(self Mover, target Collider) {
-	srl := self.GetMainColliderBounds().BoundingBox().CenterLocation()
-	trl := target.GetMainColliderBounds().BoundingBox().CenterLocation()
+	srl := self.GetMainColliderBounds().CenterLocation()
+	trl := target.GetMainColliderBounds().CenterLocation()
 	spl := l.RealToPFLocation(srl)
 	tpl := l.RealToPFLocation(trl)
 
