@@ -147,11 +147,17 @@ func IntersectRectangleToRectangle(rectangle1 RectangleF, rectangle2 RectangleF)
 	}
 }
 
-func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF) (result bool, normal Vector) {
+func IntersectCircleToRectangle(circle CircleF, rectangle RectangleF, isReverse bool) (result bool, normal Vector) {
 	p := NewVector(
 		ClampFloat(circle.OrgX, rectangle.MinX, rectangle.MaxX),
 		ClampFloat(circle.OrgY, rectangle.MinY, rectangle.MaxY))
-	r := NewVector(circle.OrgX-p.X, circle.OrgY-p.Y)
+
+	var r Vector
+	if isReverse {
+		r = NewVector(p.X-circle.OrgX, p.Y-circle.OrgY)
+	} else {
+		r = NewVector(circle.OrgX-p.X, circle.OrgY-p.Y)
+	}
 	rll := r.Length2()
 
 	if rll > (circle.Radius * circle.Radius) {
@@ -184,47 +190,43 @@ func Intersect(src Bounder, dst Bounder) (result bool, normal Vector) {
 		switch v2 := dst.(type) {
 		case RectangleF:
 			return IntersectRectangleToRectangle(v1, v2)
-		case CircleF:
-			r, n := IntersectCircleToRectangle(v2, v1)
-			return r, n.Negate()
 		case *RectangleF:
 			return IntersectRectangleToRectangle(v1, *v2)
-		case *CircleF:
-			r, n := IntersectCircleToRectangle(*v2, v1)
-			return r, n.Negate()
-		}
-	case CircleF:
-		switch v2 := dst.(type) {
-		case RectangleF:
-			return IntersectCircleToRectangle(v1, v2)
 		case CircleF:
-			return IntersectCircleToCircle(v1, v2)
-		case *RectangleF:
-			return IntersectCircleToRectangle(v1, *v2)
+			return IntersectCircleToRectangle(v2, v1, true)
 		case *CircleF:
-			return IntersectCircleToCircle(v1, *v2)
+			return IntersectCircleToRectangle(*v2, v1, true)
 		}
 	case *RectangleF:
 		switch v2 := dst.(type) {
 		case RectangleF:
 			return IntersectRectangleToRectangle(*v1, v2)
-		case CircleF:
-			r, n := IntersectCircleToRectangle(v2, *v1)
-			return r, n.Negate()
 		case *RectangleF:
 			return IntersectRectangleToRectangle(*v1, *v2)
+		case CircleF:
+			return IntersectCircleToRectangle(v2, *v1, true)
 		case *CircleF:
-			r, n := IntersectCircleToRectangle(*v2, *v1)
-			return r, n.Negate()
+			return IntersectCircleToRectangle(*v2, *v1, true)
+		}
+	case CircleF:
+		switch v2 := dst.(type) {
+		case RectangleF:
+			return IntersectCircleToRectangle(v1, v2, false)
+		case *RectangleF:
+			return IntersectCircleToRectangle(v1, *v2, false)
+		case CircleF:
+			return IntersectCircleToCircle(v1, v2)
+		case *CircleF:
+			return IntersectCircleToCircle(v1, *v2)
 		}
 	case *CircleF:
 		switch v2 := dst.(type) {
 		case RectangleF:
-			return IntersectCircleToRectangle(*v1, v2)
+			return IntersectCircleToRectangle(*v1, v2, false)
+		case *RectangleF:
+			return IntersectCircleToRectangle(*v1, *v2, false)
 		case CircleF:
 			return IntersectCircleToCircle(*v1, v2)
-		case *RectangleF:
-			return IntersectCircleToRectangle(*v1, *v2)
 		case *CircleF:
 			return IntersectCircleToCircle(*v1, *v2)
 		}
