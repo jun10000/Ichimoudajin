@@ -9,8 +9,8 @@ type RectangleF struct {
 	MaxY float64
 }
 
-func NewRectangleF(minX, minY, maxX, maxY float64) RectangleF {
-	return RectangleF{
+func NewRectangleF(minX, minY, maxX, maxY float64) *RectangleF {
+	return &RectangleF{
 		MinX: minX,
 		MinY: minY,
 		MaxX: maxX,
@@ -18,23 +18,27 @@ func NewRectangleF(minX, minY, maxX, maxY float64) RectangleF {
 	}
 }
 
-func (r RectangleF) Location() Vector {
+func (r *RectangleF) Clone() *RectangleF {
+	return NewRectangleF(r.MinX, r.MinY, r.MaxX, r.MaxY)
+}
+
+func (r *RectangleF) Location() Vector {
 	return NewVector(r.MinX, r.MinY)
 }
 
-func (r RectangleF) CenterLocation() Vector {
+func (r *RectangleF) CenterLocation() Vector {
 	return ClampLocation(NewVector((r.MinX+r.MaxX)/2, (r.MinY+r.MaxY)/2))
 }
 
-func (r RectangleF) Size() Vector {
+func (r *RectangleF) Size() Vector {
 	return NewVector(r.MaxX-r.MinX, r.MaxY-r.MinY)
 }
 
-func (r RectangleF) BoundingBox() RectangleF {
-	return r
+func (r *RectangleF) BoundingBox() *RectangleF {
+	return r.Clone()
 }
 
-func (r RectangleF) Offset(x, y float64, output Bounder) Bounder {
+func (r *RectangleF) Offset(x, y float64, output Bounder) Bounder {
 	if o, ok := output.(*RectangleF); ok {
 		o.MinX = r.MinX + x
 		o.MinY = r.MinY + y
@@ -48,19 +52,15 @@ func (r RectangleF) Offset(x, y float64, output Bounder) Bounder {
 
 /*
 Intersect supports following bounder type
-  - RectangleF
-  - CircleF
+  - *RectangleF
+  - *CircleF
 */
-func (r RectangleF) Intersect(target Bounder) (result bool, normal *Vector) {
+func (r *RectangleF) Intersect(target Bounder) (result bool, normal *Vector) {
 	switch t := target.(type) {
 	case *RectangleF:
-		return IntersectRectangleToRectangle(&r, t)
+		return IntersectRectangleToRectangle(r, t)
 	case *CircleF:
-		return IntersectCircleToRectangle(t, &r, true)
-	case RectangleF:
-		return IntersectRectangleToRectangle(&r, &t)
-	case CircleF:
-		return IntersectCircleToRectangle(&t, &r, true)
+		return IntersectCircleToRectangle(t, r, true)
 	}
 
 	log.Println("Detected unsupported intersection type")

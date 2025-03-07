@@ -86,12 +86,8 @@ func DrawDebugTraceDistance(target Bounder, distance int) {
 		}
 
 		switch dt := target.(type) {
-		case RectangleF:
-			DrawDebugRectangle(dt.Location(), dt.Size(), dc)
 		case *RectangleF:
 			DrawDebugRectangle(dt.Location(), dt.Size(), dc)
-		case CircleF:
-			DrawDebugCircle(dt.CenterLocation(), dt.Radius, dc)
 		case *CircleF:
 			DrawDebugCircle(dt.CenterLocation(), dt.Radius, dc)
 		default:
