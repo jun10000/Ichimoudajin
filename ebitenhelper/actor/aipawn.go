@@ -25,6 +25,16 @@ func NewAIPawn() *AIPawn {
 	return a
 }
 
+func (a *AIPawn) SetLocation(value utility.Vector) {
+	a.Transform.SetLocation(value)
+	a.UpdateColliderBounds()
+}
+
+func (a *AIPawn) SetScale(value utility.Vector) {
+	a.Transform.SetScale(value)
+	a.UpdateColliderBounds()
+}
+
 func (a *AIPawn) Tick() {
 	a.MovementComponent.Tick()
 	a.DrawAnimationComponent.Tick()

@@ -13,9 +13,8 @@ Available T type is pointer.
 */
 type ColliderComponent[T utility.Bounder] struct {
 	getBounds   func(T)
-	loopOffsets []utility.Vector
-	mainCache   T
-	offsetCache T
+	loopOffsets [8]utility.Vector
+	cache       [9]T
 }
 
 func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderComponent[T] {
@@ -25,42 +24,50 @@ func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderCompone
 	}
 
 	s := utility.GetScreenSize().ToVector()
+	os := [8]utility.Vector{
+		utility.NewVector(-s.X, -s.Y),
+		utility.NewVector(0, -s.Y),
+		utility.NewVector(s.X, -s.Y),
+		utility.NewVector(-s.X, 0),
+		utility.NewVector(s.X, 0),
+		utility.NewVector(-s.X, s.Y),
+		utility.NewVector(0, s.Y),
+		utility.NewVector(s.X, s.Y),
+	}
 
-	return &ColliderComponent[T]{
-		getBounds: getBounds,
-		loopOffsets: []utility.Vector{
-			utility.NewVector(-s.X, -s.Y),
-			utility.NewVector(0, -s.Y),
-			utility.NewVector(s.X, -s.Y),
-			utility.NewVector(-s.X, 0),
-			utility.NewVector(s.X, 0),
-			utility.NewVector(-s.X, s.Y),
-			utility.NewVector(0, s.Y),
-			utility.NewVector(s.X, s.Y),
-		},
-		mainCache:   reflect.New(t.Elem()).Interface().(T),
-		offsetCache: reflect.New(t.Elem()).Interface().(T),
+	c := &ColliderComponent[T]{
+		getBounds:   getBounds,
+		loopOffsets: os,
+	}
+
+	for i := range 9 {
+		c.cache[i] = reflect.New(t.Elem()).Interface().(T)
+	}
+
+	return c
+}
+
+func (c *ColliderComponent[T]) UpdateColliderBounds() {
+	c.getBounds(c.cache[0])
+	for i, v := range c.loopOffsets {
+		c.cache[0].Offset(v.X, v.Y, c.cache[i+1])
 	}
 }
 
 func (c *ColliderComponent[T]) GetMainColliderBounds() utility.Bounder {
-	c.getBounds(c.mainCache)
-	return c.mainCache
+	return c.cache[0]
 }
 
 func (c *ColliderComponent[T]) GetColliderBounds() func(yield func(utility.Bounder) bool) {
 	return func(yield func(utility.Bounder) bool) {
-		b := c.GetMainColliderBounds()
-		if !yield(b) {
-			return
-		}
-		if !utility.GetLevel().IsLooping {
-			return
-		}
-
-		for _, v := range c.loopOffsets {
-			b.Offset(v.X, v.Y, c.offsetCache)
-			if !yield(c.offsetCache) {
+		if utility.GetLevel().IsLooping {
+			for _, v := range c.cache {
+				if !yield(v) {
+					return
+				}
+			}
+		} else {
+			if !yield(c.GetMainColliderBounds()) {
 				return
 			}
 		}

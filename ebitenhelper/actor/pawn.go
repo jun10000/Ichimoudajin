@@ -25,7 +25,17 @@ func NewPawn() *Pawn {
 	return a
 }
 
-func (p *Pawn) Tick() {
-	p.MovementComponent.Tick()
-	p.DrawAnimationComponent.Tick()
+func (a *Pawn) SetLocation(value utility.Vector) {
+	a.Transform.SetLocation(value)
+	a.UpdateColliderBounds()
+}
+
+func (a *Pawn) SetScale(value utility.Vector) {
+	a.Transform.SetScale(value)
+	a.UpdateColliderBounds()
+}
+
+func (a *Pawn) Tick() {
+	a.MovementComponent.Tick()
+	a.DrawAnimationComponent.Tick()
 }

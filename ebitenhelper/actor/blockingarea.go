@@ -30,3 +30,13 @@ func (a *BlockingArea) getBounds(output *utility.RectangleF) {
 	output.MaxX = l.X + a.Size.X
 	output.MaxY = l.Y + a.Size.Y
 }
+
+func (a *BlockingArea) SetLocation(value utility.Vector) {
+	a.Transform.SetLocation(value)
+	a.UpdateColliderBounds()
+}
+
+func (a *BlockingArea) SetScale(value utility.Vector) {
+	a.Transform.SetScale(value)
+	a.UpdateColliderBounds()
+}
