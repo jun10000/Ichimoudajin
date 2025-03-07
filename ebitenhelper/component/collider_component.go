@@ -14,7 +14,7 @@ Available T type is pointer.
 type ColliderComponent[T utility.Bounder] struct {
 	getBounds   func(T)
 	loopOffsets [8]utility.Vector
-	cache       [9]T
+	cache       [9]utility.Bounder
 }
 
 func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderComponent[T] {
@@ -48,7 +48,7 @@ func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderCompone
 }
 
 func (c *ColliderComponent[T]) UpdateColliderBounds() {
-	c.getBounds(c.cache[0])
+	c.getBounds(c.cache[0].(T))
 	for i, v := range c.loopOffsets {
 		c.cache[0].Offset(v.X, v.Y, c.cache[i+1])
 	}
@@ -58,18 +58,6 @@ func (c *ColliderComponent[T]) GetMainColliderBounds() utility.Bounder {
 	return c.cache[0]
 }
 
-func (c *ColliderComponent[T]) GetColliderBounds() func(yield func(utility.Bounder) bool) {
-	return func(yield func(utility.Bounder) bool) {
-		if utility.GetLevel().IsLooping {
-			for _, v := range c.cache {
-				if !yield(v) {
-					return
-				}
-			}
-		} else {
-			if !yield(c.GetMainColliderBounds()) {
-				return
-			}
-		}
-	}
+func (c *ColliderComponent[T]) GetColliderBounds() [9]utility.Bounder {
+	return c.cache
 }

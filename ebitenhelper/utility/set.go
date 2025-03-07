@@ -6,6 +6,11 @@ func (s Set[T]) Add(value T) {
 	s[value] = Empty{}
 }
 
+func (s Set[T]) Contains(value T) bool {
+	_, ok := s[value]
+	return ok
+}
+
 func (s Set[T]) UnionRange(s2 Set[T]) func(yield func(T) bool) {
 	return func(yield func(T) bool) {
 		for v := range s {
