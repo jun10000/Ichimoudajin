@@ -77,7 +77,7 @@ func (l *Level) GetColliderBounds(excepts Set[Collider]) func(yield func(Bounder
 
 func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, normal *Vector) {
 	for b := range l.GetColliderBounds(excepts) {
-		r, n := Intersect(target, b)
+		r, n := target.Intersect(b)
 		if r {
 			return true, n
 		}

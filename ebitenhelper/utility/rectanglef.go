@@ -1,5 +1,7 @@
 package utility
 
+import "log"
+
 type RectangleF struct {
 	MinX float64
 	MinY float64
@@ -42,4 +44,25 @@ func (r RectangleF) Offset(x, y float64, output Bounder) Bounder {
 	} else {
 		return NewRectangleF(r.MinX+x, r.MinY+y, r.MaxX+x, r.MaxY+y)
 	}
+}
+
+/*
+Intersect supports following bounder type
+  - RectangleF
+  - CircleF
+*/
+func (r RectangleF) Intersect(target Bounder) (result bool, normal *Vector) {
+	switch t := target.(type) {
+	case RectangleF:
+		return IntersectRectangleToRectangle(r, t)
+	case *RectangleF:
+		return IntersectRectangleToRectangle(r, *t)
+	case CircleF:
+		return IntersectCircleToRectangle(t, r, true)
+	case *CircleF:
+		return IntersectCircleToRectangle(*t, r, true)
+	}
+
+	log.Println("Detected unsupported intersection type")
+	return false, nil
 }

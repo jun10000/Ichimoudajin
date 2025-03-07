@@ -57,4 +57,5 @@ type Drawer interface {
 type Bounder interface {
 	BoundingBox() RectangleF
 	Offset(x, y float64, output Bounder) Bounder
+	Intersect(target Bounder) (result bool, normal *Vector)
 }

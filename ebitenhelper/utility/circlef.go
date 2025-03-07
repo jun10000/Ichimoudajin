@@ -1,5 +1,7 @@
 package utility
 
+import "log"
+
 type CircleF struct {
 	OrgX   float64
 	OrgY   float64
@@ -35,4 +37,25 @@ func (c CircleF) Offset(x, y float64, output Bounder) Bounder {
 	} else {
 		return NewCircleF(c.OrgX+x, c.OrgY+y, c.Radius)
 	}
+}
+
+/*
+Intersect supports following bounder type
+  - RectangleF
+  - CircleF
+*/
+func (c CircleF) Intersect(target Bounder) (result bool, normal *Vector) {
+	switch t := target.(type) {
+	case RectangleF:
+		return IntersectCircleToRectangle(c, t, false)
+	case *RectangleF:
+		return IntersectCircleToRectangle(c, *t, false)
+	case CircleF:
+		return IntersectCircleToCircle(c, t)
+	case *CircleF:
+		return IntersectCircleToCircle(c, *t)
+	}
+
+	log.Println("Detected unsupported intersection type")
+	return false, nil
 }
