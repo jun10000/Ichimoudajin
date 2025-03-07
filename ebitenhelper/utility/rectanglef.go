@@ -26,6 +26,10 @@ func (r *RectangleF) Size() Vector {
 	return NewVector(r.MaxX-r.MinX, r.MaxY-r.MinY)
 }
 
+func (r *RectangleF) Type() BounderType {
+	return BounderTypeRectangle
+}
+
 func (r *RectangleF) CenterLocation() Vector {
 	return ClampLocation(NewVector((r.MinX+r.MaxX)/2, (r.MinY+r.MaxY)/2))
 }
@@ -48,13 +52,13 @@ Intersect supports following bounder type
   - *CircleF
 */
 func (r *RectangleF) Intersect(target Bounder) (result bool, normal *Vector) {
-	switch t := target.(type) {
-	case *RectangleF:
-		return IntersectRectangleToRectangle(r, t)
-	case *CircleF:
-		return IntersectCircleToRectangle(t, r, true)
+	switch target.Type() {
+	case BounderTypeRectangle:
+		return IntersectRectangleToRectangle(r, target.(*RectangleF))
+	case BounderTypeCircle:
+		return IntersectCircleToRectangle(target.(*CircleF), r, true)
+	default:
+		log.Println("Detected unsupported intersection type")
+		return false, nil
 	}
-
-	log.Println("Detected unsupported intersection type")
-	return false, nil
 }

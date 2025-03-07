@@ -19,6 +19,13 @@ const (
 	PressStatePressing
 )
 
+type BounderType int
+
+const (
+	BounderTypeRectangle BounderType = iota
+	BounderTypeCircle
+)
+
 type Empty struct{}
 
 func GetImageFile(filename string) *ebiten.Image {

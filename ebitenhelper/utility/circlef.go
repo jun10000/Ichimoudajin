@@ -16,6 +16,10 @@ func NewCircleF(orgX, orgY, radius float64) *CircleF {
 	}
 }
 
+func (c *CircleF) Type() BounderType {
+	return BounderTypeCircle
+}
+
 func (c *CircleF) CenterLocation() Vector {
 	return ClampLocation(NewVector(c.OrgX, c.OrgY))
 }
@@ -37,13 +41,13 @@ Intersect supports following bounder type
   - *CircleF
 */
 func (c *CircleF) Intersect(target Bounder) (result bool, normal *Vector) {
-	switch t := target.(type) {
-	case *RectangleF:
-		return IntersectCircleToRectangle(c, t, false)
-	case *CircleF:
-		return IntersectCircleToCircle(c, t)
+	switch target.Type() {
+	case BounderTypeRectangle:
+		return IntersectCircleToRectangle(c, target.(*RectangleF), false)
+	case BounderTypeCircle:
+		return IntersectCircleToCircle(c, target.(*CircleF))
+	default:
+		log.Println("Detected unsupported intersection type")
+		return false, nil
 	}
-
-	log.Println("Detected unsupported intersection type")
-	return false, nil
 }

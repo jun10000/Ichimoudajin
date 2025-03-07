@@ -85,10 +85,12 @@ func DrawDebugTraceDistance(target Bounder, distance int) {
 			dc = DebugTraceDistanceColors[-1]
 		}
 
-		switch dt := target.(type) {
-		case *RectangleF:
+		switch target.Type() {
+		case BounderTypeRectangle:
+			dt := target.(*RectangleF)
 			DrawDebugRectangle(dt.TopLeftLocation(), dt.Size(), dc)
-		case *CircleF:
+		case BounderTypeCircle:
+			dt := target.(*CircleF)
 			DrawDebugCircle(dt.CenterLocation(), dt.Radius, dc)
 		default:
 			log.Println("Drawing unknown bounder type")
