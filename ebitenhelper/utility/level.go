@@ -75,7 +75,7 @@ func (l *Level) GetColliderBounds(excepts Set[Collider]) func(yield func(Bounder
 	}
 }
 
-func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, normal Vector) {
+func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, normal *Vector) {
 	for b := range l.GetColliderBounds(excepts) {
 		r, n := Intersect(target, b)
 		if r {
@@ -83,10 +83,10 @@ func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, n
 		}
 	}
 
-	return false, ZeroVector()
+	return false, nil
 }
 
-func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOffset Vector, rNormal Vector, rIsHit bool) {
+func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOffset Vector, rNormal *Vector, rIsHit bool) {
 	ol, on := offset.Decompose()
 	var bo Bounder
 
@@ -105,7 +105,7 @@ func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOf
 		}
 	}
 
-	return offset, ZeroVector(), false
+	return offset, nil, false
 }
 
 func (l *Level) AIMove(self Mover, target Collider) {

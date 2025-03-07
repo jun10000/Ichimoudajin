@@ -31,7 +31,7 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.inputAccel = c.inputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) AddLocation(offset utility.Vector) (rOffset utility.Vector, rNormal utility.Vector, rIsHit bool) {
+func (c *MovementComponent) AddLocation(offset utility.Vector) (rOffset utility.Vector, rNormal *utility.Vector, rIsHit bool) {
 	bounds := c.parent.GetMainColliderBounds()
 	excepts := make(utility.Set[utility.Collider])
 	excepts.Add(c.parent)
@@ -52,7 +52,7 @@ func (c *MovementComponent) Tick() {
 		}
 
 		c.velocity = c.velocity.Add(av).Add(dv).ClampMax(c.MaxSpeed)
-		c.parent.SetRotation(utility.DownVector().CrossingAngle(ia))
+		c.parent.SetRotation(utility.DownVectorPtr().CrossingAngle(ia))
 	} else {
 		vl, vn := c.velocity.Decompose()
 		dv := vn.MulF(utility.ClampFloat(c.Decel*utility.TickDuration, 0, vl))
@@ -71,7 +71,7 @@ func (c *MovementComponent) Tick() {
 		}
 
 		rl = ro.Sub(tro).Length()
-		vn = vn.Reflect(trn, 0)
+		vn = vn.Reflect(*trn, 0)
 	}
 	c.velocity = vn.MulF(vl)
 

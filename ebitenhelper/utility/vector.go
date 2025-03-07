@@ -14,24 +14,48 @@ func NewVector(x float64, y float64) Vector {
 	return Vector{X: x, Y: y}
 }
 
+func NewVectorPtr(x float64, y float64) *Vector {
+	return &Vector{X: x, Y: y}
+}
+
 func ZeroVector() Vector {
 	return NewVector(0, 0)
+}
+
+func ZeroVectorPtr() *Vector {
+	return NewVectorPtr(0, 0)
 }
 
 func UpVector() Vector {
 	return NewVector(0, -1)
 }
 
+func UpVectorPtr() *Vector {
+	return NewVectorPtr(0, -1)
+}
+
 func DownVector() Vector {
 	return NewVector(0, 1)
+}
+
+func DownVectorPtr() *Vector {
+	return NewVectorPtr(0, 1)
 }
 
 func LeftVector() Vector {
 	return NewVector(-1, 0)
 }
 
+func LeftVectorPtr() *Vector {
+	return NewVectorPtr(-1, 0)
+}
+
 func RightVector() Vector {
 	return NewVector(1, 0)
+}
+
+func RightVectorPtr() *Vector {
+	return NewVectorPtr(1, 0)
 }
 
 func (v Vector) IsZero() bool {
