@@ -65,20 +65,19 @@ func (l *Level) Add(actor any) {
 
 func (l *Level) GetColliderBounds(excepts Set[Collider]) func(yield func(Bounder) bool) {
 	return func(yield func(Bounder) bool) {
-		var cbcount int
-		if l.IsLooping {
-			cbcount = 9
-		} else {
-			cbcount = 1
-		}
-
 		for c, bs := range l.Colliders {
 			if excepts.Contains(c) {
 				continue
 			}
 
-			for i := range cbcount {
-				if !yield(bs[i]) {
+			if l.IsLooping {
+				for i := range 9 {
+					if !yield(bs[i]) {
+						return
+					}
+				}
+			} else {
+				if !yield(bs[0]) {
 					return
 				}
 			}
