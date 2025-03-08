@@ -5,7 +5,8 @@ import (
 	"math"
 	"os"
 	"slices"
-	"sync"
+
+	"maps"
 
 	"github.com/jun10000/Ichimoudajin/assets"
 )
@@ -140,25 +141,19 @@ func NewAStarResultKey(start Point, goal Point) AStarResultKey {
 }
 
 type AStar struct {
-	cache     sync.Map
+	cache     *Smap[AStarResultKey, []Point]
 	taskCount int
 }
 
 func NewAStar() *AStar {
 	return &AStar{
-		cache:     sync.Map{},
+		cache:     NewSmap[AStarResultKey, []Point](),
 		taskCount: 0,
 	}
 }
 
 func (a *AStar) GetCache(start Point, goal Point) (result []Point, ok bool) {
-	if r1, ok := a.cache.Load(NewAStarResultKey(start, goal)); ok {
-		if r2, ok := r1.([]Point); ok {
-			return r2, true
-		}
-	}
-
-	return []Point{}, false
+	return a.cache.Load(NewAStarResultKey(start, goal))
 }
 
 func (a *AStar) setCache(start Point, goal Point, value []Point) {
@@ -195,15 +190,7 @@ func (a *AStar) SaveCache(filename string) error {
 
 	defer f.Close()
 	e := gob.NewEncoder(f)
-	m := map[AStarResultKey][]Point{}
-	a.cache.Range(func(key any, value any) bool {
-		if k, ok := key.(AStarResultKey); ok {
-			if v, ok := value.([]Point); ok {
-				m[k] = v
-			}
-		}
-		return true
-	})
+	m := maps.Collect(a.cache.Range())
 	err = e.Encode(m)
 	if err != nil {
 		return err
