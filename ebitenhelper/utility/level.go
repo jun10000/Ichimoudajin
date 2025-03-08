@@ -14,6 +14,8 @@ import (
 )
 
 type Level struct {
+	pfValidCache sync.Map
+
 	Name                string
 	IsLooping           bool
 	AIGridSize          Vector
@@ -30,6 +32,8 @@ type Level struct {
 
 func NewLevel(name string) *Level {
 	return &Level{
+		pfValidCache: sync.Map{},
+
 		Name:                name,
 		IsLooping:           false,
 		AIGridSize:          NewVector(32, 32),
@@ -142,6 +146,10 @@ func (l *Level) AIMove(self Mover, target Collider) {
 }
 
 func (l *Level) AIIsPFLocationValid(location Point) bool {
+	if r, ok := l.pfValidCache.Load(location); ok {
+		return r.(bool)
+	}
+
 	loc := l.PFToRealLocation(location, false, 0)
 	s := GetScreenSize()
 	if loc.X < 0 || loc.Y < 0 || loc.X >= float64(s.X) || loc.Y >= float64(s.Y) {
@@ -167,6 +175,8 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 	}
 
 	r, _ := l.Intersect(b, excepts)
+
+	l.pfValidCache.Store(location, !r)
 	return !r
 }
 
