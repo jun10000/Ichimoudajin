@@ -21,9 +21,9 @@ type Level struct {
 	AIPathfinding       *AStar
 
 	Colliders      map[Collider][9]Bounder
-	InputReceivers Set[InputReceiver]
-	AITickers      Set[AITicker]
-	Tickers        Set[Ticker]
+	InputReceivers []InputReceiver
+	AITickers      []AITicker
+	Tickers        []Ticker
 	Drawers        []Drawer
 	DebugDraws     []func(screen *ebiten.Image)
 }
@@ -37,9 +37,9 @@ func NewLevel(name string) *Level {
 		AIPathfinding:       NewAStar(),
 
 		Colliders:      make(map[Collider][9]Bounder),
-		InputReceivers: make(Set[InputReceiver]),
-		AITickers:      make(Set[AITicker]),
-		Tickers:        make(Set[Ticker]),
+		InputReceivers: make([]InputReceiver, 0, InitialInputReceiverCap),
+		AITickers:      make([]AITicker, 0, InitialAITickerCap),
+		Tickers:        make([]Ticker, 0, InitialTickerCap),
 		Drawers:        make([]Drawer, 0, InitialDrawerCap),
 		DebugDraws:     make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
 	}
@@ -50,13 +50,13 @@ func (l *Level) Add(actor any) {
 		l.Drawers = append(l.Drawers, a)
 	}
 	if a, ok := actor.(InputReceiver); ok {
-		l.InputReceivers.Add(a)
+		l.InputReceivers = append(l.InputReceivers, a)
 	}
 	if a, ok := actor.(AITicker); ok {
-		l.AITickers.Add(a)
+		l.AITickers = append(l.AITickers, a)
 	}
 	if a, ok := actor.(Ticker); ok {
-		l.Tickers.Add(a)
+		l.Tickers = append(l.Tickers, a)
 	}
 	if a, ok := actor.(Collider); ok {
 		l.Colliders[a] = a.GetColliderBounds()
@@ -156,12 +156,12 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 		loc.Y+l.AIGridSize.Y-AIValidOffset)
 
 	excepts := make(Set[Collider])
-	for t := range l.AITickers {
+	for _, t := range l.AITickers {
 		if c, ok := t.(Collider); ok {
 			excepts.Add(c)
 		}
 	}
-	for t := range l.InputReceivers {
+	for _, t := range l.InputReceivers {
 		if c, ok := t.(Collider); ok {
 			excepts.Add(c)
 		}

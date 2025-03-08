@@ -14,12 +14,15 @@ const (
 )
 
 var (
-	TraceSafeDistance  = 3
-	AIValidOffset      = 0.5
-	AIMaxTaskCount     = 1
-	AIIsUsePFCacheFile = false
-	InitialPFResultCap = 128
-	InitialDrawerCap   = 128
+	TraceSafeDistance       = 3
+	AIValidOffset           = 0.5
+	AIMaxTaskCount          = 1
+	AIIsUsePFCacheFile      = false
+	InitialPFResultCap      = 128
+	InitialInputReceiverCap = 1
+	InitialAITickerCap      = 32
+	InitialTickerCap        = 32
+	InitialDrawerCap        = 128
 )
 
 var (
@@ -155,7 +158,7 @@ func (g *Game) Update() error {
 
 	lv := GetLevel()
 
-	for r := range lv.InputReceivers {
+	for _, r := range lv.InputReceivers {
 		for _, k := range g.pressedKeys {
 			r.ReceiveKeyInput(k, PressStatePressed)
 		}
@@ -182,11 +185,11 @@ func (g *Game) Update() error {
 		}
 	}
 
-	for t := range lv.AITickers {
+	for _, t := range lv.AITickers {
 		t.AITick()
 	}
 
-	for t := range lv.Tickers {
+	for _, t := range lv.Tickers {
 		t.Tick()
 	}
 

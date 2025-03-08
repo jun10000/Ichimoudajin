@@ -14,7 +14,7 @@ func NewAIControllerComponent(parent utility.Mover) *AIControllerComponent {
 
 func (a *AIControllerComponent) AITick() {
 	l := utility.GetLevel()
-	for r := range l.InputReceivers {
+	for _, r := range l.InputReceivers {
 		if p, ok := r.(utility.Collider); ok {
 			l.AIMove(a.parent, p)
 			return
