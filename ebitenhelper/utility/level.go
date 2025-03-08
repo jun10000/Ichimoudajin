@@ -14,7 +14,7 @@ import (
 )
 
 type Level struct {
-	pfValidCache sync.Map
+	pfValidCache *Smap[Point, bool]
 
 	Name                string
 	IsLooping           bool
@@ -22,7 +22,7 @@ type Level struct {
 	AILocationDeviation float64
 	AIPathfinding       *AStar
 
-	Colliders      map[Collider][9]Bounder
+	Colliders      *Smap[Collider, [9]Bounder]
 	InputReceivers []InputReceiver
 	AITickers      []AITicker
 	Tickers        []Ticker
@@ -32,7 +32,7 @@ type Level struct {
 
 func NewLevel(name string) *Level {
 	return &Level{
-		pfValidCache: sync.Map{},
+		pfValidCache: NewSmap[Point, bool](),
 
 		Name:                name,
 		IsLooping:           false,
@@ -40,7 +40,7 @@ func NewLevel(name string) *Level {
 		AILocationDeviation: 0.5,
 		AIPathfinding:       NewAStar(),
 
-		Colliders:      make(map[Collider][9]Bounder),
+		Colliders:      NewSmap[Collider, [9]Bounder](),
 		InputReceivers: make([]InputReceiver, 0, InitialInputReceiverCap),
 		AITickers:      make([]AITicker, 0, InitialAITickerCap),
 		Tickers:        make([]Ticker, 0, InitialTickerCap),
@@ -63,13 +63,13 @@ func (l *Level) Add(actor any) {
 		l.Tickers = append(l.Tickers, a)
 	}
 	if a, ok := actor.(Collider); ok {
-		l.Colliders[a] = a.GetColliderBounds()
+		l.Colliders.Store(a, a.GetColliderBounds())
 	}
 }
 
 func (l *Level) GetColliderBounds(excepts Set[Collider]) func(yield func(Bounder) bool) {
 	return func(yield func(Bounder) bool) {
-		for c, bs := range l.Colliders {
+		for c, bs := range l.Colliders.Range() {
 			if excepts.Contains(c) {
 				continue
 			}
@@ -147,7 +147,7 @@ func (l *Level) AIMove(self Mover, target Collider) {
 
 func (l *Level) AIIsPFLocationValid(location Point) bool {
 	if r, ok := l.pfValidCache.Load(location); ok {
-		return r.(bool)
+		return r
 	}
 
 	loc := l.PFToRealLocation(location, false, 0)
@@ -219,10 +219,10 @@ func (l *Level) BuildPFCache() error {
 
 	defer close(sem)
 	log.Println("Started building PF cache")
-	for sx := 0; sx < sz.X; sx++ {
-		for sy := 0; sy < sz.Y; sy++ {
-			for gx := 0; gx < sz.X; gx++ {
-				for gy := 0; gy < sz.Y; gy++ {
+	for sx := range sz.X {
+		for sy := range sz.Y {
+			for gx := range sz.X {
+				for gy := range sz.Y {
 					start := NewPoint(sx, sy)
 					goal := NewPoint(gx, gy)
 					if _, ok := pf.GetCache(start, goal); !ok {
@@ -236,8 +236,8 @@ func (l *Level) BuildPFCache() error {
 					}
 				}
 			}
-			log.Printf("Building PF cache: %.2f%%\n", float32(sx*sz.Y+sy+1)*100/float32(sz.X*sz.Y))
 		}
+		log.Printf("Building PF cache: %d%%\n", (sx+1)*100/sz.X)
 	}
 
 	wg.Wait()
