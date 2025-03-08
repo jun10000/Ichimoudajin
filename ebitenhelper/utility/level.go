@@ -20,8 +20,7 @@ type Level struct {
 	AILocationDeviation float64
 	AIPathfinding       *AStar
 
-	Colliders      Set[Collider]
-	ColliderBounds map[Collider][9]Bounder
+	Colliders      map[Collider][9]Bounder
 	InputReceivers Set[InputReceiver]
 	AITickers      Set[AITicker]
 	Tickers        Set[Ticker]
@@ -37,8 +36,7 @@ func NewLevel(name string) *Level {
 		AILocationDeviation: 0.5,
 		AIPathfinding:       NewAStar(),
 
-		Colliders:      make(Set[Collider]),
-		ColliderBounds: make(map[Collider][9]Bounder),
+		Colliders:      make(map[Collider][9]Bounder),
 		InputReceivers: make(Set[InputReceiver]),
 		AITickers:      make(Set[AITicker]),
 		Tickers:        make(Set[Ticker]),
@@ -61,8 +59,7 @@ func (l *Level) Add(actor any) {
 		l.Tickers.Add(a)
 	}
 	if a, ok := actor.(Collider); ok {
-		l.Colliders.Add(a)
-		l.ColliderBounds[a] = a.GetColliderBounds()
+		l.Colliders[a] = a.GetColliderBounds()
 	}
 }
 
@@ -75,7 +72,7 @@ func (l *Level) GetColliderBounds(excepts Set[Collider]) func(yield func(Bounder
 			cbcount = 1
 		}
 
-		for c, bs := range l.ColliderBounds {
+		for c, bs := range l.Colliders {
 			if excepts.Contains(c) {
 				continue
 			}
