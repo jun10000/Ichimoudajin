@@ -58,5 +58,7 @@ type Bounder interface {
 	Type() BounderType
 	CenterLocation() Vector
 	Offset(x, y float64, output Bounder) Bounder
-	Intersect(target Bounder) (result bool, normal *Vector)
+	IntersectTo(target Bounder) (result bool, normal *Vector)
+	IntersectFromRectangle(src *RectangleF) (result bool, normal *Vector)
+	IntersectFromCircle(src *CircleF) (result bool, normal *Vector)
 }

@@ -1,6 +1,8 @@
 package utility
 
-import "log"
+import (
+	"math"
+)
 
 type RectangleF struct {
 	MinX float64
@@ -46,19 +48,57 @@ func (r *RectangleF) Offset(x, y float64, output Bounder) Bounder {
 	}
 }
 
-/*
-Intersect supports following bounder type
-  - *RectangleF
-  - *CircleF
-*/
-func (r *RectangleF) Intersect(target Bounder) (result bool, normal *Vector) {
-	switch target.Type() {
-	case BounderTypeRectangle:
-		return IntersectRectangleToRectangle(r, target.(*RectangleF))
-	case BounderTypeCircle:
-		return IntersectCircleToRectangle(target.(*CircleF), r, true)
-	default:
-		log.Println("Detected unsupported intersection type")
+func (r *RectangleF) IntersectTo(target Bounder) (result bool, normal *Vector) {
+	return target.IntersectFromRectangle(r)
+}
+
+func (r *RectangleF) IntersectFromRectangle(src *RectangleF) (result bool, normal *Vector) {
+	xleft := src.MaxX - r.MinX
+	if xleft < 0 {
 		return false, nil
 	}
+
+	xright := r.MaxX - src.MinX
+	if xright < 0 {
+		return false, nil
+	}
+
+	ytop := src.MaxY - r.MinY
+	if ytop < 0 {
+		return false, nil
+	}
+
+	ybottom := r.MaxY - src.MinY
+	if ybottom < 0 {
+		return false, nil
+	}
+
+	if math.Min(xleft, xright) > math.Min(ytop, ybottom) {
+		if ytop > ybottom {
+			return true, DownVectorPtr()
+		} else {
+			return true, UpVectorPtr()
+		}
+	} else {
+		if xleft > xright {
+			return true, RightVectorPtr()
+		} else {
+			return true, LeftVectorPtr()
+		}
+	}
+}
+
+func (r *RectangleF) IntersectFromCircle(src *CircleF) (result bool, normal *Vector) {
+	p := NewVector(
+		ClampFloat(src.OrgX, r.MinX, r.MaxX),
+		ClampFloat(src.OrgY, r.MinY, r.MaxY))
+	o := NewVector(src.OrgX-p.X, src.OrgY-p.Y) // CircleF to RectangleF version
+	rll := o.Length2()
+
+	if rll > (src.Radius * src.Radius) {
+		return false, nil
+	}
+
+	n := o.DivF(math.Sqrt(rll))
+	return true, &n
 }

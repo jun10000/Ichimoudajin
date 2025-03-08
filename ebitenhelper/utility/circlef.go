@@ -1,6 +1,6 @@
 package utility
 
-import "log"
+import "math"
 
 type CircleF struct {
 	OrgX   float64
@@ -35,19 +35,32 @@ func (c *CircleF) Offset(x, y float64, output Bounder) Bounder {
 	}
 }
 
-/*
-Intersect supports following bounder type
-  - *RectangleF
-  - *CircleF
-*/
-func (c *CircleF) Intersect(target Bounder) (result bool, normal *Vector) {
-	switch target.Type() {
-	case BounderTypeRectangle:
-		return IntersectCircleToRectangle(c, target.(*RectangleF), false)
-	case BounderTypeCircle:
-		return IntersectCircleToCircle(c, target.(*CircleF))
-	default:
-		log.Println("Detected unsupported intersection type")
+func (c *CircleF) IntersectTo(target Bounder) (result bool, normal *Vector) {
+	return target.IntersectFromCircle(c)
+}
+
+func (c *CircleF) IntersectFromRectangle(src *RectangleF) (result bool, normal *Vector) {
+	p := NewVector(
+		ClampFloat(c.OrgX, src.MinX, src.MaxX),
+		ClampFloat(c.OrgY, src.MinY, src.MaxY))
+	o := NewVector(p.X-c.OrgX, p.Y-c.OrgY) // RectangleF to CircleF version
+	rll := o.Length2()
+
+	if rll > (c.Radius * c.Radius) {
 		return false, nil
 	}
+
+	n := o.DivF(math.Sqrt(rll))
+	return true, &n
+}
+
+func (c *CircleF) IntersectFromCircle(src *CircleF) (result bool, normal *Vector) {
+	d := NewVector(src.OrgX-c.OrgX, src.OrgY-c.OrgY)
+	dll := d.Length2()
+	if dll > ((src.Radius + c.Radius) * (src.Radius + c.Radius)) {
+		return false, nil
+	}
+
+	n := d.DivF(math.Sqrt(dll))
+	return true, &n
 }
