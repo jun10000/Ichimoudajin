@@ -33,25 +33,25 @@ func (c *MovementComponent) addLocationForce(offset utility.Vector) {
 	c.parent.SetLocation(c.parent.GetLocation().Add(offset))
 }
 
-func (c *MovementComponent) AddLocation(offset utility.Vector) (rOnHitDistance int, rOffset utility.Vector, rNormal *utility.Vector, rIsHit bool) {
+func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceResult {
 	bounds := c.parent.GetMainColliderBounds()
 	excepts := make(utility.Set[utility.Collider])
 	excepts.Add(c.parent)
-	thd, to, tn, th := utility.Trace(utility.GetLevel().Colliders, bounds, offset, excepts)
+	r := utility.Trace(utility.GetLevel().Colliders, bounds, offset, excepts)
 
-	if th {
-		if thd == 0 { // Force back location
-			c.addLocationForce(*tn)
-		} else if (thd - 1) > utility.MovementInvalidDistance {
-			tol, ton := to.Decompose()
+	if r.IsHit {
+		if r.HitDistance == 0 { // Force back location
+			c.addLocationForce(*r.HitNormal)
+		} else if (r.HitDistance - 1) > utility.MovementInvalidDistance {
+			tol, ton := r.TraceOffset.Decompose()
 			lo := ton.MulF(tol - float64(utility.MovementInvalidDistance))
 			c.addLocationForce(lo)
 		}
 	} else {
-		c.addLocationForce(to)
+		c.addLocationForce(r.TraceOffset)
 	}
 
-	return thd, to, tn, th
+	return r
 }
 
 func (c *MovementComponent) Tick() {
@@ -79,13 +79,13 @@ func (c *MovementComponent) Tick() {
 	rl := vl * utility.TickDuration
 	for range utility.MovementMaxReflectionCount + 1 {
 		ro := vn.MulF(rl)
-		_, tro, trn, trh := c.AddLocation(ro)
-		if !trh {
+		tr := c.AddLocation(ro)
+		if !tr.IsHit {
 			break
 		}
 
-		rl = ro.Sub(tro).Length()
-		vn = vn.Reflect(*trn, 0)
+		rl = ro.Sub(tr.TraceOffset).Length()
+		vn = vn.Reflect(*tr.HitNormal, 0)
 	}
 	c.velocity = vn.MulF(vl)
 
