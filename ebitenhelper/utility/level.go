@@ -25,6 +25,7 @@ type Level struct {
 	StaticColliders  *Smap[Collider, [9]Bounder]
 	MovableColliders *Smap[MovableCollider, [9]Bounder]
 	InputReceivers   []InputReceiver
+	Players          []Player
 	AITickers        []AITicker
 	Tickers          []Ticker
 	Drawers          []Drawer
@@ -45,6 +46,7 @@ func NewLevel(name string) *Level {
 		StaticColliders:  NewSmap[Collider, [9]Bounder](),
 		MovableColliders: NewSmap[MovableCollider, [9]Bounder](),
 		InputReceivers:   make([]InputReceiver, 0, InitialInputReceiverCap),
+		Players:          make([]Player, 0, InitialInputReceiverCap),
 		AITickers:        make([]AITicker, 0, InitialAITickerCap),
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
 		Drawers:          make([]Drawer, 0, InitialDrawerCap),
@@ -53,18 +55,6 @@ func NewLevel(name string) *Level {
 }
 
 func (l *Level) Add(actor any) {
-	if a, ok := actor.(Drawer); ok {
-		l.Drawers = append(l.Drawers, a)
-	}
-	if a, ok := actor.(InputReceiver); ok {
-		l.InputReceivers = append(l.InputReceivers, a)
-	}
-	if a, ok := actor.(AITicker); ok {
-		l.AITickers = append(l.AITickers, a)
-	}
-	if a, ok := actor.(Ticker); ok {
-		l.Tickers = append(l.Tickers, a)
-	}
 	if a, ok := actor.(Collider); ok {
 		l.Colliders.Store(a, a.GetColliderBounds())
 		if m, ok := a.(MovableCollider); ok {
@@ -72,6 +62,21 @@ func (l *Level) Add(actor any) {
 		} else {
 			l.StaticColliders.Store(a, a.GetColliderBounds())
 		}
+	}
+	if a, ok := actor.(InputReceiver); ok {
+		l.InputReceivers = append(l.InputReceivers, a)
+	}
+	if a, ok := actor.(Player); ok {
+		l.Players = append(l.Players, a)
+	}
+	if a, ok := actor.(AITicker); ok {
+		l.AITickers = append(l.AITickers, a)
+	}
+	if a, ok := actor.(Ticker); ok {
+		l.Tickers = append(l.Tickers, a)
+	}
+	if a, ok := actor.(Drawer); ok {
+		l.Drawers = append(l.Drawers, a)
 	}
 }
 

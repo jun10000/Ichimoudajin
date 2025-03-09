@@ -14,10 +14,10 @@ func NewAIControllerComponent(parent utility.MovableCollider) *AIControllerCompo
 
 func (a *AIControllerComponent) AITick() {
 	l := utility.GetLevel()
-	for _, r := range l.InputReceivers {
-		if p, ok := r.(utility.Collider); ok {
-			l.AIMove(a.parent, p)
-			return
-		}
+	if len(l.Players) == 0 {
+		return
 	}
+
+	p := l.Players[0]
+	l.AIMove(a.parent, p)
 }

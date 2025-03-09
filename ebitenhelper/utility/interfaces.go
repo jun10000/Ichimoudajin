@@ -41,10 +41,14 @@ type MovableCollider interface {
 }
 
 type InputReceiver interface {
-	Transformer
 	ReceiveKeyInput(key ebiten.Key, state PressState)
 	ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState)
 	ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64)
+}
+
+type Player interface {
+	InputReceiver
+	MovableCollider
 }
 
 type AITicker interface {
