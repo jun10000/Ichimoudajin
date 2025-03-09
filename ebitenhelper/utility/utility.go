@@ -3,6 +3,7 @@ package utility
 import (
 	"image"
 	"log"
+	"math"
 	"slices"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -16,13 +17,6 @@ const (
 	PressStatePressed PressState = iota
 	PressStateReleased
 	PressStatePressing
-)
-
-type Mobility int
-
-const (
-	MobilityStatic Mobility = iota
-	MobilityMovable
 )
 
 type Empty struct{}
@@ -122,4 +116,59 @@ func RemoveSliceItem[T comparable](slice []T, item T) []T {
 	}
 
 	return slices.Delete(slice, i, i+1)
+}
+
+func GetColliderBounds[T ColliderComparable](colliders *Smap[T, [9]Bounder], excepts Set[T]) func(yield func(Bounder) bool) {
+	return func(yield func(Bounder) bool) {
+		loop := GetLevel().IsLooping
+		for c, bs := range colliders.Range() {
+			if excepts != nil && excepts.Contains(c) {
+				continue
+			}
+
+			if loop {
+				for i := range 9 {
+					if !yield(bs[i]) {
+						return
+					}
+				}
+			} else {
+				if !yield(bs[0]) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func Intersect[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, excepts Set[T]) (result bool, normal *Vector) {
+	for b := range GetColliderBounds(colliders, excepts) {
+		r, n := target.IntersectTo(b)
+		if r {
+			return true, n
+		}
+	}
+
+	return false, nil
+}
+
+func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) (rOffset Vector, rNormal *Vector, rIsHit bool) {
+	ol, on := offset.Decompose()
+
+	for i := 0; i <= int(math.Trunc(ol)+1); i++ {
+		v := on.MulF(float64(i))
+		bo := target.Offset(v.X, v.Y, nil)
+		r, n := Intersect(colliders, bo, excepts)
+		if r {
+			DrawDebugTraceDistance(target, i)
+			if i <= TraceSafeDistance {
+				return ZeroVector(), n, true
+			} else {
+				o := on.MulF(float64(i - 1))
+				return o, n, true
+			}
+		}
+	}
+
+	return offset, nil, false
 }

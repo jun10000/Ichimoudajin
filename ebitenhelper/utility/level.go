@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io/fs"
 	"log"
-	"math"
 	"math/rand/v2"
 	"runtime"
 	"sync"
@@ -22,12 +21,14 @@ type Level struct {
 	AILocationDeviation float64
 	AIPathfinding       *AStar
 
-	Colliders      *Smap[Collider, [9]Bounder]
-	InputReceivers []InputReceiver
-	AITickers      []AITicker
-	Tickers        []Ticker
-	Drawers        []Drawer
-	DebugDraws     []func(screen *ebiten.Image)
+	Colliders        *Smap[Collider, [9]Bounder]
+	StaticColliders  *Smap[Collider, [9]Bounder]
+	MovableColliders *Smap[MovableCollider, [9]Bounder]
+	InputReceivers   []InputReceiver
+	AITickers        []AITicker
+	Tickers          []Ticker
+	Drawers          []Drawer
+	DebugDraws       []func(screen *ebiten.Image)
 }
 
 func NewLevel(name string) *Level {
@@ -40,12 +41,14 @@ func NewLevel(name string) *Level {
 		AILocationDeviation: 0.5,
 		AIPathfinding:       NewAStar(),
 
-		Colliders:      NewSmap[Collider, [9]Bounder](),
-		InputReceivers: make([]InputReceiver, 0, InitialInputReceiverCap),
-		AITickers:      make([]AITicker, 0, InitialAITickerCap),
-		Tickers:        make([]Ticker, 0, InitialTickerCap),
-		Drawers:        make([]Drawer, 0, InitialDrawerCap),
-		DebugDraws:     make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
+		Colliders:        NewSmap[Collider, [9]Bounder](),
+		StaticColliders:  NewSmap[Collider, [9]Bounder](),
+		MovableColliders: NewSmap[MovableCollider, [9]Bounder](),
+		InputReceivers:   make([]InputReceiver, 0, InitialInputReceiverCap),
+		AITickers:        make([]AITicker, 0, InitialAITickerCap),
+		Tickers:          make([]Ticker, 0, InitialTickerCap),
+		Drawers:          make([]Drawer, 0, InitialDrawerCap),
+		DebugDraws:       make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
 	}
 }
 
@@ -64,64 +67,15 @@ func (l *Level) Add(actor any) {
 	}
 	if a, ok := actor.(Collider); ok {
 		l.Colliders.Store(a, a.GetColliderBounds())
-	}
-}
-
-func (l *Level) GetColliderBounds(excepts Set[Collider]) func(yield func(Bounder) bool) {
-	return func(yield func(Bounder) bool) {
-		for c, bs := range l.Colliders.Range() {
-			if excepts.Contains(c) {
-				continue
-			}
-
-			if l.IsLooping {
-				for i := range 9 {
-					if !yield(bs[i]) {
-						return
-					}
-				}
-			} else {
-				if !yield(bs[0]) {
-					return
-				}
-			}
+		if m, ok := a.(MovableCollider); ok {
+			l.MovableColliders.Store(m, m.GetColliderBounds())
+		} else {
+			l.StaticColliders.Store(a, a.GetColliderBounds())
 		}
 	}
 }
 
-func (l *Level) Intersect(target Bounder, excepts Set[Collider]) (result bool, normal *Vector) {
-	for b := range l.GetColliderBounds(excepts) {
-		r, n := target.IntersectTo(b)
-		if r {
-			return true, n
-		}
-	}
-
-	return false, nil
-}
-
-func (l *Level) Trace(target Bounder, offset Vector, excepts Set[Collider]) (rOffset Vector, rNormal *Vector, rIsHit bool) {
-	ol, on := offset.Decompose()
-
-	for i := 0; i <= int(math.Trunc(ol)+1); i++ {
-		v := on.MulF(float64(i))
-		bo := target.Offset(v.X, v.Y, nil)
-		r, n := l.Intersect(bo, excepts)
-		if r {
-			DrawDebugTraceDistance(target, i)
-			if i <= TraceSafeDistance {
-				return ZeroVector(), n, true
-			} else {
-				o := on.MulF(float64(i - 1))
-				return o, n, true
-			}
-		}
-	}
-
-	return offset, nil, false
-}
-
-func (l *Level) AIMove(self Mover, target Collider) {
+func (l *Level) AIMove(self MovableCollider, target Collider) {
 	srl := self.GetMainColliderBounds().CenterLocation()
 	trl := target.GetMainColliderBounds().CenterLocation()
 	spl := l.RealToPFLocation(srl)
@@ -161,20 +115,7 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 		loc.Y+AIValidOffset,
 		loc.X+l.AIGridSize.X-AIValidOffset,
 		loc.Y+l.AIGridSize.Y-AIValidOffset)
-
-	excepts := make(Set[Collider])
-	for _, t := range l.AITickers {
-		if c, ok := t.(Collider); ok {
-			excepts.Add(c)
-		}
-	}
-	for _, t := range l.InputReceivers {
-		if c, ok := t.(Collider); ok {
-			excepts.Add(c)
-		}
-	}
-
-	r, _ := l.Intersect(b, excepts)
+	r, _ := Intersect(l.StaticColliders, b, nil)
 
 	l.pfValidCache.Store(location, !r)
 	return !r

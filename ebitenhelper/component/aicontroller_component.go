@@ -3,10 +3,10 @@ package component
 import "github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 
 type AIControllerComponent struct {
-	parent utility.Mover
+	parent utility.MovableCollider
 }
 
-func NewAIControllerComponent(parent utility.Mover) *AIControllerComponent {
+func NewAIControllerComponent(parent utility.MovableCollider) *AIControllerComponent {
 	return &AIControllerComponent{
 		parent: parent,
 	}

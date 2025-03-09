@@ -29,7 +29,12 @@ type Collider interface {
 	GetColliderBounds() [9]Bounder
 }
 
-type Mover interface {
+type ColliderComparable interface {
+	Collider
+	comparable
+}
+
+type MovableCollider interface {
 	Collider
 	AddInput(normal Vector, scale float64)
 	AddLocation(offset Vector) (rOffset Vector, rNormal *Vector, rIsHit bool)

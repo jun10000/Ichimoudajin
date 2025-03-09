@@ -9,10 +9,10 @@ import (
 
 type ControllerComponent struct {
 	DeadZone float64
-	parent   utility.Mover
+	parent   utility.MovableCollider
 }
 
-func NewControllerComponent(parent utility.Mover) *ControllerComponent {
+func NewControllerComponent(parent utility.MovableCollider) *ControllerComponent {
 	return &ControllerComponent{
 		DeadZone: 0.2,
 		parent:   parent,
