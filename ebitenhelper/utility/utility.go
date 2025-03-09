@@ -18,11 +18,11 @@ const (
 	PressStatePressing
 )
 
-type BounderType int
+type Mobility int
 
 const (
-	BounderTypeRectangle BounderType = iota
-	BounderTypeCircle
+	MobilityStatic Mobility = iota
+	MobilityMovable
 )
 
 type Empty struct{}

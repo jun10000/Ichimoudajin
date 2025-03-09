@@ -28,10 +28,6 @@ func (r *RectangleF) Size() Vector {
 	return NewVector(r.MaxX-r.MinX, r.MaxY-r.MinY)
 }
 
-func (r *RectangleF) Type() BounderType {
-	return BounderTypeRectangle
-}
-
 func (r *RectangleF) CenterLocation() Vector {
 	return ClampLocation(NewVector((r.MinX+r.MaxX)/2, (r.MinY+r.MaxY)/2))
 }

@@ -16,10 +16,6 @@ func NewCircleF(orgX, orgY, radius float64) *CircleF {
 	}
 }
 
-func (c *CircleF) Type() BounderType {
-	return BounderTypeCircle
-}
-
 func (c *CircleF) CenterLocation() Vector {
 	return ClampLocation(NewVector(c.OrgX, c.OrgY))
 }
