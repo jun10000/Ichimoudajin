@@ -7,10 +7,9 @@ import (
 )
 
 type MovementComponent struct {
-	Accel              float64
-	Decel              float64
-	MaxSpeed           float64
-	MaxReflectionCount int
+	Accel    float64
+	Decel    float64
+	MaxSpeed float64
 
 	parent     utility.Collider
 	velocity   utility.Vector
@@ -19,11 +18,10 @@ type MovementComponent struct {
 
 func NewMovementComponent(parent utility.Collider) *MovementComponent {
 	return &MovementComponent{
-		Accel:              8000,
-		Decel:              8000,
-		MaxSpeed:           200,
-		MaxReflectionCount: 3,
-		parent:             parent,
+		Accel:    8000,
+		Decel:    8000,
+		MaxSpeed: 200,
+		parent:   parent,
 	}
 }
 
@@ -31,13 +29,29 @@ func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
 	c.inputAccel = c.inputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) AddLocation(offset utility.Vector) (rOffset utility.Vector, rNormal *utility.Vector, rIsHit bool) {
+func (c *MovementComponent) addLocationForce(offset utility.Vector) {
+	c.parent.SetLocation(c.parent.GetLocation().Add(offset))
+}
+
+func (c *MovementComponent) AddLocation(offset utility.Vector) (rOnHitDistance int, rOffset utility.Vector, rNormal *utility.Vector, rIsHit bool) {
 	bounds := c.parent.GetMainColliderBounds()
 	excepts := make(utility.Set[utility.Collider])
 	excepts.Add(c.parent)
-	o, n, ok := utility.Trace(utility.GetLevel().Colliders, bounds, offset, excepts)
-	c.parent.SetLocation(c.parent.GetLocation().Add(o))
-	return o, n, ok
+	thd, to, tn, th := utility.Trace(utility.GetLevel().Colliders, bounds, offset, excepts)
+
+	if th {
+		if thd == 0 { // Force back location
+			c.addLocationForce(*tn)
+		} else if (thd - 1) > utility.MovementInvalidDistance {
+			tol, ton := to.Decompose()
+			lo := ton.MulF(tol - float64(utility.MovementInvalidDistance))
+			c.addLocationForce(lo)
+		}
+	} else {
+		c.addLocationForce(to)
+	}
+
+	return thd, to, tn, th
 }
 
 func (c *MovementComponent) Tick() {
@@ -63,10 +77,10 @@ func (c *MovementComponent) Tick() {
 	// Collision test
 	vl, vn := c.velocity.Decompose()
 	rl := vl * utility.TickDuration
-	for i := 0; i <= c.MaxReflectionCount; i++ {
+	for range utility.MovementMaxReflectionCount + 1 {
 		ro := vn.MulF(rl)
-		tro, trn, trok := c.AddLocation(ro)
-		if !trok {
+		_, tro, trn, trh := c.AddLocation(ro)
+		if !trh {
 			break
 		}
 

@@ -37,7 +37,7 @@ type ColliderComparable interface {
 type MovableCollider interface {
 	Collider
 	AddInput(normal Vector, scale float64)
-	AddLocation(offset Vector) (rOffset Vector, rNormal *Vector, rIsHit bool)
+	AddLocation(offset Vector) (rOnHitDistance int, rOffset Vector, rNormal *Vector, rIsHit bool)
 }
 
 type InputReceiver interface {

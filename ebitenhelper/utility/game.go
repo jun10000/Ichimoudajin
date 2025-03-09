@@ -14,14 +14,15 @@ const (
 )
 
 var (
-	TraceSafeDistance       = 3
-	AIValidOffset           = 0.5
-	AIMaxTaskCount          = 1
-	InitialPFResultCap      = 128
-	InitialInputReceiverCap = 1
-	InitialAITickerCap      = 32
-	InitialTickerCap        = 32
-	InitialDrawerCap        = 128
+	MovementMaxReflectionCount = 1
+	MovementInvalidDistance    = 2
+	AIValidOffset              = 0.5
+	AIMaxTaskCount             = 1
+	InitialPFResultCap         = 128
+	InitialInputReceiverCap    = 1
+	InitialAITickerCap         = 32
+	InitialTickerCap           = 32
+	InitialDrawerCap           = 128
 )
 
 var (
@@ -38,7 +39,6 @@ var (
 	DebugIsShowTraceDistance = true
 	DebugTraceDistanceColors = map[int]color.RGBA{
 		0: DebugColorRed,
-		1: DebugColorGreen,
 	}
 
 	DebugIsShowAIPath = false

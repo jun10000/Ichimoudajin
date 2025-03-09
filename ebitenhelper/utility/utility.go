@@ -152,23 +152,24 @@ func Intersect[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Boun
 	return false, nil
 }
 
-func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) (rOffset Vector, rNormal *Vector, rIsHit bool) {
+func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) (rOnHitDistance int, rOffset Vector, rNormal *Vector, rIsHit bool) {
 	ol, on := offset.Decompose()
+	oli := int(math.Trunc(ol)) + 1
 
-	for i := 0; i <= int(math.Trunc(ol)+1); i++ {
+	for i := 0; i <= oli; i++ {
 		v := on.MulF(float64(i))
 		bo := target.Offset(v.X, v.Y, nil)
 		r, n := Intersect(colliders, bo, excepts)
 		if r {
 			DrawDebugTraceDistance(target, i)
-			if i <= TraceSafeDistance {
-				return ZeroVector(), n, true
+			if i == 0 {
+				return 0, ZeroVector(), n, true
 			} else {
 				o := on.MulF(float64(i - 1))
-				return o, n, true
+				return i, o, n, true
 			}
 		}
 	}
 
-	return offset, nil, false
+	return oli + 1, offset, nil, false
 }

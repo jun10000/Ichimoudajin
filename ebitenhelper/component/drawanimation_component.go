@@ -49,7 +49,7 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
 	switch r := c.parent.GetRotation(); {
 	case r < math.Pi*-3/4:
 		idy = c.FrameDirectionMap[3]
-	case r < math.Pi*-1/4:
+	case r <= math.Pi*-1/4:
 		idy = c.FrameDirectionMap[2]
 	case r < math.Pi*1/4:
 		idy = c.FrameDirectionMap[0]
