@@ -3,45 +3,59 @@ package utility
 import "math"
 
 type TraceResult struct {
-	IsHit       bool
-	HitDistance int
-	TraceOffset Vector
-	HitNormal   *Vector
+	InputOffset  Vector
+	InputOffsetD float64
+	InputOffsetN Vector
+
+	IsHit        bool
+	HitNormal    *Vector
+	HitOffset    Vector
+	HitOffsetD   int
+	TraceOffset  Vector
+	TraceoffsetD int
 }
 
 func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) *TraceResult {
-	ol, on := offset.Decompose()
-	oli := int(math.Trunc(ol)) + 1
+	offsetl, offsetn := offset.Decompose()
+	oli := int(math.Trunc(offsetl)) + 1
 
 	for i := 0; i <= oli; i++ {
-		v := on.MulF(float64(i))
+		v := offsetn.MulF(float64(i))
 		bo := target.Offset(v.X, v.Y, nil)
 		r, n := Intersect(colliders, bo, excepts)
 		if r {
 			DrawDebugTraceDistance(target, i)
 			if i == 0 {
 				return &TraceResult{
-					HitDistance: 0,
-					TraceOffset: ZeroVector(),
-					HitNormal:   n,
-					IsHit:       true,
+					InputOffset:  offset,
+					InputOffsetD: offsetl,
+					InputOffsetN: offsetn,
+
+					IsHit:     true,
+					HitNormal: n,
 				}
 			} else {
-				o := on.MulF(float64(i - 1))
 				return &TraceResult{
-					HitDistance: i,
-					TraceOffset: o,
-					HitNormal:   n,
-					IsHit:       true,
+					InputOffset:  offset,
+					InputOffsetD: offsetl,
+					InputOffsetN: offsetn,
+
+					IsHit:        true,
+					HitNormal:    n,
+					HitOffset:    v,
+					HitOffsetD:   i,
+					TraceOffset:  offsetn.MulF(float64(i - 1)),
+					TraceoffsetD: i - 1,
 				}
 			}
 		}
 	}
 
 	return &TraceResult{
-		HitDistance: oli + 1,
-		TraceOffset: offset,
-		HitNormal:   nil,
-		IsHit:       false,
+		InputOffset:  offset,
+		InputOffsetD: offsetl,
+		InputOffsetN: offsetn,
+
+		IsHit: false,
 	}
 }

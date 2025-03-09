@@ -40,15 +40,15 @@ func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceRes
 	r := utility.Trace(utility.GetLevel().Colliders, bounds, offset, excepts)
 
 	if r.IsHit {
-		if r.HitDistance == 0 { // Force back location
+		if r.HitOffsetD == 0 { // Force back location
 			c.addLocationForce(*r.HitNormal)
-		} else if (r.HitDistance - 1) > utility.MovementInvalidDistance {
+		} else if r.TraceoffsetD > utility.MovementInvalidDistance {
 			tol, ton := r.TraceOffset.Decompose()
 			lo := ton.MulF(tol - float64(utility.MovementInvalidDistance))
 			c.addLocationForce(lo)
 		}
 	} else {
-		c.addLocationForce(r.TraceOffset)
+		c.addLocationForce(r.InputOffset)
 	}
 
 	return r
