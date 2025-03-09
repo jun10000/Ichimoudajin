@@ -1,61 +1,45 @@
 package utility
 
-import "math"
-
 type TraceResult struct {
 	InputOffset  Vector
 	InputOffsetD float64
 	InputOffsetN Vector
 
 	IsHit        bool
+	IsFirstHit   bool
 	HitNormal    *Vector
-	HitOffset    Vector
-	HitOffsetD   int
 	TraceOffset  Vector
 	TraceoffsetD int
 }
 
-func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) *TraceResult {
-	offsetl, offsetn := offset.Decompose()
-	oli := int(math.Trunc(offsetl)) + 1
+func NewTraceResult(offset Vector) *TraceResult {
+	ol, on := offset.Decompose()
+	return &TraceResult{
+		InputOffset:  offset,
+		InputOffsetD: ol,
+		InputOffsetN: on,
+	}
+}
 
-	for i := 0; i <= oli; i++ {
-		v := offsetn.MulF(float64(i))
-		bo := target.Offset(v.X, v.Y, nil)
-		r, n := Intersect(colliders, bo, excepts)
-		if r {
+func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) *TraceResult {
+	ret := NewTraceResult(offset)
+
+	for i := range int(ret.InputOffsetD) + 2 {
+		o := ret.InputOffsetN.MulF(float64(i))
+		b := target.Offset(o.X, o.Y, nil)
+		ret.IsHit, ret.HitNormal = Intersect(colliders, b, excepts)
+		if ret.IsHit {
 			DrawDebugTraceDistance(target, i)
 			if i == 0 {
-				return &TraceResult{
-					InputOffset:  offset,
-					InputOffsetD: offsetl,
-					InputOffsetN: offsetn,
-
-					IsHit:     true,
-					HitNormal: n,
-				}
+				ret.IsFirstHit = true
+				return ret
 			} else {
-				return &TraceResult{
-					InputOffset:  offset,
-					InputOffsetD: offsetl,
-					InputOffsetN: offsetn,
-
-					IsHit:        true,
-					HitNormal:    n,
-					HitOffset:    v,
-					HitOffsetD:   i,
-					TraceOffset:  offsetn.MulF(float64(i - 1)),
-					TraceoffsetD: i - 1,
-				}
+				ret.TraceOffset = o.Sub(ret.InputOffsetN)
+				ret.TraceoffsetD = i - 1
+				return ret
 			}
 		}
 	}
 
-	return &TraceResult{
-		InputOffset:  offset,
-		InputOffsetD: offsetl,
-		InputOffsetN: offsetn,
-
-		IsHit: false,
-	}
+	return ret
 }

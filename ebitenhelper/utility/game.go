@@ -15,7 +15,7 @@ const (
 
 var (
 	MovementMaxReflectionCount = 1
-	MovementInvalidDistance    = 2
+	MovementInvalidDistance    = 3
 	AIValidOffset              = 0.5
 	AIMaxTaskCount             = 1
 	InitialPFResultCap         = 128

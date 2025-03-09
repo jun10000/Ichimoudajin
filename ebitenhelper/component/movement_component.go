@@ -40,12 +40,11 @@ func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceRes
 	r := utility.Trace(utility.GetLevel().Colliders, bounds, offset, excepts)
 
 	if r.IsHit {
-		if r.HitOffsetD == 0 { // Force back location
+		if r.IsFirstHit { // Force back location
 			c.addLocationForce(*r.HitNormal)
 		} else if r.TraceoffsetD > utility.MovementInvalidDistance {
-			tol, ton := r.TraceOffset.Decompose()
-			lo := ton.MulF(tol - float64(utility.MovementInvalidDistance))
-			c.addLocationForce(lo)
+			ld := float64(r.TraceoffsetD - utility.MovementInvalidDistance)
+			c.addLocationForce(r.InputOffsetN.MulF(ld))
 		}
 	} else {
 		c.addLocationForce(r.InputOffset)
@@ -75,19 +74,22 @@ func (c *MovementComponent) Tick() {
 	c.inputAccel = utility.ZeroVector()
 
 	// Collision test
-	vl, vn := c.velocity.Decompose()
-	rl := vl * utility.TickDuration
+	velocityL, velocityN := c.velocity.Decompose()
+	remD := velocityL * utility.TickDuration
 	for range utility.MovementMaxReflectionCount + 1 {
-		ro := vn.MulF(rl)
-		tr := c.AddLocation(ro)
+		tr := c.AddLocation(velocityN.MulF(remD))
 		if !tr.IsHit {
 			break
 		}
 
-		rl = ro.Sub(tr.TraceOffset).Length()
-		vn = vn.Reflect(*tr.HitNormal, 0)
+		remD -= float64(tr.TraceoffsetD)
+		if remD <= 0 {
+			break
+		}
+
+		velocityN = velocityN.Reflect(*tr.HitNormal, 0)
 	}
-	c.velocity = vn.MulF(vl)
+	c.velocity = velocityN.MulF(velocityL)
 
 	// Debug
 	utility.DrawDebugLocation(c.parent.GetLocation())
