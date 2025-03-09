@@ -54,6 +54,11 @@ func NewAStarInstance() *AStarInstance {
 }
 
 func (a *AStarInstance) Run(start Point, goal Point) []Point {
+	isValid := GetLevel().AIIsPFLocationValid
+	if !isValid(start) || !isValid(goal) {
+		return []Point{}
+	}
+
 	a.currentNode = NewAStarNode(start)
 	clear(a.openedNodes)
 	clear(a.closedNodes)
@@ -64,7 +69,7 @@ func (a *AStarInstance) Run(start Point, goal Point) []Point {
 		}
 
 		for l := range a.currentNode.GetAroundLocations() {
-			if !GetLevel().AIIsPFLocationValid(l) || a.closedNodes[l] != nil {
+			if !isValid(l) || a.closedNodes[l] != nil {
 				continue
 			}
 
