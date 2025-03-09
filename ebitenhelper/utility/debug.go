@@ -82,7 +82,7 @@ func DrawDebugTraceDistance(target Bounder, distance int) {
 	if isDebugMode && DebugIsShowTraceDistance {
 		dc, ok := DebugTraceDistanceColors[distance]
 		if !ok {
-			dc = DebugTraceDistanceColors[-1]
+			return
 		}
 
 		switch dt := target.(type) {
