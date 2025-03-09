@@ -17,7 +17,6 @@ var (
 	TraceSafeDistance       = 3
 	AIValidOffset           = 0.5
 	AIMaxTaskCount          = 1
-	AIIsUsePFCacheFile      = false
 	InitialPFResultCap      = 128
 	InitialInputReceiverCap = 1
 	InitialAITickerCap      = 32
@@ -84,15 +83,11 @@ func SetLevel(level *Level) error {
 	}
 
 	currentLevel = level
-	if AIIsUsePFCacheFile {
-		if IsDebugMode() {
-			return level.LoadOrBuildPFCache()
-		} else {
-			return level.LoadPFCache()
-		}
+	if IsDebugMode() {
+		return level.BuildPFCache()
+	} else {
+		return level.LoadPFCache()
 	}
-
-	return nil
 }
 
 type GamepadAxisKey struct {
