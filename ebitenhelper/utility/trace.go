@@ -21,6 +21,40 @@ func NewTraceResult(offset Vector) *TraceResult {
 	}
 }
 
+func GetColliderBounds[T ColliderComparable](colliders *Smap[T, [9]Bounder], excepts Set[T]) func(yield func(Bounder) bool) {
+	return func(yield func(Bounder) bool) {
+		loop := GetLevel().IsLooping
+		for c, bs := range colliders.Range() {
+			if excepts != nil && excepts.Contains(c) {
+				continue
+			}
+
+			if loop {
+				for i := range 9 {
+					if !yield(bs[i]) {
+						return
+					}
+				}
+			} else {
+				if !yield(bs[0]) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func Intersect[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, excepts Set[T]) (result bool, normal *Vector) {
+	for b := range GetColliderBounds(colliders, excepts) {
+		r, n := target.IntersectTo(b)
+		if r {
+			return true, n
+		}
+	}
+
+	return false, nil
+}
+
 func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) *TraceResult {
 	ret := NewTraceResult(offset)
 

@@ -35,7 +35,7 @@ var (
 	DebugIsShowLocation     = false
 	DebugLocationTextOffset = NewVector(3, -12)
 
-	DebugIsShowTraceDistance = true
+	DebugIsShowTraceDistance = false
 	DebugTraceDistanceColors = map[int]color.RGBA{
 		0: DebugColorRed,
 	}
