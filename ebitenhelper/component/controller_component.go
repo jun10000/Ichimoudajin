@@ -8,14 +8,12 @@ import (
 )
 
 type ControllerComponent struct {
-	DeadZone float64
-	parent   utility.MovableCollider
+	parent utility.MovableCollider
 }
 
 func NewControllerComponent(parent utility.MovableCollider) *ControllerComponent {
 	return &ControllerComponent{
-		DeadZone: 0.2,
-		parent:   parent,
+		parent: parent,
 	}
 }
 
@@ -45,7 +43,7 @@ func (c *ControllerComponent) ReceiveButtonInput(id ebiten.GamepadID, button ebi
 }
 
 func (c *ControllerComponent) ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
-	if -c.DeadZone < value && value < c.DeadZone {
+	if -utility.GamepadDeadZone < value && value < utility.GamepadDeadZone {
 		return
 	}
 

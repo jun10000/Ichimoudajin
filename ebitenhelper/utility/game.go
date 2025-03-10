@@ -17,6 +17,7 @@ var (
 	MovementMaxReflectionCount = 1
 	AIValidOffset              = 0.5
 	AIMaxTaskCount             = 1
+	GamepadDeadZone            = 0.2
 	InitialPFResultCap         = 128
 	InitialInputReceiverCap    = 1
 	InitialAITickerCap         = 32
