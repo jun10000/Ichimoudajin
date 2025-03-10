@@ -8,10 +8,12 @@ import (
 )
 
 /*
-ColliderComponent gives actors collider.
+ColliderComponent gives actors Collider and Transformer role.
 Available T type is pointer.
 */
 type ColliderComponent[T utility.Bounder] struct {
+	utility.Transform
+
 	getBounds   func(T)
 	loopOffsets [8]utility.Vector
 	cache       [9]utility.Bounder
@@ -36,6 +38,7 @@ func NewColliderComponent[T utility.Bounder](getBounds func(T)) *ColliderCompone
 	}
 
 	c := &ColliderComponent[T]{
+		Transform:   utility.DefaultTransform(),
 		getBounds:   getBounds,
 		loopOffsets: os,
 	}
@@ -60,4 +63,14 @@ func (c *ColliderComponent[T]) GetMainColliderBounds() utility.Bounder {
 
 func (c *ColliderComponent[T]) GetColliderBounds() [9]utility.Bounder {
 	return c.cache
+}
+
+func (c *ColliderComponent[T]) SetLocation(value utility.Vector) {
+	c.Transform.SetLocation(value)
+	c.UpdateColliderBounds()
+}
+
+func (c *ColliderComponent[T]) SetScale(value utility.Vector) {
+	c.Transform.SetScale(value)
+	c.UpdateColliderBounds()
 }

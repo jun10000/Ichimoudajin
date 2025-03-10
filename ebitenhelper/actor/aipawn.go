@@ -6,7 +6,6 @@ import (
 )
 
 type AIPawn struct {
-	utility.Transform
 	*component.MovementComponent
 	*component.DrawAnimationComponent
 	*component.AIControllerComponent
@@ -14,25 +13,12 @@ type AIPawn struct {
 }
 
 func NewAIPawn() *AIPawn {
-	a := &AIPawn{
-		Transform: utility.DefaultTransform(),
-	}
-
+	a := &AIPawn{}
 	a.MovementComponent = component.NewMovementComponent(a)
 	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
 	a.AIControllerComponent = component.NewAIControllerComponent(a)
 	a.ColliderComponent = component.NewColliderComponent(a.GetCircleBounds)
 	return a
-}
-
-func (a *AIPawn) SetLocation(value utility.Vector) {
-	a.Transform.SetLocation(value)
-	a.UpdateColliderBounds()
-}
-
-func (a *AIPawn) SetScale(value utility.Vector) {
-	a.Transform.SetScale(value)
-	a.UpdateColliderBounds()
 }
 
 func (a *AIPawn) Tick() {
