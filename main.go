@@ -8,7 +8,7 @@ import (
 func NewStage1() *utility.Level {
 	// Level
 	level := utility.NewLevel("stage1", true)
-	actor.AddActorsToLevelFromMapFile(level, "stage1.tmx")
+	actor.AddTileMapActorsToLevel(level, "stage1.tmx")
 
 	// Player
 	playerImage := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")

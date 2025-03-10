@@ -11,70 +11,70 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type mapTilesetImageXML struct {
+type tileMapTilesetImageXML struct {
 	Source string `xml:"source,attr"`
 }
 
-type mapLayerPropertyXML struct {
+type tileMapTileLayerPropertyXML struct {
 	Name  string `xml:"name,attr"`
 	Value string `xml:"value,attr"`
 }
 
-type mapLayerDataXML struct {
+type tileMapTileLayerDataXML struct {
 	Inner string `xml:",innerxml"`
 }
 
-type mapTilesetXML struct {
-	FirstGID  int                `xml:"firstgid,attr"`
-	TileCount int                `xml:"tilecount,attr"`
-	Columns   int                `xml:"columns,attr"`
-	Image     mapTilesetImageXML `xml:"image"`
+type tileMapTilesetXML struct {
+	FirstGID  int                    `xml:"firstgid,attr"`
+	TileCount int                    `xml:"tilecount,attr"`
+	Columns   int                    `xml:"columns,attr"`
+	Image     tileMapTilesetImageXML `xml:"image"`
 }
 
-type mapLayerXML struct {
-	Name       string                `xml:"name,attr"`
-	Properties []mapLayerPropertyXML `xml:"properties>property"`
-	Data       mapLayerDataXML       `xml:"data"`
+type tileMapTileLayerXML struct {
+	Name       string                        `xml:"name,attr"`
+	Properties []tileMapTileLayerPropertyXML `xml:"properties>property"`
+	Data       tileMapTileLayerDataXML       `xml:"data"`
 }
 
-type mapInfoXML struct {
-	Version    string          `xml:"version,attr"`
-	Width      int             `xml:"width,attr"`
-	Height     int             `xml:"height,attr"`
-	TileWidth  int             `xml:"tilewidth,attr"`
-	TileHeight int             `xml:"tileheight,attr"`
-	Tilesets   []mapTilesetXML `xml:"tileset"`
-	Layers     []mapLayerXML   `xml:"layer"`
+type tileMapInfoXML struct {
+	Version    string                `xml:"version,attr"`
+	Width      int                   `xml:"width,attr"`
+	Height     int                   `xml:"height,attr"`
+	TileWidth  int                   `xml:"tilewidth,attr"`
+	TileHeight int                   `xml:"tileheight,attr"`
+	Tilesets   []tileMapTilesetXML   `xml:"tileset"`
+	Layers     []tileMapTileLayerXML `xml:"layer"`
 }
 
-type MapCell struct {
-	Tileset   *MapTileset
+type TileMapTileLayerCell struct {
+	Tileset   *TileMapTileset
 	TileIndex int
 }
 
-type MapTileset struct {
+type TileMapTileset struct {
 	Image       *ebiten.Image
 	ColumnCount int
 	StartIndex  int
 	LastIndex   int
 }
 
-type MapLayer struct {
+type TileMapTileLayer struct {
 	Name        string
 	IsCollision bool
-	Cells       []MapCell
+	Cells       []TileMapTileLayerCell
 }
 
-type MapInfo struct {
+type TileMap struct {
 	MapSize  utility.Point
 	TileSize utility.Point
-	Tilesets []MapTileset
-	Layers   []MapLayer
+	Tilesets []TileMapTileset
+	Layers   []TileMapTileLayer
 }
 
-func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
+func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
 	// Read and check XML data
-	mxml := &mapInfoXML{}
+	mxml := &tileMapInfoXML{}
 	err := decoder.DecodeElement(mxml, &start)
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	}
 
 	// Begin creating MapInfo
-	result := MapInfo{
+	result := TileMap{
 		MapSize:  utility.NewPoint(mxml.Width, mxml.Height),
 		TileSize: utility.NewPoint(mxml.TileWidth, mxml.TileHeight),
 	}
@@ -93,7 +93,7 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	// Add MapTilesets
 	for _, v := range mxml.Tilesets {
 		image := utility.GetImageFile(v.Image.Source)
-		tileset := MapTileset{
+		tileset := TileMapTileset{
 			Image:       image,
 			ColumnCount: v.Columns,
 			StartIndex:  v.FirstGID,
@@ -104,7 +104,7 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 
 	// Add MapLayers
 	for _, v := range mxml.Layers {
-		layer := MapLayer{
+		layer := TileMapTileLayer{
 			Name:        v.Name,
 			IsCollision: (v.Name == "Collision"),
 		}
@@ -118,7 +118,7 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 		cellstrings = strings.ReplaceAll(cellstrings, "\n", "")
 		cellstrings = strings.ReplaceAll(cellstrings, " ", "")
 		for _, cellstring := range strings.Split(cellstrings, ",") {
-			c := MapCell{
+			c := TileMapTileLayerCell{
 				TileIndex: -1,
 			}
 			cellvalue, _ := strconv.Atoi(cellstring)
@@ -141,7 +141,7 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	return nil
 }
 
-func (m *MapInfo) GetActors() func(yield func(any) bool) {
+func (m *TileMap) ToActors() func(yield func(any) bool) {
 	return func(yield func(any) bool) {
 		mapimage := ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
 		mapactor := NewActor()
@@ -188,33 +188,19 @@ func (m *MapInfo) GetActors() func(yield func(any) bool) {
 	}
 }
 
-func getMapInfo(filename string) (*MapInfo, error) {
-	data, err := assets.Assets.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	data2 := &MapInfo{}
-	err = xml.Unmarshal(data, data2)
-	if err != nil {
-		return nil, err
-	}
-
-	return data2, nil
-}
-
-func getActorsFromMapFile(filename string) (func(yield func(any) bool), error) {
-	mi, err := getMapInfo(filename)
-	if err != nil {
-		return nil, err
-	}
-	return mi.GetActors(), nil
-}
-
-func AddActorsToLevelFromMapFile(level *utility.Level, filename string) {
-	as, err := getActorsFromMapFile(filename)
+func GetTileMap(filename string) *TileMap {
+	xmlData, err := assets.Assets.ReadFile(filename)
 	utility.PanicIfError(err)
-	for a := range as {
+
+	ret := &TileMap{}
+	err = xml.Unmarshal(xmlData, ret)
+	utility.PanicIfError(err)
+
+	return ret
+}
+
+func AddTileMapActorsToLevel(level *utility.Level, filename string) {
+	for a := range GetTileMap(filename).ToActors() {
 		level.Add(a)
 	}
 }
