@@ -11,6 +11,11 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
+type tileMapObjectLayerObjectPropertyXML struct {
+	Name  string `xml:"name,attr"`
+	Value string `xml:"value,attr"`
+}
+
 type tileMapTilesetImageXML struct {
 	Source string `xml:"source,attr"`
 }
@@ -22,6 +27,16 @@ type tileMapTileLayerPropertyXML struct {
 
 type tileMapTileLayerDataXML struct {
 	Inner string `xml:",innerxml"`
+}
+
+type tileMapObjectLayerObjectXML struct {
+	Name       string                                `xml:"name,attr"`
+	Class      string                                `xml:"type,attr"`
+	LocationX  float64                               `xml:"x,attr"`
+	LocationY  float64                               `xml:"y,attr"`
+	SizeX      float64                               `xml:"width,attr"`
+	SizeY      float64                               `xml:"height,attr"`
+	Properties []tileMapObjectLayerObjectPropertyXML `xml:"properties>property"`
 }
 
 type tileMapTilesetXML struct {
@@ -37,14 +52,20 @@ type tileMapTileLayerXML struct {
 	Data       tileMapTileLayerDataXML       `xml:"data"`
 }
 
-type tileMapInfoXML struct {
-	Version    string                `xml:"version,attr"`
-	Width      int                   `xml:"width,attr"`
-	Height     int                   `xml:"height,attr"`
-	TileWidth  int                   `xml:"tilewidth,attr"`
-	TileHeight int                   `xml:"tileheight,attr"`
-	Tilesets   []tileMapTilesetXML   `xml:"tileset"`
-	Layers     []tileMapTileLayerXML `xml:"layer"`
+type tileMapObjectLayerXML struct {
+	Name    string                        `xml:"name,attr"`
+	Objects []tileMapObjectLayerObjectXML `xml:"object"`
+}
+
+type tileMapXML struct {
+	Version      string                  `xml:"version,attr"`
+	Width        int                     `xml:"width,attr"`
+	Height       int                     `xml:"height,attr"`
+	TileWidth    int                     `xml:"tilewidth,attr"`
+	TileHeight   int                     `xml:"tileheight,attr"`
+	Tilesets     []tileMapTilesetXML     `xml:"tileset"`
+	TileLayers   []tileMapTileLayerXML   `xml:"layer"`
+	ObjectLayers []tileMapObjectLayerXML `xml:"objectgroup"`
 }
 
 type TileMapTileLayerCell struct {
@@ -74,7 +95,7 @@ type TileMap struct {
 
 func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
 	// Read and check XML data
-	mxml := &tileMapInfoXML{}
+	mxml := &tileMapXML{}
 	err := decoder.DecodeElement(mxml, &start)
 	if err != nil {
 		return err
@@ -103,7 +124,7 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	}
 
 	// Add MapLayers
-	for _, v := range mxml.Layers {
+	for _, v := range mxml.TileLayers {
 		layer := TileMapTileLayer{
 			Name:        v.Name,
 			IsCollision: (v.Name == "Collision"),
