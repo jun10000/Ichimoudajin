@@ -30,12 +30,12 @@ type Level struct {
 	DebugDraws       []func(screen *ebiten.Image)
 }
 
-func NewLevel(name string) *Level {
+func NewLevel(name string, isLooping bool) *Level {
 	return &Level{
 		pfValidCache: NewSmap[Point, bool](),
 
 		Name:          name,
-		IsLooping:     false,
+		IsLooping:     isLooping,
 		AIGridSize:    NewVector(32, 32),
 		AIPathfinding: NewAStar(),
 
