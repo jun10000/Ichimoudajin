@@ -106,17 +106,12 @@ func (m *MapInfo) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	for _, v := range mxml.Layers {
 		layer := MapLayer{
 			Name:        v.Name,
-			IsCollision: false,
+			IsCollision: (v.Name == "Collision"),
 		}
 
 		// Add Properties
-		for _, p := range v.Properties {
-			switch p.Name {
-			case "IsCollision":
-				v, _ := strconv.ParseBool(p.Value)
-				layer.IsCollision = v
-			}
-		}
+		// for _, p := range v.Properties {
+		// }
 
 		// Add MapCells
 		cellstrings := strings.ReplaceAll(v.Data.Inner, "\r", "")

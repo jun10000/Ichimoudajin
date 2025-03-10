@@ -1,0 +1,130 @@
+{
+    "automappingRulesFile": "",
+    "commands": [
+    ],
+    "compatibilityVersion": 1100,
+    "extensionsPath": "extensions",
+    "folders": [
+        "."
+    ],
+    "properties": [
+    ],
+    "propertyTypes": [
+        {
+            "color": "#ffff4400",
+            "drawFill": true,
+            "id": 3,
+            "members": [
+                {
+                    "name": "Accel",
+                    "type": "float",
+                    "value": 8000
+                },
+                {
+                    "name": "Decel",
+                    "type": "float",
+                    "value": 8000
+                },
+                {
+                    "name": "FPS",
+                    "type": "int",
+                    "value": 4
+                },
+                {
+                    "name": "FrameCount",
+                    "type": "int",
+                    "value": 3
+                },
+                {
+                    "name": "FrameDirectionMap",
+                    "type": "string",
+                    "value": "0123"
+                },
+                {
+                    "name": "Image",
+                    "type": "file",
+                    "value": ""
+                },
+                {
+                    "name": "MaxSpeed",
+                    "type": "float",
+                    "value": 200
+                },
+                {
+                    "name": "ScaleX",
+                    "type": "float",
+                    "value": 1
+                },
+                {
+                    "name": "ScaleY",
+                    "type": "float",
+                    "value": 1
+                }
+            ],
+            "name": "AIPawn",
+            "type": "class",
+            "useAs": [
+                "object",
+                "project"
+            ]
+        },
+        {
+            "color": "#ff00aaff",
+            "drawFill": true,
+            "id": 1,
+            "members": [
+                {
+                    "name": "Accel",
+                    "type": "float",
+                    "value": 8000
+                },
+                {
+                    "name": "Decel",
+                    "type": "float",
+                    "value": 8000
+                },
+                {
+                    "name": "FPS",
+                    "type": "int",
+                    "value": 4
+                },
+                {
+                    "name": "FrameCount",
+                    "type": "int",
+                    "value": 3
+                },
+                {
+                    "name": "FrameDirectionMap",
+                    "type": "string",
+                    "value": "0123"
+                },
+                {
+                    "name": "Image",
+                    "type": "file",
+                    "value": ""
+                },
+                {
+                    "name": "MaxSpeed",
+                    "type": "float",
+                    "value": 200
+                },
+                {
+                    "name": "ScaleX",
+                    "type": "float",
+                    "value": 1
+                },
+                {
+                    "name": "ScaleY",
+                    "type": "float",
+                    "value": 1
+                }
+            ],
+            "name": "Pawn",
+            "type": "class",
+            "useAs": [
+                "object",
+                "project"
+            ]
+        }
+    ]
+}
