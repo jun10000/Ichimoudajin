@@ -36,6 +36,7 @@ func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder,
 			} else {
 				ret.TraceOffset = o.Sub(ret.InputOffsetN)
 				ret.TraceoffsetD = i - 1
+				DrawDebugTraceResult(ret, target)
 				return ret
 			}
 		}

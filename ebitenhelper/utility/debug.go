@@ -96,6 +96,20 @@ func DrawDebugTraceDistance(target Bounder, distance int) {
 	}
 }
 
+func DrawDebugTraceResult(r *TraceResult, b Bounder) {
+	if isDebugMode && DebugIsShowTraceResult {
+		if !r.IsHit || r.IsFirstHit {
+			return
+		}
+
+		ls := b.CenterLocation()
+		lh := ls.Add(r.TraceOffset.MulF(DebugTraceResultLength))
+		DrawDebugLine(ls, lh, DebugColorGreen)
+		DrawDebugLine(lh, lh.Add(r.InputOffset.Sub(r.TraceOffset).MulF(DebugTraceResultLength)), DebugColorRed)
+		DrawDebugLine(ls, ls.Add((*r.HitNormal).MulF(DebugTraceResultLength)), DebugColorBlue)
+	}
+}
+
 func DrawDebugAIPath(path []Point) {
 	if isDebugMode && DebugIsShowAIPath {
 		l := GetLevel()

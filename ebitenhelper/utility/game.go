@@ -41,6 +41,9 @@ var (
 		0: DebugColorRed,
 	}
 
+	DebugIsShowTraceResult = true
+	DebugTraceResultLength = 30.0
+
 	DebugIsShowAIPath = false
 	DebugAIPathColor  = DebugColorGreen
 )
@@ -81,7 +84,7 @@ func SetLevel(level *Level) error {
 
 	currentLevel = level
 	if IsDebugMode() {
-		return level.BuildPFCache()
+		return level.LoadOrBuildPFCache()
 	} else {
 		return level.LoadPFCache()
 	}
