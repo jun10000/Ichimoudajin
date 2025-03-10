@@ -40,7 +40,7 @@ var (
 		0: DebugColorRed,
 	}
 
-	DebugIsShowTraceResult = true
+	DebugIsShowTraceResult = false
 	DebugTraceResultLength = 30.0
 
 	DebugIsShowAIPath = false

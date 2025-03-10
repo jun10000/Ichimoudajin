@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io/fs"
 	"log"
-	"math/rand/v2"
 	"runtime"
 	"sync"
 	"time"
@@ -15,11 +14,10 @@ import (
 type Level struct {
 	pfValidCache *Smap[Point, bool]
 
-	Name                string
-	IsLooping           bool
-	AIGridSize          Vector
-	AILocationDeviation float64
-	AIPathfinding       *AStar
+	Name          string
+	IsLooping     bool
+	AIGridSize    Vector
+	AIPathfinding *AStar
 
 	Colliders        *Smap[Collider, [9]Bounder]
 	StaticColliders  *Smap[Collider, [9]Bounder]
@@ -36,11 +34,10 @@ func NewLevel(name string) *Level {
 	return &Level{
 		pfValidCache: NewSmap[Point, bool](),
 
-		Name:                name,
-		IsLooping:           false,
-		AIGridSize:          NewVector(32, 32),
-		AILocationDeviation: 0.5,
-		AIPathfinding:       NewAStar(),
+		Name:          name,
+		IsLooping:     false,
+		AIGridSize:    NewVector(32, 32),
+		AIPathfinding: NewAStar(),
 
 		Colliders:        NewSmap[Collider, [9]Bounder](),
 		StaticColliders:  NewSmap[Collider, [9]Bounder](),
@@ -89,12 +86,12 @@ func (l *Level) AIMove(self MovableCollider, target Collider) {
 	if res, ok := l.AIPathfinding.GetResult(spl, tpl); ok {
 		switch c := len(res); {
 		case c > 2:
-			trl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
-			trl2 := l.PFToRealLocation(res[2], true, l.AILocationDeviation)
+			trl1 := l.PFToRealLocation(res[1], true)
+			trl2 := l.PFToRealLocation(res[2], true)
 			trlave := trl1.Add(trl2.Sub(trl1).DivF(2))
 			self.AddInput(trlave.Sub(srl), 1)
 		case c == 2:
-			trl1 := l.PFToRealLocation(res[1], true, l.AILocationDeviation)
+			trl1 := l.PFToRealLocation(res[1], true)
 			self.AddInput(trl1.Sub(srl), 1)
 		case c == 1:
 			self.AddInput(trl.Sub(srl), 1)
@@ -109,7 +106,7 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 		return r
 	}
 
-	loc := l.PFToRealLocation(location, false, 0)
+	loc := l.PFToRealLocation(location, false)
 	s := GetScreenSize()
 	if loc.X < 0 || loc.Y < 0 || loc.X >= float64(s.X) || loc.Y >= float64(s.Y) {
 		return false
@@ -130,9 +127,8 @@ func (l *Level) RealToPFLocation(realLocation Vector) Point {
 	return realLocation.Div(l.AIGridSize).Trunc()
 }
 
-func (l *Level) PFToRealLocation(pfLocation Point, isCenter bool, deviation float64) Vector {
-	rr := l.AIGridSize.MulF((rand.Float64() - 0.5) * deviation)
-	r := pfLocation.ToVector().Mul(l.AIGridSize).Add(rr)
+func (l *Level) PFToRealLocation(pfLocation Point, isCenter bool) Vector {
+	r := pfLocation.ToVector().Mul(l.AIGridSize)
 	if isCenter {
 		r = r.Add(l.AIGridSize.DivF(2))
 	}

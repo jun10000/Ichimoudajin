@@ -114,7 +114,7 @@ func DrawDebugAIPath(path []Point) {
 	if isDebugMode && DebugIsShowAIPath {
 		l := GetLevel()
 		for _, p := range path {
-			DrawDebugRectangle(l.PFToRealLocation(p, false, 0), l.AIGridSize, DebugAIPathColor)
+			DrawDebugRectangle(l.PFToRealLocation(p, false), l.AIGridSize, DebugAIPathColor)
 		}
 	}
 }
