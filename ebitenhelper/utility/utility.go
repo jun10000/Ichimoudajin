@@ -3,7 +3,10 @@ package utility
 import (
 	"image"
 	"log"
+	"math"
 	"slices"
+	"strconv"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -19,6 +22,14 @@ const (
 )
 
 type Empty struct{}
+
+func RemoveAllStrings(src string, targets ...string) string {
+	ret := src
+	for _, s := range targets {
+		ret = strings.ReplaceAll(ret, s, "")
+	}
+	return ret
+}
 
 func GetImageFile(filename string) *ebiten.Image {
 	image, _, err := ebitenutil.NewImageFromFileSystem(assets.Assets, filename)
@@ -115,4 +126,36 @@ func RemoveSliceItem[T comparable](slice []T, item T) []T {
 	}
 
 	return slices.Delete(slice, i, i+1)
+}
+
+func DegreeToRadian(degree float64) float64 {
+	return degree / 180.0 * math.Pi
+}
+
+func RadianToDegree(radian float64) float64 {
+	return radian / math.Pi * 180.0
+}
+
+func RuneToInt(r rune) int {
+	return int(r - '0')
+}
+
+func StringToInt(str string, output *int) error {
+	v, err := strconv.Atoi(str)
+	if err != nil {
+		return err
+	}
+
+	*output = v
+	return nil
+}
+
+func StringToFloat(str string, output *float64) error {
+	v, err := strconv.ParseFloat(str, 64)
+	if err != nil {
+		return err
+	}
+
+	*output = v
+	return nil
 }

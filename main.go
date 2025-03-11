@@ -10,13 +10,6 @@ func NewStage1() *utility.Level {
 	level := utility.NewLevel("stage1", true)
 	actor.AddTileMapActorsToLevel(level, "stage1.tmx")
 
-	// Player
-	playerImage := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
-	player := actor.NewPawn()
-	player.SetLocation(utility.NewVector(600, 300))
-	player.Image = playerImage
-	level.Add(player)
-
 	// Enemy
 	enemyImage := utility.GetImageFile("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
 	enemyLocations := []utility.Vector{

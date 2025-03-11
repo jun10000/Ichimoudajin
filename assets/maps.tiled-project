@@ -51,6 +51,11 @@
                     "value": 200
                 },
                 {
+                    "name": "RotationDeg",
+                    "type": "float",
+                    "value": 0
+                },
+                {
                     "name": "ScaleX",
                     "type": "float",
                     "value": 1
@@ -107,6 +112,11 @@
                     "name": "MaxSpeed",
                     "type": "float",
                     "value": 200
+                },
+                {
+                    "name": "RotationDeg",
+                    "type": "float",
+                    "value": 0
                 },
                 {
                     "name": "ScaleX",

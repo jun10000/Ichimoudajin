@@ -73,6 +73,11 @@ type TileMapTileLayerCell struct {
 	TileIndex int
 }
 
+type TileMapObjectLayerObject struct {
+	Name  string
+	Actor any
+}
+
 type TileMapTileset struct {
 	Image       *ebiten.Image
 	ColumnCount int
@@ -86,79 +91,186 @@ type TileMapTileLayer struct {
 	Cells       []TileMapTileLayerCell
 }
 
+type TileMapObjectLayer struct {
+	Name    string
+	Objects []TileMapObjectLayerObject
+}
+
 type TileMap struct {
-	MapSize  utility.Point
-	TileSize utility.Point
-	Tilesets []TileMapTileset
-	Layers   []TileMapTileLayer
+	MapSize      utility.Point
+	TileSize     utility.Point
+	Tilesets     []TileMapTileset
+	TileLayers   []TileMapTileLayer
+	ObjectLayers []TileMapObjectLayer
+}
+
+func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
+	switch o.Class {
+	case "Pawn":
+		ret := NewPawn()
+		ret.SetLocation(utility.NewVector(o.LocationX, o.LocationY))
+		ret.FrameSize.X = int(o.SizeX)
+		ret.FrameSize.Y = int(o.SizeY)
+
+		for _, property := range o.Properties {
+			switch property.Name {
+			case "Accel":
+				err := utility.StringToFloat(property.Value, &ret.Accel)
+				if err != nil {
+					return nil, err
+				}
+			case "Decel":
+				err := utility.StringToFloat(property.Value, &ret.Decel)
+				if err != nil {
+					return nil, err
+				}
+			case "FPS":
+				err := utility.StringToInt(property.Value, &ret.FPS)
+				if err != nil {
+					return nil, err
+				}
+			case "FrameCount":
+				err := utility.StringToInt(property.Value, &ret.FrameCount)
+				if err != nil {
+					return nil, err
+				}
+			case "FrameDirectionMap":
+				clear(ret.FrameDirectionMap)
+				for _, v := range property.Value {
+					ret.FrameDirectionMap = append(ret.FrameDirectionMap, utility.RuneToInt(v))
+				}
+			case "Image":
+				ret.Image = utility.GetImageFile(property.Value)
+			case "MaxSpeed":
+				err := utility.StringToFloat(property.Value, &ret.MaxSpeed)
+				if err != nil {
+					return nil, err
+				}
+			case "RotationDeg":
+				var deg float64
+				err := utility.StringToFloat(property.Value, &deg)
+				if err != nil {
+					return nil, err
+				}
+				ret.SetRotation(utility.DegreeToRadian(deg))
+			case "ScaleX":
+				s := ret.GetScale()
+				err := utility.StringToFloat(property.Value, &s.X)
+				if err != nil {
+					return nil, err
+				}
+				ret.SetScale(s)
+			case "ScaleY":
+				s := ret.GetScale()
+				err := utility.StringToFloat(property.Value, &s.Y)
+				if err != nil {
+					return nil, err
+				}
+				ret.SetScale(s)
+			}
+		}
+
+		return ret, nil
+	}
+
+	log.Println("Found unsupported Tiled map object class: " + o.Class)
+	return nil, nil
 }
 
 func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
-	// Read and check XML data
-	mxml := &tileMapXML{}
-	err := decoder.DecodeElement(mxml, &start)
+	// Read XML data
+	data := &tileMapXML{}
+	err := decoder.DecodeElement(data, &start)
 	if err != nil {
 		return err
 	}
-	if mxml.Version != "1.10" {
+
+	// Check map version
+	if data.Version != "1.10" {
 		log.Println("Loaded map version is not 1.10")
 		log.Println("This may cause problem")
 	}
 
-	// Begin creating MapInfo
-	result := TileMap{
-		MapSize:  utility.NewPoint(mxml.Width, mxml.Height),
-		TileSize: utility.NewPoint(mxml.TileWidth, mxml.TileHeight),
+	// Start building TileMap
+	ret := TileMap{
+		MapSize:  utility.NewPoint(data.Width, data.Height),
+		TileSize: utility.NewPoint(data.TileWidth, data.TileHeight),
 	}
 
-	// Add MapTilesets
-	for _, v := range mxml.Tilesets {
-		image := utility.GetImageFile(v.Image.Source)
+	// Add Tilesets
+	for _, dataTileset := range data.Tilesets {
 		tileset := TileMapTileset{
-			Image:       image,
-			ColumnCount: v.Columns,
-			StartIndex:  v.FirstGID,
-			LastIndex:   v.FirstGID + v.TileCount - 1,
+			Image:       utility.GetImageFile(dataTileset.Image.Source),
+			ColumnCount: dataTileset.Columns,
+			StartIndex:  dataTileset.FirstGID,
+			LastIndex:   dataTileset.FirstGID + dataTileset.TileCount - 1,
 		}
-		result.Tilesets = append(result.Tilesets, tileset)
+		ret.Tilesets = append(ret.Tilesets, tileset)
 	}
 
-	// Add MapLayers
-	for _, v := range mxml.TileLayers {
-		layer := TileMapTileLayer{
-			Name:        v.Name,
-			IsCollision: (v.Name == "Collision"),
+	// Add TileLayers
+	for _, dataTileLayer := range data.TileLayers {
+		tileLayer := TileMapTileLayer{
+			Name:        dataTileLayer.Name,
+			IsCollision: (dataTileLayer.Name == "Collision"),
 		}
 
-		// Add Properties
-		// for _, p := range v.Properties {
+		// Add TileLayer.Properties
+		// for _, dataTileLayerProperty := range dataTileLayer.Properties {
 		// }
 
-		// Add MapCells
-		cellstrings := strings.ReplaceAll(v.Data.Inner, "\r", "")
-		cellstrings = strings.ReplaceAll(cellstrings, "\n", "")
-		cellstrings = strings.ReplaceAll(cellstrings, " ", "")
-		for _, cellstring := range strings.Split(cellstrings, ",") {
-			c := TileMapTileLayerCell{
+		// Add TileLayer.Cells
+		css := utility.RemoveAllStrings(dataTileLayer.Data.Inner, "\r", "\n", " ")
+		for _, cs := range strings.Split(css, ",") {
+			cv, err := strconv.Atoi(cs)
+			if err != nil {
+				return err
+			}
+
+			tileLayerCell := TileMapTileLayerCell{
 				TileIndex: -1,
 			}
-			cellvalue, _ := strconv.Atoi(cellstring)
-			for _, t := range result.Tilesets {
-				if t.StartIndex <= cellvalue && cellvalue <= t.LastIndex {
-					c.Tileset = &t
-					c.TileIndex = cellvalue - t.StartIndex
+			for _, tileset := range ret.Tilesets {
+				if tileset.StartIndex <= cv && cv <= tileset.LastIndex {
+					tileLayerCell.Tileset = &tileset
+					tileLayerCell.TileIndex = cv - tileset.StartIndex
 					break
 				}
 			}
 
-			layer.Cells = append(layer.Cells, c)
+			tileLayer.Cells = append(tileLayer.Cells, tileLayerCell)
 		}
 
-		result.Layers = append(result.Layers, layer)
+		ret.TileLayers = append(ret.TileLayers, tileLayer)
 	}
 
-	// Finished creating MapInfo
-	*m = result
+	// Add ObjectLayers
+	for _, dataObjectLayer := range data.ObjectLayers {
+		objectLayer := TileMapObjectLayer{
+			Name: dataObjectLayer.Name,
+		}
+
+		// Add ObjectLayer.Objects
+		for _, dataObjectLayerObject := range dataObjectLayer.Objects {
+			objectLayerObject := TileMapObjectLayerObject{
+				Name: dataObjectLayerObject.Name,
+			}
+			a, err := dataObjectLayerObject.CreateActor()
+			if err != nil {
+				return err
+			}
+
+			if a != nil {
+				objectLayerObject.Actor = a
+				objectLayer.Objects = append(objectLayer.Objects, objectLayerObject)
+			}
+		}
+
+		ret.ObjectLayers = append(ret.ObjectLayers, objectLayer)
+	}
+
+	// Finish building TileMap
+	*m = ret
 	return nil
 }
 
@@ -171,7 +283,7 @@ func (m *TileMap) ToActors() func(yield func(any) bool) {
 			return
 		}
 
-		for _, l := range m.Layers {
+		for _, l := range m.TileLayers {
 			if l.IsCollision {
 				for ci, c := range l.Cells {
 					if c.TileIndex < 0 {
@@ -203,6 +315,14 @@ func (m *TileMap) ToActors() func(yield func(any) bool) {
 							c.TileIndex%c.Tileset.ColumnCount*m.TileSize.X,
 							c.TileIndex/c.Tileset.ColumnCount*m.TileSize.Y),
 						m.TileSize), o)
+				}
+			}
+		}
+
+		for _, ol := range m.ObjectLayers {
+			for _, o := range ol.Objects {
+				if !yield(o.Actor) {
+					return
 				}
 			}
 		}
