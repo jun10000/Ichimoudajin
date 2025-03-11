@@ -39,6 +39,11 @@ type tileMapObjectLayerObjectXML struct {
 	Properties []tileMapObjectLayerObjectPropertyXML `xml:"properties>property"`
 }
 
+type tileMapPropertyXML struct {
+	Name  string `xml:"name,attr"`
+	Value string `xml:"value,attr"`
+}
+
 type tileMapTilesetXML struct {
 	FirstGID  int                    `xml:"firstgid,attr"`
 	TileCount int                    `xml:"tilecount,attr"`
@@ -59,10 +64,13 @@ type tileMapObjectLayerXML struct {
 
 type tileMapXML struct {
 	Version      string                  `xml:"version,attr"`
+	TiledVersion string                  `xml:"tiledversion,attr"`
+	Class        string                  `xml:"class,attr"`
 	Width        int                     `xml:"width,attr"`
 	Height       int                     `xml:"height,attr"`
 	TileWidth    int                     `xml:"tilewidth,attr"`
 	TileHeight   int                     `xml:"tileheight,attr"`
+	Properties   []tileMapPropertyXML    `xml:"properties>property"`
 	Tilesets     []tileMapTilesetXML     `xml:"tileset"`
 	TileLayers   []tileMapTileLayerXML   `xml:"layer"`
 	ObjectLayers []tileMapObjectLayerXML `xml:"objectgroup"`
@@ -99,6 +107,7 @@ type TileMapObjectLayer struct {
 type TileMap struct {
 	MapSize      utility.Point
 	TileSize     utility.Point
+	IsLooping    bool
 	Tilesets     []TileMapTileset
 	TileLayers   []TileMapTileLayer
 	ObjectLayers []TileMapObjectLayer
@@ -250,16 +259,30 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 		return err
 	}
 
-	// Check map version
+	// Validate map data
 	if data.Version != "1.10" {
 		log.Println("Loaded map version is not 1.10")
 		log.Println("This may cause problem")
+	}
+	if data.Class != "EbitenhelperMap" {
+		log.Println("Loaded map's class is not EbitenhelperMap")
 	}
 
 	// Start building TileMap
 	ret := TileMap{
 		MapSize:  utility.NewPoint(data.Width, data.Height),
 		TileSize: utility.NewPoint(data.TileWidth, data.TileHeight),
+	}
+
+	// Apply TileMap properties
+	for _, dataProperty := range data.Properties {
+		switch dataProperty.Name {
+		case "IsLooping":
+			err := utility.StringToBool(dataProperty.Value, &ret.IsLooping)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	// Add Tilesets
@@ -416,8 +439,8 @@ func AddTileMapActorsToLevel(level *utility.Level) {
 }
 
 func NewLevelByTiledMap(levelName string) *utility.Level {
-	// m := GetTileMap(levelName)
-	l := utility.NewLevel(levelName, true)
+	m := GetTileMap(levelName)
+	l := utility.NewLevel(levelName, m.IsLooping)
 	AddTileMapActorsToLevel(l)
 	return l
 }

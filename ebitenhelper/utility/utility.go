@@ -140,6 +140,16 @@ func RuneToInt(r rune) int {
 	return int(r - '0')
 }
 
+func StringToBool(str string, output *bool) error {
+	v, err := strconv.ParseBool(str)
+	if err != nil {
+		return err
+	}
+
+	*output = v
+	return nil
+}
+
 func StringToInt(str string, output *int) error {
 	v, err := strconv.Atoi(str)
 	if err != nil {
