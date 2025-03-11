@@ -74,6 +74,24 @@
             ]
         },
         {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 4,
+            "members": [
+                {
+                    "name": "IsLooping",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "EbitenhelperMap",
+            "type": "class",
+            "useAs": [
+                "map",
+                "project"
+            ]
+        },
+        {
             "color": "#ff00aaff",
             "drawFill": true,
             "id": 1,

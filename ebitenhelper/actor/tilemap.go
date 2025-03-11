@@ -394,8 +394,12 @@ func (m *TileMap) ToActors() func(yield func(any) bool) {
 	}
 }
 
-func GetTileMap(filename string) *TileMap {
-	xmlData, err := assets.Assets.ReadFile(filename)
+func GetTiledFileName(levelName string) string {
+	return levelName + ".tmx"
+}
+
+func GetTileMap(levelName string) *TileMap {
+	xmlData, err := assets.Assets.ReadFile(GetTiledFileName(levelName))
 	utility.PanicIfError(err)
 
 	ret := &TileMap{}
@@ -405,8 +409,15 @@ func GetTileMap(filename string) *TileMap {
 	return ret
 }
 
-func AddTileMapActorsToLevel(level *utility.Level, filename string) {
-	for a := range GetTileMap(filename).ToActors() {
+func AddTileMapActorsToLevel(level *utility.Level) {
+	for a := range GetTileMap(level.Name).ToActors() {
 		level.Add(a)
 	}
+}
+
+func NewLevelByTiledMap(levelName string) *utility.Level {
+	// m := GetTileMap(levelName)
+	l := utility.NewLevel(levelName, true)
+	AddTileMapActorsToLevel(l)
+	return l
 }
