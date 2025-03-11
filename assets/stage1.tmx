@@ -141,7 +141,7 @@
   <object id="6" name="Enemy" type="AIPawn" x="768" y="320" width="32" height="32">
    <properties>
     <property name="Image" type="file" value="images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png"/>
-    <property name="MaxSpeed" type="float" value="500"/>
+    <property name="MaxSpeed" type="float" value="250"/>
    </properties>
    <ellipse/>
   </object>
