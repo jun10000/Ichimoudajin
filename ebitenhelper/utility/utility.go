@@ -9,8 +9,6 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/jun10000/Ichimoudajin/assets"
 )
 
 type PressState int
@@ -29,12 +27,6 @@ func RemoveAllStrings(src string, targets ...string) string {
 		ret = strings.ReplaceAll(ret, s, "")
 	}
 	return ret
-}
-
-func GetImageFile(filename string) *ebiten.Image {
-	image, _, err := ebitenutil.NewImageFromFileSystem(assets.Assets, filename)
-	PanicIfError(err)
-	return image
 }
 
 func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.Image {

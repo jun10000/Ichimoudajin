@@ -149,7 +149,11 @@ func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
 					ret.FrameDirectionMap = append(ret.FrameDirectionMap, utility.RuneToInt(v))
 				}
 			case "Image":
-				ret.Image = utility.GetImageFile(property.Value)
+				img, err := utility.GetImageFromFile(property.Value)
+				if err != nil {
+					return nil, err
+				}
+				ret.Image = img
 			case "MaxSpeed":
 				err := utility.StringToFloat(property.Value, &ret.MaxSpeed)
 				if err != nil {
@@ -214,7 +218,11 @@ func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
 					ret.FrameDirectionMap = append(ret.FrameDirectionMap, utility.RuneToInt(v))
 				}
 			case "Image":
-				ret.Image = utility.GetImageFile(property.Value)
+				img, err := utility.GetImageFromFile(property.Value)
+				if err != nil {
+					return nil, err
+				}
+				ret.Image = img
 			case "MaxSpeed":
 				err := utility.StringToFloat(property.Value, &ret.MaxSpeed)
 				if err != nil {
@@ -288,11 +296,17 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	// Add Tilesets
 	for _, dataTileset := range data.Tilesets {
 		tileset := TileMapTileset{
-			Image:       utility.GetImageFile(dataTileset.Image.Source),
 			ColumnCount: dataTileset.Columns,
 			StartIndex:  dataTileset.FirstGID,
 			LastIndex:   dataTileset.FirstGID + dataTileset.TileCount - 1,
 		}
+
+		img, err := utility.GetImageFromFile(dataTileset.Image.Source)
+		if err != nil {
+			return err
+		}
+		tileset.Image = img
+
 		ret.Tilesets = append(ret.Tilesets, tileset)
 	}
 

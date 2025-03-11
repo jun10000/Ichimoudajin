@@ -5,7 +5,9 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/jun10000/Ichimoudajin/assets"
 )
 
 const (
@@ -88,6 +90,22 @@ func SetLevel(level *Level) error {
 	} else {
 		return level.LoadPFCache()
 	}
+}
+
+var ebitenImages = NewSmap[string, *ebiten.Image]()
+
+func GetImageFromFile(filename string) (*ebiten.Image, error) {
+	if img, ok := ebitenImages.Load(filename); ok {
+		return img, nil
+	}
+
+	img, _, err := ebitenutil.NewImageFromFileSystem(assets.Assets, filename)
+	if err != nil {
+		return nil, err
+	}
+
+	ebitenImages.Store(filename, img)
+	return img, nil
 }
 
 type GamepadAxisKey struct {
