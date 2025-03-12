@@ -20,7 +20,7 @@ func NewRectangleF(minX, minY, maxX, maxY float64) *RectangleF {
 	}
 }
 
-func (r *RectangleF) TopLeftLocation() Vector {
+func (r *RectangleF) TopLeft() Vector {
 	return NewVector(r.MinX, r.MinY)
 }
 

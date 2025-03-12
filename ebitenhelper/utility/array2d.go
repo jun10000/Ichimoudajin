@@ -24,6 +24,14 @@ func (a *Array2D[T]) getXY(index int) (X, Y int) {
 	return index % a.width, index / a.width
 }
 
+func (a *Array2D[T]) Width() int {
+	return a.width
+}
+
+func (a *Array2D[T]) Height() int {
+	return a.height
+}
+
 func (a *Array2D[T]) Get(x, y int) T {
 	if x < 0 || x >= a.width || y < 0 || y >= a.height {
 		log.Panicln("Array2D detects out of range index")
