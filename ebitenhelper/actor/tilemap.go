@@ -398,6 +398,8 @@ func (m *TileMap) ToActors() func(yield func(any) bool) {
 			return
 		}
 
+		collisionMap := NewTileCollisionMap(m.MapSize)
+
 		for _, layer := range m.TileLayers {
 			if layer.IsCollision {
 				for cellIndex, cell := range layer.Cells {
@@ -405,16 +407,9 @@ func (m *TileMap) ToActors() func(yield func(any) bool) {
 						continue
 					}
 
-					lx := float64((cellIndex % m.MapSize.X) * m.TileSize.X)
-					ly := float64(cellIndex / m.MapSize.X * m.TileSize.Y)
-					s := m.TileSize.ToVector()
-
-					a := NewBlockingArea()
-					a.SetLocation(utility.NewVector(lx, ly))
-					a.Size = s
-					if !yield(a) {
-						return
-					}
+					clx := cellIndex % m.MapSize.X
+					cly := cellIndex / m.MapSize.X
+					collisionMap.Set(clx, cly, true)
 				}
 			} else {
 				for cellIndex, cell := range layer.Cells {
@@ -424,14 +419,22 @@ func (m *TileMap) ToActors() func(yield func(any) bool) {
 
 					tlx := cell.TileIndex % cell.Tileset.ColumnCount * m.TileSize.X
 					tly := cell.TileIndex / cell.Tileset.ColumnCount * m.TileSize.Y
-					mlx := float64((cellIndex % m.MapSize.X) * m.TileSize.X)
-					mly := float64(cellIndex / m.MapSize.X * m.TileSize.Y)
+					clx := cellIndex % m.MapSize.X
+					cly := cellIndex / m.MapSize.X
+					mlx := float64(clx * m.TileSize.X)
+					mly := float64(cly * m.TileSize.Y)
 					img := utility.GetSubImage(cell.Tileset.Image, utility.NewPoint(tlx, tly), m.TileSize)
 
 					o := &ebiten.DrawImageOptions{}
 					o.GeoM.Translate(mlx, mly)
 					landscape.Image.DrawImage(img, o)
 				}
+			}
+		}
+
+		for a := range collisionMap.ToBlockingAreas(m.TileSize.ToVector()) {
+			if !yield(a) {
+				return
 			}
 		}
 
