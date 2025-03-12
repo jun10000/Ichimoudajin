@@ -392,52 +392,52 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 
 func (m *TileMap) ToActors() func(yield func(any) bool) {
 	return func(yield func(any) bool) {
-		mapimage := ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
-		mapactor := NewActor()
-		mapactor.Image = mapimage
-		if !yield(mapactor) {
+		landscape := NewActor()
+		landscape.Image = ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
+		if !yield(landscape) {
 			return
 		}
 
-		for _, l := range m.TileLayers {
-			if l.IsCollision {
-				for ci, c := range l.Cells {
-					if c.TileIndex < 0 {
+		for _, layer := range m.TileLayers {
+			if layer.IsCollision {
+				for cellIndex, cell := range layer.Cells {
+					if cell.TileIndex < 0 {
 						continue
 					}
 
-					b := NewBlockingArea()
-					b.SetLocation(utility.NewVector(
-						float64((ci%m.MapSize.X)*m.TileSize.X),
-						float64(ci/m.MapSize.X*m.TileSize.Y)))
-					b.Size = m.TileSize.ToVector()
-					if !yield(b) {
+					lx := float64((cellIndex % m.MapSize.X) * m.TileSize.X)
+					ly := float64(cellIndex / m.MapSize.X * m.TileSize.Y)
+					s := m.TileSize.ToVector()
+
+					a := NewBlockingArea()
+					a.SetLocation(utility.NewVector(lx, ly))
+					a.Size = s
+					if !yield(a) {
 						return
 					}
 				}
 			} else {
-				for ci, c := range l.Cells {
-					if c.Tileset == nil {
+				for cellIndex, cell := range layer.Cells {
+					if cell.Tileset == nil {
 						continue
 					}
 
+					tlx := cell.TileIndex % cell.Tileset.ColumnCount * m.TileSize.X
+					tly := cell.TileIndex / cell.Tileset.ColumnCount * m.TileSize.Y
+					mlx := float64((cellIndex % m.MapSize.X) * m.TileSize.X)
+					mly := float64(cellIndex / m.MapSize.X * m.TileSize.Y)
+					img := utility.GetSubImage(cell.Tileset.Image, utility.NewPoint(tlx, tly), m.TileSize)
+
 					o := &ebiten.DrawImageOptions{}
-					o.GeoM.Translate(
-						float64((ci%m.MapSize.X)*m.TileSize.X),
-						float64(ci/m.MapSize.X*m.TileSize.Y))
-					mapimage.DrawImage(utility.GetSubImage(
-						c.Tileset.Image,
-						utility.NewPoint(
-							c.TileIndex%c.Tileset.ColumnCount*m.TileSize.X,
-							c.TileIndex/c.Tileset.ColumnCount*m.TileSize.Y),
-						m.TileSize), o)
+					o.GeoM.Translate(mlx, mly)
+					landscape.Image.DrawImage(img, o)
 				}
 			}
 		}
 
-		for _, ol := range m.ObjectLayers {
-			for _, o := range ol.Objects {
-				if !yield(o.Actor) {
+		for _, layer := range m.ObjectLayers {
+			for _, object := range layer.Objects {
+				if !yield(object.Actor) {
 					return
 				}
 			}
