@@ -1,6 +1,9 @@
-package actor
+package tilemap
 
-import "github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
+import (
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
+)
 
 type TileCollisionMap struct {
 	*utility.Array2D[bool]
@@ -14,8 +17,8 @@ func NewTileCollisionMap(size utility.Point) *TileCollisionMap {
 	}
 }
 
-func (t *TileCollisionMap) ToBlockingAreas(tileSize utility.Vector) func(yield func(*BlockingArea) bool) {
-	return func(yield func(*BlockingArea) bool) {
+func (t *TileCollisionMap) ToBlockingAreas(tileSize utility.Vector) func(yield func(*actor.BlockingArea) bool) {
+	return func(yield func(*actor.BlockingArea) bool) {
 		for x := range t.size.X {
 			for y := range t.size.Y {
 				if !t.Get(x, y) {
@@ -26,7 +29,7 @@ func (t *TileCollisionMap) ToBlockingAreas(tileSize utility.Vector) func(yield f
 				ly := float64(y) * tileSize.Y
 				sz := tileSize
 
-				a := NewBlockingArea()
+				a := actor.NewBlockingArea()
 				a.SetLocation(utility.NewVector(lx, ly))
 				a.Size = sz
 				if !yield(a) {

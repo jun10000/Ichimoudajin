@@ -1,4 +1,4 @@
-package actor
+package tilemap
 
 import (
 	"encoding/xml"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/assets"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
@@ -113,8 +114,8 @@ type TileMap struct {
 	ObjectLayers []TileMapObjectLayer
 }
 
-func (o *tileMapObjectLayerObjectXML) CreatePawn() (*Pawn, error) {
-	ret := NewPawn()
+func (o *tileMapObjectLayerObjectXML) CreatePawn() (*actor.Pawn, error) {
+	ret := actor.NewPawn()
 	ret.SetLocation(utility.NewVector(o.LocationX, o.LocationY))
 	ret.FrameSize.X = int(o.SizeX)
 	ret.FrameSize.Y = int(o.SizeY)
@@ -187,8 +188,8 @@ func (o *tileMapObjectLayerObjectXML) CreatePawn() (*Pawn, error) {
 	return ret, nil
 }
 
-func (o *tileMapObjectLayerObjectXML) CreateAIPawn() (*AIPawn, error) {
-	ret := NewAIPawn()
+func (o *tileMapObjectLayerObjectXML) CreateAIPawn() (*actor.AIPawn, error) {
+	ret := actor.NewAIPawn()
 	ret.SetLocation(utility.NewVector(o.LocationX, o.LocationY))
 	ret.FrameSize.X = int(o.SizeX)
 	ret.FrameSize.Y = int(o.SizeY)
@@ -392,7 +393,7 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 
 func (m *TileMap) ToActors() func(yield func(any) bool) {
 	return func(yield func(any) bool) {
-		landscape := NewActor()
+		landscape := actor.NewActor()
 		landscape.Image = ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
 		if !yield(landscape) {
 			return
