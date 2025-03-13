@@ -41,6 +41,16 @@
                     "value": "0123"
                 },
                 {
+                    "name": "FrameSizeX",
+                    "type": "int",
+                    "value": 32
+                },
+                {
+                    "name": "FrameSizeY",
+                    "type": "int",
+                    "value": 32
+                },
+                {
                     "name": "Image",
                     "type": "file",
                     "value": ""
@@ -54,16 +64,6 @@
                     "name": "RotationDeg",
                     "type": "float",
                     "value": 0
-                },
-                {
-                    "name": "ScaleX",
-                    "type": "float",
-                    "value": 1
-                },
-                {
-                    "name": "ScaleY",
-                    "type": "float",
-                    "value": 1
                 }
             ],
             "name": "AIPawn",
@@ -122,6 +122,16 @@
                     "value": "0123"
                 },
                 {
+                    "name": "FrameSizeX",
+                    "type": "int",
+                    "value": 32
+                },
+                {
+                    "name": "FrameSizeY",
+                    "type": "int",
+                    "value": 32
+                },
+                {
                     "name": "Image",
                     "type": "file",
                     "value": ""
@@ -135,16 +145,6 @@
                     "name": "RotationDeg",
                     "type": "float",
                     "value": 0
-                },
-                {
-                    "name": "ScaleX",
-                    "type": "float",
-                    "value": 1
-                },
-                {
-                    "name": "ScaleY",
-                    "type": "float",
-                    "value": 1
                 }
             ],
             "name": "Pawn",

@@ -19,9 +19,8 @@ type tileMapObjectLayerObjectXML struct {
 
 func (o *tileMapObjectLayerObjectXML) CreatePawn() (*actor.Pawn, error) {
 	l := utility.NewVector(o.LocationX, o.LocationY)
+	sz := utility.NewVector(o.SizeX, o.SizeY)
 	ret := actor.NewPawn(l, 0, utility.DefaultScale())
-	ret.FrameSize.X = int(o.SizeX)
-	ret.FrameSize.Y = int(o.SizeY)
 
 	for _, property := range o.Properties {
 		switch property.Name {
@@ -50,6 +49,16 @@ func (o *tileMapObjectLayerObjectXML) CreatePawn() (*actor.Pawn, error) {
 			for _, v := range property.Value {
 				ret.FrameDirectionMap = append(ret.FrameDirectionMap, utility.RuneToInt(v))
 			}
+		case "FrameSizeX":
+			err := utility.StringToInt(property.Value, &ret.FrameSize.X)
+			if err != nil {
+				return nil, err
+			}
+		case "FrameSizeY":
+			err := utility.StringToInt(property.Value, &ret.FrameSize.Y)
+			if err != nil {
+				return nil, err
+			}
 		case "Image":
 			img, err := utility.GetImageFromFile(property.Value)
 			if err != nil {
@@ -68,34 +77,23 @@ func (o *tileMapObjectLayerObjectXML) CreatePawn() (*actor.Pawn, error) {
 				return nil, err
 			}
 			ret.SetRotation(utility.DegreeToRadian(deg))
-		case "ScaleX":
-			s := ret.GetScale()
-			err := utility.StringToFloat(property.Value, &s.X)
-			if err != nil {
-				return nil, err
-			}
-			ret.SetScale(s)
-		case "ScaleY":
-			s := ret.GetScale()
-			err := utility.StringToFloat(property.Value, &s.Y)
-			if err != nil {
-				return nil, err
-			}
-			ret.SetScale(s)
 		default:
 			log.Printf("Found unknown Tiled object (%s) property: %s = %s\n",
 				o.Name, property.Name, property.Value)
 		}
 	}
+
+	// Calculate scale
+	s := sz.Div(ret.FrameSize.ToVector())
+	ret.SetScale(s)
 
 	return ret, nil
 }
 
 func (o *tileMapObjectLayerObjectXML) CreateAIPawn() (*actor.AIPawn, error) {
 	l := utility.NewVector(o.LocationX, o.LocationY)
+	sz := utility.NewVector(o.SizeX, o.SizeY)
 	ret := actor.NewAIPawn(l, 0, utility.DefaultScale())
-	ret.FrameSize.X = int(o.SizeX)
-	ret.FrameSize.Y = int(o.SizeY)
 
 	for _, property := range o.Properties {
 		switch property.Name {
@@ -124,6 +122,16 @@ func (o *tileMapObjectLayerObjectXML) CreateAIPawn() (*actor.AIPawn, error) {
 			for _, v := range property.Value {
 				ret.FrameDirectionMap = append(ret.FrameDirectionMap, utility.RuneToInt(v))
 			}
+		case "FrameSizeX":
+			err := utility.StringToInt(property.Value, &ret.FrameSize.X)
+			if err != nil {
+				return nil, err
+			}
+		case "FrameSizeY":
+			err := utility.StringToInt(property.Value, &ret.FrameSize.Y)
+			if err != nil {
+				return nil, err
+			}
 		case "Image":
 			img, err := utility.GetImageFromFile(property.Value)
 			if err != nil {
@@ -142,25 +150,15 @@ func (o *tileMapObjectLayerObjectXML) CreateAIPawn() (*actor.AIPawn, error) {
 				return nil, err
 			}
 			ret.SetRotation(utility.DegreeToRadian(deg))
-		case "ScaleX":
-			s := ret.GetScale()
-			err := utility.StringToFloat(property.Value, &s.X)
-			if err != nil {
-				return nil, err
-			}
-			ret.SetScale(s)
-		case "ScaleY":
-			s := ret.GetScale()
-			err := utility.StringToFloat(property.Value, &s.Y)
-			if err != nil {
-				return nil, err
-			}
-			ret.SetScale(s)
 		default:
 			log.Printf("Found unknown Tiled object (%s) property: %s = %s\n",
 				o.Name, property.Name, property.Value)
 		}
 	}
+
+	// Calculate scale
+	s := sz.Div(ret.FrameSize.ToVector())
+	ret.SetScale(s)
 
 	return ret, nil
 }
