@@ -12,11 +12,6 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type tileMapObjectLayerObjectPropertyXML struct {
-	Name  string `xml:"name,attr"`
-	Value string `xml:"value,attr"`
-}
-
 type tileMapTilesetImageXML struct {
 	Source string `xml:"source,attr"`
 }
