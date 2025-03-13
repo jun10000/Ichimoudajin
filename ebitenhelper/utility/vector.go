@@ -58,6 +58,14 @@ func RightVectorPtr() *Vector {
 	return NewVectorPtr(1, 0)
 }
 
+func DefaultScale() Vector {
+	return NewVector(1, 1)
+}
+
+func DefaultScalePtr() *Vector {
+	return NewVectorPtr(1, 1)
+}
+
 func (v Vector) IsZero() bool {
 	return (v.X == 0 && v.Y == 0)
 }

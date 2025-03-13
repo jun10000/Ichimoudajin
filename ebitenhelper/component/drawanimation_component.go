@@ -8,23 +8,24 @@ import (
 )
 
 type DrawAnimationComponent struct {
+	parent    utility.StaticTransformer
+	tickIndex int
+
 	Image             *ebiten.Image
 	FrameCount        int
 	FrameSize         utility.Point
 	FPS               int
 	FrameDirectionMap []int // Front, Left, Right, Back
-
-	parent    utility.StaticTransformer
-	tickIndex int
 }
 
 func NewDrawAnimationComponent(parent utility.StaticTransformer) *DrawAnimationComponent {
 	return &DrawAnimationComponent{
+		parent: parent,
+
 		FrameCount:        3,
 		FrameSize:         utility.NewPoint(32, 32),
 		FPS:               4,
 		FrameDirectionMap: []int{0, 1, 2, 3},
-		parent:            parent,
 	}
 }
 

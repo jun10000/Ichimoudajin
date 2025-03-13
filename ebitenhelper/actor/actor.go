@@ -10,11 +10,9 @@ type Actor struct {
 	*component.DrawImageComponent
 }
 
-func NewActor(sTransform *utility.StaticTransform) *Actor {
-	a := &Actor{
-		StaticTransform: sTransform,
-	}
-
+func NewActor(location utility.Vector, rotation float64, scale utility.Vector) *Actor {
+	a := &Actor{}
+	a.StaticTransform = utility.NewStaticTransform(location, rotation, scale)
 	a.DrawImageComponent = component.NewDrawImageComponent(a)
 	return a
 }

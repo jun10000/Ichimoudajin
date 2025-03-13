@@ -82,11 +82,10 @@ func (t *TileCollisionMap) ToRectangles() utility.Set[*utility.Rectangle] {
 func (t *TileCollisionMap) ToBlockingAreas(tileSize utility.Vector) func(yield func(*actor.BlockingArea) bool) {
 	return func(yield func(*actor.BlockingArea) bool) {
 		for r := range t.ToRectangles() {
-			lc := r.TopLeft().ToVector().Mul(tileSize)
-			tf := utility.NewStaticTransform(lc, 0, utility.NewVector(1, 1))
+			l := r.TopLeft().ToVector().Mul(tileSize)
 			sz := r.Size().ToVector().Mul(tileSize)
 
-			a := actor.NewBlockingArea(tf, sz)
+			a := actor.NewBlockingArea(l, 0, utility.DefaultScale(), sz)
 			if !yield(a) {
 				return
 			}

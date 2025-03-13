@@ -10,12 +10,13 @@ type BlockingArea struct {
 	size utility.Vector
 }
 
-func NewBlockingArea(sTransform *utility.StaticTransform, size utility.Vector) *BlockingArea {
-	a := &BlockingArea{
-		size: size,
-	}
+func NewBlockingArea(location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector) *BlockingArea {
+	t := utility.NewStaticTransform(location, rotation, scale)
 
-	a.StaticColliderComponent = component.NewStaticColliderComponent(sTransform, a.GetBounds)
+	a := &BlockingArea{}
+	a.StaticColliderComponent = component.NewStaticColliderComponent(t, a.GetBounds)
+	a.size = size
+
 	a.UpdateColliderBounds()
 	return a
 }

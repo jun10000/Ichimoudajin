@@ -74,7 +74,8 @@ type StaticColliderComponent[T utility.Bounder] struct {
 func NewStaticColliderComponent[T utility.Bounder](sTransform *utility.StaticTransform, getBounds func(T)) *StaticColliderComponent[T] {
 	return &StaticColliderComponent[T]{
 		colliderComponentBase: newColliderComponentBase(getBounds),
-		StaticTransform:       sTransform,
+
+		StaticTransform: sTransform,
 	}
 }
 
@@ -90,7 +91,8 @@ type ColliderComponent[T utility.Bounder] struct {
 func NewColliderComponent[T utility.Bounder](transform *utility.Transform, getBounds func(T)) *ColliderComponent[T] {
 	return &ColliderComponent[T]{
 		colliderComponentBase: newColliderComponentBase(getBounds),
-		Transform:             transform,
+
+		Transform: transform,
 	}
 }
 

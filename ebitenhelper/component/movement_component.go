@@ -7,21 +7,22 @@ import (
 )
 
 type MovementComponent struct {
-	Accel    float64
-	Decel    float64
-	MaxSpeed float64
-
 	parent     utility.MovableCollider
 	velocity   utility.Vector
 	inputAccel utility.Vector
+
+	Accel    float64
+	Decel    float64
+	MaxSpeed float64
 }
 
 func NewMovementComponent(parent utility.MovableCollider) *MovementComponent {
 	return &MovementComponent{
+		parent: parent,
+
 		Accel:    8000,
 		Decel:    8000,
 		MaxSpeed: 200,
-		parent:   parent,
 	}
 }
 

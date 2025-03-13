@@ -6,8 +6,9 @@ import (
 )
 
 type DrawImageComponent struct {
-	Image  *ebiten.Image
 	parent utility.StaticTransformer
+
+	Image *ebiten.Image
 }
 
 func NewDrawImageComponent(parent utility.StaticTransformer) *DrawImageComponent {

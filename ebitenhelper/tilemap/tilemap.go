@@ -223,13 +223,10 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 
 func (m *TileMap) ToActors() func(yield func(any) bool) {
 	return func(yield func(any) bool) {
-		landscape := actor.NewActor(utility.NewStaticTransform(utility.ZeroVector(), 0, utility.NewVector(1, 1)))
-		landscape.Image = ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
-		if !yield(landscape) {
-			return
-		}
-
+		mapSize := m.MapSize.Mul(m.TileSize)
 		collisionMap := NewTileCollisionMap(m.MapSize)
+		landscape := actor.NewActor(utility.ZeroVector(), 0, utility.DefaultScale())
+		landscape.Image = ebiten.NewImage(mapSize.X, mapSize.Y)
 
 		for _, layer := range m.TileLayers {
 			if layer.IsCollision {
@@ -267,6 +264,10 @@ func (m *TileMap) ToActors() func(yield func(any) bool) {
 			if !yield(a) {
 				return
 			}
+		}
+
+		if !yield(landscape) {
+			return
 		}
 
 		for _, layer := range m.ObjectLayers {

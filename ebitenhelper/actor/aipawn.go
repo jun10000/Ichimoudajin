@@ -12,12 +12,14 @@ type AIPawn struct {
 	*component.ColliderComponent[*utility.CircleF]
 }
 
-func NewAIPawn(transform *utility.Transform) *AIPawn {
+func NewAIPawn(location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
+	t := utility.NewTransform(location, rotation, scale)
+
 	a := &AIPawn{}
 	a.MovementComponent = component.NewMovementComponent(a)
 	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
 	a.AIControllerComponent = component.NewAIControllerComponent(a)
-	a.ColliderComponent = component.NewColliderComponent(transform, a.GetCircleBounds)
+	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
 	a.UpdateColliderBounds()
 	return a
 }

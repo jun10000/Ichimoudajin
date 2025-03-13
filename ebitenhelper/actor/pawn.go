@@ -12,12 +12,15 @@ type Pawn struct {
 	*component.ColliderComponent[*utility.CircleF]
 }
 
-func NewPawn(transform *utility.Transform) *Pawn {
+func NewPawn(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
+	t := utility.NewTransform(location, rotation, scale)
+
 	a := &Pawn{}
 	a.MovementComponent = component.NewMovementComponent(a)
 	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
 	a.ControllerComponent = component.NewControllerComponent(a)
-	a.ColliderComponent = component.NewColliderComponent(transform, a.GetCircleBounds)
+	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
+
 	a.UpdateColliderBounds()
 	return a
 }
