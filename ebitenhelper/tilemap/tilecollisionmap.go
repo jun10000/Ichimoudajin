@@ -85,7 +85,7 @@ func (t *TileCollisionMap) ToBlockingAreas(tileSize utility.Vector) func(yield f
 			l := r.TopLeft().ToVector().Mul(tileSize)
 			sz := r.Size().ToVector().Mul(tileSize)
 
-			a := actor.NewBlockingArea(l, 0, utility.DefaultScale(), sz)
+			a := actor.NewBlockingArea(l, sz)
 			if !yield(a) {
 				return
 			}
