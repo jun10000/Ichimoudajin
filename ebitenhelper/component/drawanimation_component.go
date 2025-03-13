@@ -14,11 +14,11 @@ type DrawAnimationComponent struct {
 	FPS               int
 	FrameDirectionMap []int // Front, Left, Right, Back
 
-	parent    utility.Transformer
+	parent    utility.StaticTransformer
 	tickIndex int
 }
 
-func NewDrawAnimationComponent(parent utility.Transformer) *DrawAnimationComponent {
+func NewDrawAnimationComponent(parent utility.StaticTransformer) *DrawAnimationComponent {
 	return &DrawAnimationComponent{
 		FrameCount:        3,
 		FrameSize:         utility.NewPoint(32, 32),

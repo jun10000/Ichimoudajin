@@ -18,8 +18,11 @@ type tileMapObjectLayerObjectXML struct {
 }
 
 func (o *tileMapObjectLayerObjectXML) CreatePawn() (*actor.Pawn, error) {
-	ret := actor.NewPawn()
-	ret.SetLocation(utility.NewVector(o.LocationX, o.LocationY))
+	rettf := utility.NewTransform(
+		utility.NewVector(o.LocationX, o.LocationY),
+		0,
+		utility.NewVector(1, 1))
+	ret := actor.NewPawn(rettf)
 	ret.FrameSize.X = int(o.SizeX)
 	ret.FrameSize.Y = int(o.SizeY)
 
@@ -92,8 +95,11 @@ func (o *tileMapObjectLayerObjectXML) CreatePawn() (*actor.Pawn, error) {
 }
 
 func (o *tileMapObjectLayerObjectXML) CreateAIPawn() (*actor.AIPawn, error) {
-	ret := actor.NewAIPawn()
-	ret.SetLocation(utility.NewVector(o.LocationX, o.LocationY))
+	rettf := utility.NewTransform(
+		utility.NewVector(o.LocationX, o.LocationY),
+		0,
+		utility.NewVector(1, 1))
+	ret := actor.NewAIPawn(rettf)
 	ret.FrameSize.X = int(o.SizeX)
 	ret.FrameSize.Y = int(o.SizeY)
 

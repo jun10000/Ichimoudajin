@@ -11,12 +11,12 @@ type MovementComponent struct {
 	Decel    float64
 	MaxSpeed float64
 
-	parent     utility.Collider
+	parent     utility.MovableCollider
 	velocity   utility.Vector
 	inputAccel utility.Vector
 }
 
-func NewMovementComponent(parent utility.Collider) *MovementComponent {
+func NewMovementComponent(parent utility.MovableCollider) *MovementComponent {
 	return &MovementComponent{
 		Accel:    8000,
 		Decel:    8000,

@@ -38,7 +38,7 @@ func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.
 	return parentimage.SubImage(r).(*ebiten.Image)
 }
 
-func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform Transformer) {
+func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform StaticTransformer) {
 	if dst == nil || src == nil {
 		return
 	}
@@ -106,6 +106,17 @@ func ClampLocation(location Vector) Vector {
 	}
 	if r.Y < 0 {
 		r.Y += ss.Y
+	}
+
+	return r
+}
+
+func ClampRotation(rotation float64) float64 {
+	r := math.Mod(rotation, 2*math.Pi)
+	if r >= math.Pi {
+		r -= 2 * math.Pi
+	} else if r <= math.Pi*-1 {
+		r += 2 * math.Pi
 	}
 
 	return r

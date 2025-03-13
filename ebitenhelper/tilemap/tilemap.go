@@ -223,7 +223,7 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 
 func (m *TileMap) ToActors() func(yield func(any) bool) {
 	return func(yield func(any) bool) {
-		landscape := actor.NewActor()
+		landscape := actor.NewActor(utility.NewStaticTransform(utility.ZeroVector(), 0, utility.NewVector(1, 1)))
 		landscape.Image = ebiten.NewImage(m.MapSize.X*m.TileSize.X, m.MapSize.Y*m.TileSize.Y)
 		if !yield(landscape) {
 			return

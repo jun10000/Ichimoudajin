@@ -7,10 +7,10 @@ import (
 
 type DrawImageComponent struct {
 	Image  *ebiten.Image
-	parent utility.Transformer
+	parent utility.StaticTransformer
 }
 
-func NewDrawImageComponent(parent utility.Transformer) *DrawImageComponent {
+func NewDrawImageComponent(parent utility.StaticTransformer) *DrawImageComponent {
 	return &DrawImageComponent{
 		parent: parent,
 	}

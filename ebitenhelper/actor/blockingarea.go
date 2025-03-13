@@ -6,33 +6,28 @@ import (
 )
 
 type BlockingArea struct {
-	*component.ColliderComponent[*utility.RectangleF]
-
+	*component.StaticColliderComponent[*utility.RectangleF]
 	size utility.Vector
 }
 
-func NewBlockingArea() *BlockingArea {
+func NewBlockingArea(sTransform *utility.StaticTransform, size utility.Vector) *BlockingArea {
 	a := &BlockingArea{
-		size: utility.NewVector(32, 32),
+		size: size,
 	}
 
-	a.ColliderComponent = component.NewColliderComponent(a.getBounds)
+	a.StaticColliderComponent = component.NewStaticColliderComponent(sTransform, a.GetBounds)
+	a.UpdateColliderBounds()
 	return a
 }
 
-func (a *BlockingArea) GetSize() utility.Vector {
-	return a.size
-}
-
-func (a *BlockingArea) SetSize(size utility.Vector) {
-	a.size = size
-	a.UpdateColliderBounds()
-}
-
-func (a *BlockingArea) getBounds(output *utility.RectangleF) {
+func (a *BlockingArea) GetBounds(output *utility.RectangleF) {
 	l := a.GetLocation()
 	output.MinX = l.X
 	output.MinY = l.Y
 	output.MaxX = l.X + a.size.X
 	output.MaxY = l.Y + a.size.Y
+}
+
+func (a *BlockingArea) GetSize() utility.Vector {
+	return a.size
 }

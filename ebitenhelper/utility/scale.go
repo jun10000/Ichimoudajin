@@ -1,30 +1,29 @@
 package utility
 
-type Scale struct {
+type StaticScale struct {
 	value Vector
 }
 
-func NewScale(value Vector) Scale {
-	scale := Scale{
-		value: NewVector(1, 1),
-	}
-	scale.SetScale(value)
-
-	return scale
+func NewStaticScale(value Vector) StaticScale {
+	s := StaticScale{}
+	s.value = value.Abs()
+	return s
 }
 
-func DefaultScale() Scale {
-	return NewScale(NewVector(1, 1))
-}
-
-func (s *Scale) GetScale() Vector {
+func (s *StaticScale) GetScale() Vector {
 	return s.value
 }
 
-func (s *Scale) SetScale(value Vector) {
-	if value.X <= 0 || value.Y <= 0 {
-		return
-	}
+type Scale struct {
+	StaticScale
+}
 
-	s.value = value
+func NewScale(value Vector) Scale {
+	s := Scale{}
+	s.value = value.Abs()
+	return s
+}
+
+func (s *Scale) SetScale(value Vector) {
+	s.value = value.Abs()
 }

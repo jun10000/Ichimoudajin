@@ -6,13 +6,13 @@ import (
 )
 
 type Actor struct {
-	utility.Transform
+	*utility.StaticTransform
 	*component.DrawImageComponent
 }
 
-func NewActor() *Actor {
+func NewActor(sTransform *utility.StaticTransform) *Actor {
 	a := &Actor{
-		Transform: utility.DefaultTransform(),
+		StaticTransform: sTransform,
 	}
 
 	a.DrawImageComponent = component.NewDrawImageComponent(a)

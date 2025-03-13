@@ -146,6 +146,10 @@ func (v Vector) Mod(value Vector) Vector {
 	return NewVector(math.Mod(v.X, value.X), math.Mod(v.Y, value.Y))
 }
 
+func (v Vector) Abs() Vector {
+	return NewVector(math.Abs(v.X), math.Abs(v.Y))
+}
+
 func (v Vector) Trunc() Point {
 	return NewPoint(int(math.Trunc(v.X)), int(math.Trunc(v.Y)))
 }

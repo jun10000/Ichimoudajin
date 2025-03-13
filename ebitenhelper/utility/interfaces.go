@@ -2,19 +2,37 @@ package utility
 
 import "github.com/hajimehoshi/ebiten/v2"
 
-type Locator interface {
+type StaticLocator interface {
 	GetLocation() Vector
+}
+
+type Locator interface {
+	StaticLocator
 	SetLocation(value Vector)
 }
 
-type Rotator interface {
+type StaticRotator interface {
 	GetRotation() float64
+}
+
+type Rotator interface {
+	StaticRotator
 	SetRotation(value float64)
 }
 
-type Scaler interface {
+type StaticScaler interface {
 	GetScale() Vector
+}
+
+type Scaler interface {
+	StaticScaler
 	SetScale(value Vector)
+}
+
+type StaticTransformer interface {
+	StaticLocator
+	StaticRotator
+	StaticScaler
 }
 
 type Transformer interface {
@@ -23,21 +41,26 @@ type Transformer interface {
 	Scaler
 }
 
-type Collider interface {
-	Transformer
+type ColliderBase interface {
 	GetMainColliderBounds() Bounder
 	GetColliderBounds() [9]Bounder
+}
+
+type Collider interface {
+	ColliderBase
+	StaticTransformer
+}
+
+type MovableCollider interface {
+	ColliderBase
+	Transformer
+	AddInput(normal Vector, scale float64)
+	AddLocation(offset Vector) *TraceResult
 }
 
 type ColliderComparable interface {
 	Collider
 	comparable
-}
-
-type MovableCollider interface {
-	Collider
-	AddInput(normal Vector, scale float64)
-	AddLocation(offset Vector) *TraceResult
 }
 
 type InputReceiver interface {

@@ -1,21 +1,27 @@
 package utility
 
-type Location struct {
+type StaticLocation struct {
 	value Vector
 }
 
-func NewLocation(value Vector) Location {
-	location := Location{}
-	location.SetLocation(value)
-	return location
+func NewStaticLocation(value Vector) StaticLocation {
+	l := StaticLocation{}
+	l.value = ClampLocation(value)
+	return l
 }
 
-func ZeroLocation() Location {
-	return NewLocation(ZeroVector())
-}
-
-func (l *Location) GetLocation() Vector {
+func (l *StaticLocation) GetLocation() Vector {
 	return l.value
+}
+
+type Location struct {
+	StaticLocation
+}
+
+func NewLocation(value Vector) Location {
+	l := Location{}
+	l.value = ClampLocation(value)
+	return l
 }
 
 func (l *Location) SetLocation(value Vector) {
