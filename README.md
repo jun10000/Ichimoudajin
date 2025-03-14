@@ -7,7 +7,9 @@
 ### 開発ツール
 - [Ebitengine](https://ebitengine.org/)
   by [Hajime Hoshi](https://hajimehoshi.com/)
+  ([Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0))
 - [Tiled](https://www.mapeditor.org/)
+  by Thorbjørn Lindeijer
 
 ### 画像・アニメーション
 - [キャラクターチップ２](https://pipoya.net/sozai/assets/charachip/character-chip-2/)
