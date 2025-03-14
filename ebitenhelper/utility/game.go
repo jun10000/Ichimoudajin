@@ -121,28 +121,28 @@ func NewGamepadAxisKey(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis) Gam
 }
 
 type Game struct {
-	pressedKeys          []ebiten.Key
-	releasedKeys         []ebiten.Key
-	pressingKeys         []ebiten.Key
-	pressedMouseButtons  []ebiten.MouseButton
-	releasedMouseButtons []ebiten.MouseButton
-	pressingMouseButtons Set[ebiten.MouseButton]
-	gamepadIDs           []ebiten.GamepadID
-	pressedButtons       map[ebiten.GamepadID][]ebiten.StandardGamepadButton
-	releasedButtons      map[ebiten.GamepadID][]ebiten.StandardGamepadButton
-	pressingButtons      map[ebiten.GamepadID][]ebiten.StandardGamepadButton
-	axisValues           map[GamepadAxisKey]float64
+	pressedKeys            []ebiten.Key
+	releasedKeys           []ebiten.Key
+	pressingKeys           []ebiten.Key
+	pressedMouseButtons    []ebiten.MouseButton
+	releasedMouseButtons   []ebiten.MouseButton
+	pressingMouseButtons   Set[ebiten.MouseButton]
+	gamepadIDs             []ebiten.GamepadID
+	pressedGamepadButtons  map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	releasedGamepadButtons map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	pressingGamepadButtons map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	gamepadAxisValues      map[GamepadAxisKey]float64
 }
 
 func NewGame() *Game {
 	return &Game{
-		pressedMouseButtons:  make([]ebiten.MouseButton, 0, ebiten.MouseButtonMax+1),
-		releasedMouseButtons: make([]ebiten.MouseButton, 0, ebiten.MouseButtonMax+1),
-		pressingMouseButtons: make(Set[ebiten.MouseButton]),
-		pressedButtons:       make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
-		releasedButtons:      make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
-		pressingButtons:      make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
-		axisValues:           make(map[GamepadAxisKey]float64),
+		pressedMouseButtons:    make([]ebiten.MouseButton, 0, ebiten.MouseButtonMax+1),
+		releasedMouseButtons:   make([]ebiten.MouseButton, 0, ebiten.MouseButtonMax+1),
+		pressingMouseButtons:   make(Set[ebiten.MouseButton]),
+		pressedGamepadButtons:  make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
+		releasedGamepadButtons: make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
+		pressingGamepadButtons: make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
+		gamepadAxisValues:      make(map[GamepadAxisKey]float64),
 	}
 }
 
@@ -179,13 +179,13 @@ func (g *Game) Update() error {
 		}
 	}
 	for _, id := range g.gamepadIDs {
-		g.pressedButtons[id] = inpututil.AppendJustPressedStandardGamepadButtons(id, g.pressedButtons[id][:0])
-		g.releasedButtons[id] = inpututil.AppendJustReleasedStandardGamepadButtons(id, g.releasedButtons[id][:0])
-		g.pressingButtons[id] = inpututil.AppendPressedStandardGamepadButtons(id, g.pressingButtons[id][:0])
+		g.pressedGamepadButtons[id] = inpututil.AppendJustPressedStandardGamepadButtons(id, g.pressedGamepadButtons[id][:0])
+		g.releasedGamepadButtons[id] = inpututil.AppendJustReleasedStandardGamepadButtons(id, g.releasedGamepadButtons[id][:0])
+		g.pressingGamepadButtons[id] = inpututil.AppendPressedStandardGamepadButtons(id, g.pressingGamepadButtons[id][:0])
 		for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
 			k := NewGamepadAxisKey(id, a)
 			v := ebiten.StandardGamepadAxisValue(id, a)
-			g.axisValues[k] = v
+			g.gamepadAxisValues[k] = v
 		}
 	}
 
@@ -214,18 +214,18 @@ func (g *Game) Update() error {
 		}
 
 		for _, id := range g.gamepadIDs {
-			for _, b := range g.pressedButtons[id] {
-				r.ReceiveButtonInput(id, b, PressStatePressed)
+			for _, b := range g.pressedGamepadButtons[id] {
+				r.ReceiveGamepadButtonInput(id, b, PressStatePressed)
 			}
-			for _, b := range g.releasedButtons[id] {
-				r.ReceiveButtonInput(id, b, PressStateReleased)
+			for _, b := range g.releasedGamepadButtons[id] {
+				r.ReceiveGamepadButtonInput(id, b, PressStateReleased)
 			}
-			for _, b := range g.pressingButtons[id] {
-				r.ReceiveButtonInput(id, b, PressStatePressing)
+			for _, b := range g.pressingGamepadButtons[id] {
+				r.ReceiveGamepadButtonInput(id, b, PressStatePressing)
 			}
 			for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
 				k := NewGamepadAxisKey(id, a)
-				r.ReceiveAxisInput(id, a, g.axisValues[k])
+				r.ReceiveGamepadAxisInput(id, a, g.gamepadAxisValues[k])
 			}
 		}
 	}

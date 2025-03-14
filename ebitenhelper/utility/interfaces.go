@@ -66,8 +66,8 @@ type ColliderComparable interface {
 type InputReceiver interface {
 	ReceiveKeyInput(key ebiten.Key, state PressState)
 	ReceiveMouseButtonInput(button ebiten.MouseButton, state PressState, pos Point)
-	ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState)
-	ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64)
+	ReceiveGamepadButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState)
+	ReceiveGamepadAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64)
 }
 
 type Player interface {

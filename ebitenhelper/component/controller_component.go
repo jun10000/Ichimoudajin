@@ -44,10 +44,10 @@ func (c *ControllerComponent) ReceiveMouseButtonInput(button ebiten.MouseButton,
 	log.Printf("MouseButton %d: State %d, Position %s", button, state, pos)
 }
 
-func (c *ControllerComponent) ReceiveButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state utility.PressState) {
+func (c *ControllerComponent) ReceiveGamepadButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state utility.PressState) {
 }
 
-func (c *ControllerComponent) ReceiveAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
+func (c *ControllerComponent) ReceiveGamepadAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
 	if -utility.GamepadDeadZone < value && value < utility.GamepadDeadZone {
 		return
 	}
