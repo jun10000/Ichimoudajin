@@ -1,6 +1,9 @@
 package utility
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type Point struct {
 	X int
@@ -13,6 +16,10 @@ func NewPoint(x int, y int) Point {
 
 func ZeroPoint() Point {
 	return NewPoint(0, 0)
+}
+
+func (p Point) String() string {
+	return fmt.Sprintf("(%d, %d)", p.X, p.Y)
 }
 
 func (p Point) ToVector() Vector {

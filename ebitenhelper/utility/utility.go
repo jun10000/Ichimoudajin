@@ -75,6 +75,11 @@ func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform StaticTransformer
 	}
 }
 
+func GetCursorPosition() Point {
+	x, y := ebiten.CursorPosition()
+	return NewPoint(x, y)
+}
+
 func PanicIfError(err error) {
 	if err != nil {
 		log.Panic(err)

@@ -121,22 +121,28 @@ func NewGamepadAxisKey(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis) Gam
 }
 
 type Game struct {
-	pressedKeys     []ebiten.Key
-	releasedKeys    []ebiten.Key
-	pressingKeys    []ebiten.Key
-	gamepadIDs      []ebiten.GamepadID
-	pressedButtons  map[ebiten.GamepadID][]ebiten.StandardGamepadButton
-	releasedButtons map[ebiten.GamepadID][]ebiten.StandardGamepadButton
-	pressingButtons map[ebiten.GamepadID][]ebiten.StandardGamepadButton
-	axisValues      map[GamepadAxisKey]float64
+	pressedKeys          []ebiten.Key
+	releasedKeys         []ebiten.Key
+	pressingKeys         []ebiten.Key
+	pressedMouseButtons  []ebiten.MouseButton
+	releasedMouseButtons []ebiten.MouseButton
+	pressingMouseButtons Set[ebiten.MouseButton]
+	gamepadIDs           []ebiten.GamepadID
+	pressedButtons       map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	releasedButtons      map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	pressingButtons      map[ebiten.GamepadID][]ebiten.StandardGamepadButton
+	axisValues           map[GamepadAxisKey]float64
 }
 
 func NewGame() *Game {
 	return &Game{
-		pressedButtons:  map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
-		releasedButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
-		pressingButtons: map[ebiten.GamepadID][]ebiten.StandardGamepadButton{},
-		axisValues:      map[GamepadAxisKey]float64{},
+		pressedMouseButtons:  make([]ebiten.MouseButton, 0, ebiten.MouseButtonMax+1),
+		releasedMouseButtons: make([]ebiten.MouseButton, 0, ebiten.MouseButtonMax+1),
+		pressingMouseButtons: make(Set[ebiten.MouseButton]),
+		pressedButtons:       make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
+		releasedButtons:      make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
+		pressingButtons:      make(map[ebiten.GamepadID][]ebiten.StandardGamepadButton),
+		axisValues:           make(map[GamepadAxisKey]float64),
 	}
 }
 
@@ -151,6 +157,20 @@ func (g *Game) Update() error {
 	g.pressedKeys = inpututil.AppendJustPressedKeys(g.pressedKeys[:0])
 	g.releasedKeys = inpututil.AppendJustReleasedKeys(g.releasedKeys[:0])
 	g.pressingKeys = inpututil.AppendPressedKeys(g.pressingKeys[:0])
+	for _, b := range g.pressedMouseButtons {
+		g.pressingMouseButtons.Add(b)
+	}
+	g.pressedMouseButtons = g.pressedMouseButtons[:0]
+	g.releasedMouseButtons = g.releasedMouseButtons[:0]
+	for b := ebiten.MouseButton0; b <= ebiten.MouseButtonMax; b++ {
+		if inpututil.IsMouseButtonJustPressed(b) {
+			g.pressedMouseButtons = append(g.pressedMouseButtons, b)
+		}
+		if inpututil.IsMouseButtonJustReleased(b) {
+			g.releasedMouseButtons = append(g.releasedMouseButtons, b)
+			g.pressingMouseButtons.Remove(b)
+		}
+	}
 	g.gamepadIDs = inpututil.AppendJustConnectedGamepadIDs(g.gamepadIDs)
 	for _, id := range g.gamepadIDs {
 		if inpututil.IsGamepadJustDisconnected(id) ||
@@ -170,6 +190,7 @@ func (g *Game) Update() error {
 	}
 
 	lv := GetLevel()
+	cp := GetCursorPosition()
 
 	for _, r := range lv.InputReceivers {
 		for _, k := range g.pressedKeys {
@@ -181,6 +202,17 @@ func (g *Game) Update() error {
 		for _, k := range g.pressingKeys {
 			r.ReceiveKeyInput(k, PressStatePressing)
 		}
+
+		for _, b := range g.pressedMouseButtons {
+			r.ReceiveMouseButtonInput(b, PressStatePressed, cp)
+		}
+		for _, b := range g.releasedMouseButtons {
+			r.ReceiveMouseButtonInput(b, PressStateReleased, cp)
+		}
+		for b := range g.pressingMouseButtons {
+			r.ReceiveMouseButtonInput(b, PressStatePressing, cp)
+		}
+
 		for _, id := range g.gamepadIDs {
 			for _, b := range g.pressedButtons[id] {
 				r.ReceiveButtonInput(id, b, PressStatePressed)
