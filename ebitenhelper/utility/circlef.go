@@ -1,6 +1,12 @@
 package utility
 
-import "math"
+import (
+	"image/color"
+	"math"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+)
 
 type CircleF struct {
 	OrgX   float64
@@ -14,6 +20,10 @@ func NewCircleF(orgX, orgY, radius float64) *CircleF {
 		OrgY:   orgY,
 		Radius: radius,
 	}
+}
+
+func (c *CircleF) Draw(screen *ebiten.Image, color color.Color, antialias bool) {
+	vector.DrawFilledCircle(screen, float32(c.OrgX), float32(c.OrgY), float32(c.Radius), color, antialias)
 }
 
 func (c *CircleF) CenterLocation() Vector {

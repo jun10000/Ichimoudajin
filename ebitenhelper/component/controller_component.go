@@ -1,7 +1,6 @@
 package component
 
 import (
-	"log"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -41,7 +40,6 @@ func (c *ControllerComponent) ReceiveKeyInput(key ebiten.Key, state utility.Pres
 }
 
 func (c *ControllerComponent) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.PressState, pos utility.Point) {
-	log.Printf("MouseButton %d: State %d, Position %s", button, state, pos)
 }
 
 func (c *ControllerComponent) ReceiveGamepadButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state utility.PressState) {

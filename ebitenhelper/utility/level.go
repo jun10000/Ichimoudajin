@@ -75,6 +75,12 @@ func (l *Level) Add(actor any) {
 	if a, ok := actor.(Drawer); ok {
 		l.Drawers = append(l.Drawers, a)
 	}
+
+	if a, ok := actor.(Parenter); ok {
+		for _, ac := range a.Children() {
+			l.Add(ac)
+		}
+	}
 }
 
 func (l *Level) AIMove(self MovableCollider, target Collider) {

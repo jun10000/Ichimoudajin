@@ -41,6 +41,14 @@ type Transformer interface {
 	Scaler
 }
 
+type Bounder interface {
+	CenterLocation() Vector
+	Offset(x, y float64, output Bounder) Bounder
+	IntersectTo(target Bounder) (result bool, normal *Vector)
+	IntersectFromRectangle(src *RectangleF) (result bool, normal *Vector)
+	IntersectFromCircle(src *CircleF) (result bool, normal *Vector)
+}
+
 type ColliderBase interface {
 	GetMainColliderBounds() Bounder
 	GetColliderBounds() [9]Bounder
@@ -87,10 +95,6 @@ type Drawer interface {
 	Draw(screen *ebiten.Image)
 }
 
-type Bounder interface {
-	CenterLocation() Vector
-	Offset(x, y float64, output Bounder) Bounder
-	IntersectTo(target Bounder) (result bool, normal *Vector)
-	IntersectFromRectangle(src *RectangleF) (result bool, normal *Vector)
-	IntersectFromCircle(src *CircleF) (result bool, normal *Vector)
+type Parenter interface {
+	Children() []any
 }
