@@ -46,7 +46,7 @@ func NewLevel(name string, isLooping bool) *Level {
 		Players:          make([]Player, 0, InitialInputReceiverCap),
 		AITickers:        make([]AITicker, 0, InitialAITickerCap),
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
-		Drawers:          make([][]Drawer, 0, 2),
+		Drawers:          make([][]Drawer, 0, ZOrderMax+1),
 		DebugDraws:       make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
 	}
 }
@@ -73,7 +73,7 @@ func (l *Level) Add(actor any) {
 		l.Tickers = append(l.Tickers, a)
 	}
 	if a, ok := actor.(Drawer); ok {
-		z := 0
+		z := ZOrderDefault
 		if az, ok := a.(ZHolder); ok {
 			z = az.ZOrder()
 		}

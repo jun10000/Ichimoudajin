@@ -1,27 +1,55 @@
 package actor
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 type Destroyer struct {
-	IsShow bool
-	Circle *utility.CircleF
+	isShow bool
+	circle *utility.CircleF
+
+	GrowthValue float64
+	MaxRadius   float64
+	DrawColor   color.Color
 }
 
 func NewDestroyer() *Destroyer {
 	return &Destroyer{
-		Circle: utility.NewCircleF(0, 0, 0),
+		circle: utility.NewCircleF(0, 0, 0),
+
+		GrowthValue: 1,
+		MaxRadius:   120,
+		DrawColor:   utility.ColorBlue,
 	}
 }
 
 func (a *Destroyer) ZOrder() int {
-	return 1
+	return utility.ZOrderEffect
 }
 
 func (a *Destroyer) Draw(screen *ebiten.Image) {
-	if a.IsShow {
-		a.Circle.Draw(screen, utility.DebugColorBlue, true)
+	if a.isShow {
+		a.circle.Draw(screen, a.DrawColor, true)
 	}
+}
+
+func (a *Destroyer) Start(location utility.Vector) {
+	a.isShow = true
+	a.circle.OrgX = location.X
+	a.circle.OrgY = location.Y
+	a.circle.Radius = a.GrowthValue
+}
+
+func (a *Destroyer) Grow() {
+	a.circle.Radius += a.GrowthValue
+	if a.circle.Radius > a.MaxRadius {
+		a.circle.Radius = a.MaxRadius
+	}
+}
+
+func (a *Destroyer) Execute() {
+	a.isShow = false
 }

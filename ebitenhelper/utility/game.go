@@ -13,6 +13,10 @@ import (
 const (
 	TickCount    = 60
 	TickDuration = 1.0 / float64(TickCount)
+
+	ZOrderDefault = 0
+	ZOrderEffect  = 1
+	ZOrderMax     = ZOrderEffect
 )
 
 var (
@@ -20,19 +24,21 @@ var (
 	AIValidOffset              = 0.5
 	AIMaxTaskCount             = 1
 	GamepadDeadZone            = 0.2
-	InitialPFResultCap         = 128
-	InitialInputReceiverCap    = 1
-	InitialAITickerCap         = 32
-	InitialTickerCap           = 32
-	InitialDrawerCap           = 128
+
+	ColorRed    = color.RGBA{R: 255, G: 8}
+	ColorYellow = color.RGBA{R: 255, G: 255}
+	ColorGreen  = color.RGBA{G: 255}
+	ColorBlue   = color.RGBA{G: 128, B: 255}
+	ColorGray   = color.RGBA{R: 128, G: 128, B: 128}
+
+	InitialPFResultCap      = 128
+	InitialInputReceiverCap = 1
+	InitialAITickerCap      = 32
+	InitialTickerCap        = 32
+	InitialDrawerCap        = 128
 )
 
 var (
-	DebugColorRed        = color.RGBA{R: 255, G: 8}
-	DebugColorYellow     = color.RGBA{R: 255, G: 255}
-	DebugColorGreen      = color.RGBA{G: 255}
-	DebugColorBlue       = color.RGBA{G: 128, B: 255}
-	DebugColorGray       = color.RGBA{R: 128, G: 128, B: 128}
 	DebugInitialDrawsCap = 32
 
 	DebugIsShowLocation     = false
@@ -40,14 +46,14 @@ var (
 
 	DebugIsShowTraceDistance = false
 	DebugTraceDistanceColors = map[int]color.RGBA{
-		0: DebugColorRed,
+		0: ColorRed,
 	}
 
 	DebugIsShowTraceResult = false
 	DebugTraceResultLength = 30.0
 
 	DebugIsShowAIPath = false
-	DebugAIPathColor  = DebugColorGreen
+	DebugAIPathColor  = ColorGreen
 )
 
 var windowTitle = "Game"

@@ -44,17 +44,11 @@ func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.
 
 	switch state {
 	case utility.PressStatePressed:
-		a.destroyer.IsShow = true
-		a.destroyer.Circle.OrgX = float64(pos.X)
-		a.destroyer.Circle.OrgY = float64(pos.Y)
-		a.destroyer.Circle.Radius = 0
+		a.destroyer.Start(pos.ToVector())
 	case utility.PressStatePressing:
-		a.destroyer.Circle.Radius += 5
-		if a.destroyer.Circle.Radius > 100 {
-			a.destroyer.Circle.Radius = 100
-		}
+		a.destroyer.Grow()
 	case utility.PressStateReleased:
-		a.destroyer.IsShow = false
+		a.destroyer.Execute()
 	}
 }
 
