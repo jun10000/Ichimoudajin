@@ -16,6 +16,10 @@ func NewDestroyer() *Destroyer {
 	}
 }
 
+func (a *Destroyer) ZOrder() int {
+	return 1
+}
+
 func (a *Destroyer) Draw(screen *ebiten.Image) {
 	if a.IsShow {
 		a.Circle.Draw(screen, utility.DebugColorBlue, true)

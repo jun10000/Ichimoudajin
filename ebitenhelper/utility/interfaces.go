@@ -95,6 +95,10 @@ type Drawer interface {
 	Draw(screen *ebiten.Image)
 }
 
+type ZHolder interface {
+	ZOrder() int
+}
+
 type Parenter interface {
 	Children() []any
 }

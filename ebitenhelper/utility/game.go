@@ -244,8 +244,10 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	lv := GetLevel()
 
-	for _, d := range lv.Drawers {
-		d.Draw(screen)
+	for _, ds := range lv.Drawers {
+		for _, d := range ds {
+			d.Draw(screen)
+		}
 	}
 
 	if IsDebugMode() {

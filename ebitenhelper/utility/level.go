@@ -26,7 +26,7 @@ type Level struct {
 	Players          []Player
 	AITickers        []AITicker
 	Tickers          []Ticker
-	Drawers          []Drawer
+	Drawers          [][]Drawer
 	DebugDraws       []func(screen *ebiten.Image)
 }
 
@@ -46,7 +46,7 @@ func NewLevel(name string, isLooping bool) *Level {
 		Players:          make([]Player, 0, InitialInputReceiverCap),
 		AITickers:        make([]AITicker, 0, InitialAITickerCap),
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
-		Drawers:          make([]Drawer, 0, InitialDrawerCap),
+		Drawers:          make([][]Drawer, 0, 2),
 		DebugDraws:       make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
 	}
 }
@@ -73,7 +73,16 @@ func (l *Level) Add(actor any) {
 		l.Tickers = append(l.Tickers, a)
 	}
 	if a, ok := actor.(Drawer); ok {
-		l.Drawers = append(l.Drawers, a)
+		z := 0
+		if az, ok := a.(ZHolder); ok {
+			z = az.ZOrder()
+		}
+
+		for range z - len(l.Drawers) + 1 {
+			l.Drawers = append(l.Drawers, make([]Drawer, 0, InitialDrawerCap))
+		}
+
+		l.Drawers[z] = append(l.Drawers[z], a)
 	}
 
 	if a, ok := actor.(Parenter); ok {
