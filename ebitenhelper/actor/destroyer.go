@@ -52,4 +52,14 @@ func (a *Destroyer) Grow() {
 
 func (a *Destroyer) Execute() {
 	a.isShow = false
+
+	l := utility.GetLevel()
+	excepts := make(utility.Set[utility.MovableCollider])
+	for _, p := range l.Players {
+		excepts.Add(p)
+	}
+
+	if ok, c, _ := utility.Intersect(l.MovableColliders, a.circle, excepts); ok {
+		l.Remove(c)
+	}
 }

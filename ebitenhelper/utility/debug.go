@@ -96,7 +96,7 @@ func DrawDebugTraceDistance(target Bounder, distance int) {
 	}
 }
 
-func DrawDebugTraceResult(r *TraceResult, b Bounder) {
+func DrawDebugTraceResult[T ColliderComparable](r *TraceResult[T], b Bounder) {
 	if isDebugMode && DebugIsShowTraceResult {
 		if !r.IsHit || r.IsFirstHit {
 			return

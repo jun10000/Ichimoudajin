@@ -63,7 +63,7 @@ type MovableCollider interface {
 	ColliderBase
 	Transformer
 	AddInput(normal Vector, scale float64)
-	AddLocation(offset Vector) *TraceResult
+	AddLocation(offset Vector) *TraceResult[Collider]
 }
 
 type ColliderComparable interface {

@@ -92,6 +92,43 @@ func (l *Level) Add(actor any) {
 	}
 }
 
+func (l *Level) Remove(actor any) {
+	if a, ok := actor.(Collider); ok {
+		l.Colliders.Delete(a)
+		if m, ok := a.(MovableCollider); ok {
+			l.MovableColliders.Delete(m)
+		} else {
+			l.StaticColliders.Delete(a)
+		}
+	}
+	if a, ok := actor.(InputReceiver); ok {
+		l.InputReceivers = RemoveSliceItem(l.InputReceivers, a)
+	}
+	if a, ok := actor.(Player); ok {
+		l.Players = RemoveSliceItem(l.Players, a)
+	}
+	if a, ok := actor.(AITicker); ok {
+		l.AITickers = RemoveSliceItem(l.AITickers, a)
+	}
+	if a, ok := actor.(Ticker); ok {
+		l.Tickers = RemoveSliceItem(l.Tickers, a)
+	}
+	if a, ok := actor.(Drawer); ok {
+		z := ZOrderDefault
+		if az, ok := a.(ZHolder); ok {
+			z = az.ZOrder()
+		}
+
+		l.Drawers[z] = RemoveSliceItem(l.Drawers[z], a)
+	}
+
+	if a, ok := actor.(Parenter); ok {
+		for _, ac := range a.Children() {
+			l.Remove(ac)
+		}
+	}
+}
+
 func (l *Level) AIMove(self MovableCollider, target Collider) {
 	srl := self.GetMainColliderBounds().CenterLocation()
 	trl := target.GetMainColliderBounds().CenterLocation()
@@ -132,7 +169,7 @@ func (l *Level) AIIsPFLocationValid(location Point) bool {
 		loc.Y+AIValidOffset,
 		loc.X+l.AIGridSize.X-AIValidOffset,
 		loc.Y+l.AIGridSize.Y-AIValidOffset)
-	r, _ := Intersect(l.StaticColliders, b, nil)
+	r, _, _ := Intersect(l.StaticColliders, b, nil)
 
 	l.pfValidCache.Store(location, !r)
 	return !r
