@@ -22,8 +22,13 @@ func NewCircleF(orgX, orgY, radius float64) *CircleF {
 	}
 }
 
-func (c *CircleF) Draw(screen *ebiten.Image, color color.Color, antialias bool) {
-	vector.DrawFilledCircle(screen, float32(c.OrgX), float32(c.OrgY), float32(c.Radius), color, antialias)
+func (c *CircleF) Draw(screen *ebiten.Image, borderWidth float32, borderColor color.Color, fillColor color.Color, antialias bool) {
+	cx := float32(c.OrgX)
+	cy := float32(c.OrgY)
+	cr := float32(c.Radius)
+
+	vector.DrawFilledCircle(screen, cx, cy, cr, fillColor, antialias)
+	vector.StrokeCircle(screen, cx, cy, cr, borderWidth, borderColor, antialias)
 }
 
 func (c *CircleF) CenterLocation() Vector {

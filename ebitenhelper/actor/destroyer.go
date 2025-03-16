@@ -13,7 +13,9 @@ type Destroyer struct {
 
 	GrowthValue float64
 	MaxRadius   float64
-	DrawColor   color.Color
+	BorderWidth float32
+	BorderColor color.Color
+	FillColor   color.Color
 }
 
 func NewDestroyer() *Destroyer {
@@ -22,7 +24,9 @@ func NewDestroyer() *Destroyer {
 
 		GrowthValue: 1,
 		MaxRadius:   120,
-		DrawColor:   utility.ColorBlue,
+		BorderWidth: 2,
+		BorderColor: utility.ColorLightBlue.ToRGBA(0xff),
+		FillColor:   utility.ColorLightBlue.ToRGBA(0x20),
 	}
 }
 
@@ -32,7 +36,7 @@ func (a *Destroyer) ZOrder() int {
 
 func (a *Destroyer) Draw(screen *ebiten.Image) {
 	if a.isShow {
-		a.circle.Draw(screen, a.DrawColor, true)
+		a.circle.Draw(screen, a.BorderWidth, a.BorderColor, a.FillColor, true)
 	}
 }
 

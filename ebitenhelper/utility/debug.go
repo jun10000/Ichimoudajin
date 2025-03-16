@@ -106,7 +106,7 @@ func DrawDebugTraceResult[T ColliderComparable](r *TraceResult[T], b Bounder) {
 		lh := ls.Add(r.TraceOffset.MulF(DebugTraceResultLength))
 		DrawDebugLine(ls, lh, ColorGreen)
 		DrawDebugLine(lh, lh.Add(r.InputOffset.Sub(r.TraceOffset).MulF(DebugTraceResultLength)), ColorRed)
-		DrawDebugLine(ls, ls.Add((*r.HitNormal).MulF(DebugTraceResultLength)), ColorBlue)
+		DrawDebugLine(ls, ls.Add((*r.HitNormal).MulF(DebugTraceResultLength)), ColorLightBlue)
 	}
 }
 

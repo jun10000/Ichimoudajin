@@ -25,11 +25,17 @@ var (
 	AIMaxTaskCount             = 1
 	GamepadDeadZone            = 0.2
 
-	ColorRed    = color.RGBA{R: 255, G: 8}
-	ColorYellow = color.RGBA{R: 255, G: 255}
-	ColorGreen  = color.RGBA{G: 255}
-	ColorBlue   = color.RGBA{G: 128, B: 255}
-	ColorGray   = color.RGBA{R: 128, G: 128, B: 128}
+	ColorRed        = RGB{0xff, 0x00, 0x00}
+	ColorOrange     = RGB{0xff, 0x80, 0x00}
+	ColorYellow     = RGB{0xff, 0xff, 0x00}
+	ColorLightGreen = RGB{0x80, 0xff, 0x00}
+	ColorGreen      = RGB{0x00, 0xff, 0x00}
+	ColorLightBlue  = RGB{0x00, 0x80, 0xff}
+	ColorBlue       = RGB{0x00, 0x00, 0xff}
+	ColorPurple     = RGB{0x80, 0x00, 0xff}
+	ColorWhite      = RGB{0xff, 0xff, 0xff}
+	ColorGray       = RGB{0x80, 0x80, 0x80}
+	ColorBlack      = RGB{0x00, 0x00, 0x00}
 
 	InitialPFResultCap      = 128
 	InitialInputReceiverCap = 1
@@ -45,7 +51,7 @@ var (
 	DebugLocationTextOffset = NewVector(3, -12)
 
 	DebugIsShowTraceDistance = false
-	DebugTraceDistanceColors = map[int]color.RGBA{
+	DebugTraceDistanceColors = map[int]color.Color{
 		0: ColorRed,
 	}
 
