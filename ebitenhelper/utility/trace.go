@@ -56,6 +56,23 @@ func Intersect[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Boun
 	return false, *new(T), nil
 }
 
+func IntersectAll[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, excepts Set[T]) (result bool, iColliders []T, normal Vector) {
+	rr := false
+	rcs := make([]T, 0, colliders.Len())
+	rn := ZeroVector()
+
+	for c, b := range GetColliderBounds(colliders, excepts) {
+		r, n := target.IntersectTo(b)
+		if r {
+			rr = true
+			rcs = append(rcs, c)
+			rn = rn.Add(*n)
+		}
+	}
+
+	return rr, rcs, rn.Normalize()
+}
+
 func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) *TraceResult[T] {
 	ret := NewTraceResult[T](offset)
 

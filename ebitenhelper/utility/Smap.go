@@ -12,6 +12,16 @@ func NewSmap[K, V any]() *Smap[K, V] {
 	}
 }
 
+func (s *Smap[K, V]) Len() int {
+	len := 0
+	s.m.Range(func(key any, value any) bool {
+		len++
+		return true
+	})
+
+	return len
+}
+
 func (s *Smap[K, V]) Load(key K) (value V, ok bool) {
 	if v, o := s.m.Load(key); o {
 		return v.(V), true

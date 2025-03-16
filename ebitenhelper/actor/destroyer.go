@@ -59,7 +59,9 @@ func (a *Destroyer) Execute() {
 		excepts.Add(p)
 	}
 
-	if ok, c, _ := utility.Intersect(l.MovableColliders, a.circle, excepts); ok {
-		l.Remove(c)
+	if ok, cs, _ := utility.IntersectAll(l.MovableColliders, a.circle, excepts); ok {
+		for _, c := range cs {
+			l.Remove(c)
+		}
 	}
 }
