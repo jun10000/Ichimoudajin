@@ -42,6 +42,7 @@ var (
 	InitialAITickerCap      = 32
 	InitialTickerCap        = 32
 	InitialDrawerCap        = 128
+	InitialTrashCap         = 32
 )
 
 var (
@@ -249,6 +250,8 @@ func (g *Game) Update() error {
 	for _, t := range lv.Tickers {
 		t.Tick()
 	}
+
+	lv.EmptyTrashes()
 
 	return nil
 }

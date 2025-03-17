@@ -45,10 +45,8 @@ func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.
 	switch state {
 	case utility.PressStatePressed:
 		a.destroyer.Start(pos.ToVector())
-	case utility.PressStatePressing:
-		a.destroyer.Grow()
 	case utility.PressStateReleased:
-		a.destroyer.Execute()
+		a.destroyer.Finish()
 	}
 }
 

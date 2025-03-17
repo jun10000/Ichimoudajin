@@ -28,6 +28,7 @@ type Level struct {
 	Tickers          []Ticker
 	Drawers          [][]Drawer
 	DebugDraws       []func(screen *ebiten.Image)
+	Trashes          []any
 }
 
 func NewLevel(name string, isLooping bool) *Level {
@@ -48,6 +49,7 @@ func NewLevel(name string, isLooping bool) *Level {
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
 		Drawers:          make([][]Drawer, 0, ZOrderMax+1),
 		DebugDraws:       make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
+		Trashes:          make([]any, 0, InitialTrashCap),
 	}
 }
 
@@ -93,40 +95,48 @@ func (l *Level) Add(actor any) {
 }
 
 func (l *Level) Remove(actor any) {
-	if a, ok := actor.(Collider); ok {
-		l.Colliders.Delete(a)
-		if m, ok := a.(MovableCollider); ok {
-			l.MovableColliders.Delete(m)
-		} else {
-			l.StaticColliders.Delete(a)
+	l.Trashes = append(l.Trashes, actor)
+}
+
+func (l *Level) EmptyTrashes() {
+	for _, actor := range l.Trashes {
+		if a, ok := actor.(Collider); ok {
+			l.Colliders.Delete(a)
+			if m, ok := a.(MovableCollider); ok {
+				l.MovableColliders.Delete(m)
+			} else {
+				l.StaticColliders.Delete(a)
+			}
 		}
-	}
-	if a, ok := actor.(InputReceiver); ok {
-		l.InputReceivers = RemoveSliceItem(l.InputReceivers, a)
-	}
-	if a, ok := actor.(Player); ok {
-		l.Players = RemoveSliceItem(l.Players, a)
-	}
-	if a, ok := actor.(AITicker); ok {
-		l.AITickers = RemoveSliceItem(l.AITickers, a)
-	}
-	if a, ok := actor.(Ticker); ok {
-		l.Tickers = RemoveSliceItem(l.Tickers, a)
-	}
-	if a, ok := actor.(Drawer); ok {
-		z := ZOrderDefault
-		if az, ok := a.(ZHolder); ok {
-			z = az.ZOrder()
+		if a, ok := actor.(InputReceiver); ok {
+			l.InputReceivers = RemoveSliceItem(l.InputReceivers, a)
+		}
+		if a, ok := actor.(Player); ok {
+			l.Players = RemoveSliceItem(l.Players, a)
+		}
+		if a, ok := actor.(AITicker); ok {
+			l.AITickers = RemoveSliceItem(l.AITickers, a)
+		}
+		if a, ok := actor.(Ticker); ok {
+			l.Tickers = RemoveSliceItem(l.Tickers, a)
+		}
+		if a, ok := actor.(Drawer); ok {
+			z := ZOrderDefault
+			if az, ok := a.(ZHolder); ok {
+				z = az.ZOrder()
+			}
+
+			l.Drawers[z] = RemoveSliceItem(l.Drawers[z], a)
 		}
 
-		l.Drawers[z] = RemoveSliceItem(l.Drawers[z], a)
-	}
-
-	if a, ok := actor.(Parenter); ok {
-		for _, ac := range a.Children() {
-			l.Remove(ac)
+		if a, ok := actor.(Parenter); ok {
+			for _, ac := range a.Children() {
+				l.Remove(ac)
+			}
 		}
 	}
+
+	l.Trashes = l.Trashes[:0]
 }
 
 func (l *Level) AIMove(self MovableCollider, target Collider) {

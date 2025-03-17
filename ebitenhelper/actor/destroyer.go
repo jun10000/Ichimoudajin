@@ -7,11 +7,21 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type Destroyer struct {
-	isShow bool
-	circle *utility.CircleF
+type DestroyerStatus int
 
-	GrowthValue float64
+const (
+	DestroyerStatusDisable DestroyerStatus = iota
+	DestroyerStatusGrowing
+	DestroyerStatusShrinking
+)
+
+type Destroyer struct {
+	status  DestroyerStatus
+	circle  *utility.CircleF
+	targets []utility.MovableCollider
+
+	GrowSpeed   float64
+	ShrinkSpeed float64
 	MaxRadius   float64
 	BorderWidth float32
 	BorderColor color.Color
@@ -20,9 +30,11 @@ type Destroyer struct {
 
 func NewDestroyer() *Destroyer {
 	return &Destroyer{
+		status: DestroyerStatusDisable,
 		circle: utility.NewCircleF(0, 0, 0),
 
-		GrowthValue: 1,
+		GrowSpeed:   1,
+		ShrinkSpeed: 10,
 		MaxRadius:   120,
 		BorderWidth: 2,
 		BorderColor: utility.ColorLightBlue.ToRGBA(0xff),
@@ -34,38 +46,60 @@ func (a *Destroyer) ZOrder() int {
 	return utility.ZOrderEffect
 }
 
+func (a *Destroyer) Tick() {
+	switch a.status {
+	case DestroyerStatusGrowing:
+		a.circle.Radius += a.GrowSpeed
+		if a.circle.Radius > a.MaxRadius {
+			a.circle.Radius = a.MaxRadius
+		}
+	case DestroyerStatusShrinking:
+		a.circle.Radius -= a.ShrinkSpeed
+		if a.circle.Radius <= 0 {
+			a.circle.Radius = 0
+			a.execute()
+		}
+	}
+}
+
 func (a *Destroyer) Draw(screen *ebiten.Image) {
-	if a.isShow {
+	if a.status != DestroyerStatusDisable {
 		a.circle.Draw(screen, a.BorderWidth, a.BorderColor, a.FillColor, true)
 	}
 }
 
 func (a *Destroyer) Start(location utility.Vector) {
-	a.isShow = true
+	if a.status != DestroyerStatusDisable {
+		return
+	}
+
 	a.circle.OrgX = location.X
 	a.circle.OrgY = location.Y
-	a.circle.Radius = a.GrowthValue
+	a.circle.Radius = a.GrowSpeed
+
+	a.status = DestroyerStatusGrowing
 }
 
-func (a *Destroyer) Grow() {
-	a.circle.Radius += a.GrowthValue
-	if a.circle.Radius > a.MaxRadius {
-		a.circle.Radius = a.MaxRadius
+func (a *Destroyer) Finish() {
+	if a.status != DestroyerStatusGrowing {
+		return
 	}
-}
-
-func (a *Destroyer) Execute() {
-	a.isShow = false
 
 	l := utility.GetLevel()
 	excepts := make(utility.Set[utility.MovableCollider])
 	for _, p := range l.Players {
 		excepts.Add(p)
 	}
+	_, a.targets, _ = utility.IntersectAll(l.MovableColliders, a.circle, excepts)
 
-	if ok, cs, _ := utility.IntersectAll(l.MovableColliders, a.circle, excepts); ok {
-		for _, c := range cs {
-			l.Remove(c)
-		}
+	a.status = DestroyerStatusShrinking
+}
+
+func (a *Destroyer) execute() {
+	l := utility.GetLevel()
+	for _, c := range a.targets {
+		l.Remove(c)
 	}
+
+	a.status = DestroyerStatusDisable
 }
