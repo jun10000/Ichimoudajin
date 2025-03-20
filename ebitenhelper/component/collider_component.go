@@ -58,8 +58,12 @@ func (c *colliderComponentBase[T]) GetMainColliderBounds() utility.Bounder {
 	return c.cache[0]
 }
 
-func (c *colliderComponentBase[T]) GetColliderBounds() [9]utility.Bounder {
-	return c.cache
+func (c *colliderComponentBase[T]) GetColliderBounds() []utility.Bounder {
+	if utility.GetLevel().IsLooping {
+		return c.cache[:]
+	} else {
+		return c.cache[:1]
+	}
 }
 
 /*

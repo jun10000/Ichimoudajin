@@ -37,12 +37,15 @@ var (
 	ColorGray       = RGB{0x80, 0x80, 0x80}
 	ColorBlack      = RGB{0x00, 0x00, 0x00}
 
-	InitialPFResultCap      = 128
-	InitialInputReceiverCap = 1
-	InitialAITickerCap      = 32
-	InitialTickerCap        = 32
-	InitialDrawerCap        = 128
-	InitialTrashCap         = 32
+	InitialStaticColliderCap  = 128
+	InitialMovableColliderCap = 32
+	InitialInputReceiverCap   = 1
+	InitialPlayerCap          = 1
+	InitialAITickerCap        = 32
+	InitialTickerCap          = 32
+	InitialDrawerCap          = 128
+	InitialTrashCap           = 32
+	InitialPFResultCap        = 128
 )
 
 var (

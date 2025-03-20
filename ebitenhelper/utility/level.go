@@ -19,9 +19,9 @@ type Level struct {
 	AIGridSize    Vector
 	AIPathfinding *AStar
 
-	Colliders        *Smap[Collider, [9]Bounder]
-	StaticColliders  *Smap[Collider, [9]Bounder]
-	MovableColliders *Smap[MovableCollider, [9]Bounder]
+	Colliders        []Collider
+	StaticColliders  []Collider
+	MovableColliders []MovableCollider
 	InputReceivers   []InputReceiver
 	Players          []Player
 	AITickers        []AITicker
@@ -40,11 +40,11 @@ func NewLevel(name string, isLooping bool) *Level {
 		AIGridSize:    NewVector(32, 32),
 		AIPathfinding: NewAStar(),
 
-		Colliders:        NewSmap[Collider, [9]Bounder](),
-		StaticColliders:  NewSmap[Collider, [9]Bounder](),
-		MovableColliders: NewSmap[MovableCollider, [9]Bounder](),
+		Colliders:        make([]Collider, 0, InitialStaticColliderCap+InitialMovableColliderCap),
+		StaticColliders:  make([]Collider, 0, InitialStaticColliderCap),
+		MovableColliders: make([]MovableCollider, 0, InitialMovableColliderCap),
 		InputReceivers:   make([]InputReceiver, 0, InitialInputReceiverCap),
-		Players:          make([]Player, 0, InitialInputReceiverCap),
+		Players:          make([]Player, 0, InitialPlayerCap),
 		AITickers:        make([]AITicker, 0, InitialAITickerCap),
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
 		Drawers:          make([][]Drawer, 0, ZOrderMax+1),
@@ -55,11 +55,11 @@ func NewLevel(name string, isLooping bool) *Level {
 
 func (l *Level) Add(actor any) {
 	if a, ok := actor.(Collider); ok {
-		l.Colliders.Store(a, a.GetColliderBounds())
+		l.Colliders = append(l.Colliders, a)
 		if m, ok := a.(MovableCollider); ok {
-			l.MovableColliders.Store(m, m.GetColliderBounds())
+			l.MovableColliders = append(l.MovableColliders, m)
 		} else {
-			l.StaticColliders.Store(a, a.GetColliderBounds())
+			l.StaticColliders = append(l.StaticColliders, a)
 		}
 	}
 	if a, ok := actor.(InputReceiver); ok {
@@ -101,11 +101,11 @@ func (l *Level) Remove(actor any) {
 func (l *Level) EmptyTrashes() {
 	for _, actor := range l.Trashes {
 		if a, ok := actor.(Collider); ok {
-			l.Colliders.Delete(a)
+			l.Colliders = RemoveSliceItem(l.Colliders, a)
 			if m, ok := a.(MovableCollider); ok {
-				l.MovableColliders.Delete(m)
+				l.MovableColliders = RemoveSliceItem(l.MovableColliders, m)
 			} else {
-				l.StaticColliders.Delete(a)
+				l.StaticColliders = RemoveSliceItem(l.StaticColliders, a)
 			}
 		}
 		if a, ok := actor.(InputReceiver); ok {

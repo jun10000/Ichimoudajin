@@ -22,22 +22,15 @@ func NewTraceResult[T ColliderComparable](offset Vector) *TraceResult[T] {
 	}
 }
 
-func GetColliderBounds[T ColliderComparable](colliders *Smap[T, [9]Bounder], excepts Set[T]) func(yield func(T, Bounder) bool) {
+func GetColliderBounds[T ColliderComparable](colliders []T, excepts Set[T]) func(yield func(T, Bounder) bool) {
 	return func(yield func(T, Bounder) bool) {
-		loop := GetLevel().IsLooping
-		for c, bs := range colliders.Range() {
+		for _, c := range colliders {
 			if excepts != nil && excepts.Contains(c) {
 				continue
 			}
 
-			if loop {
-				for i := range 9 {
-					if !yield(c, bs[i]) {
-						return
-					}
-				}
-			} else {
-				if !yield(c, bs[0]) {
+			for _, b := range c.GetColliderBounds() {
+				if !yield(c, b) {
 					return
 				}
 			}
@@ -45,7 +38,7 @@ func GetColliderBounds[T ColliderComparable](colliders *Smap[T, [9]Bounder], exc
 	}
 }
 
-func Intersect[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, excepts Set[T]) (result bool, collider T, normal *Vector) {
+func Intersect[T ColliderComparable](colliders []T, target Bounder, excepts Set[T]) (result bool, collider T, normal *Vector) {
 	for c, b := range GetColliderBounds(colliders, excepts) {
 		r, n := target.IntersectTo(b)
 		if r {
@@ -56,9 +49,9 @@ func Intersect[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Boun
 	return false, *new(T), nil
 }
 
-func IntersectAll[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, excepts Set[T]) (result bool, iColliders []T, normal Vector) {
+func IntersectAll[T ColliderComparable](colliders []T, target Bounder, excepts Set[T]) (result bool, iColliders []T, normal Vector) {
 	rr := false
-	rcs := make([]T, 0, colliders.Len())
+	rcs := make([]T, 0, len(colliders))
 	rn := ZeroVector()
 
 	for c, b := range GetColliderBounds(colliders, excepts) {
@@ -73,7 +66,7 @@ func IntersectAll[T ColliderComparable](colliders *Smap[T, [9]Bounder], target B
 	return rr, rcs, rn.Normalize()
 }
 
-func Trace[T ColliderComparable](colliders *Smap[T, [9]Bounder], target Bounder, offset Vector, excepts Set[T]) *TraceResult[T] {
+func Trace[T ColliderComparable](colliders []T, target Bounder, offset Vector, excepts Set[T]) *TraceResult[T] {
 	ret := NewTraceResult[T](offset)
 
 	for i := range int(ret.InputOffsetD) + 2 {

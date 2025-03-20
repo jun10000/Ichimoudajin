@@ -50,8 +50,9 @@ type Bounder interface {
 }
 
 type ColliderBase interface {
+	UpdateColliderBounds()
 	GetMainColliderBounds() Bounder
-	GetColliderBounds() [9]Bounder
+	GetColliderBounds() []Bounder
 }
 
 type Collider interface {
