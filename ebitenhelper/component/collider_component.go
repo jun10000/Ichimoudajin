@@ -13,6 +13,7 @@ Available T type is pointer.
 */
 type colliderComponentBase[T utility.Bounder] struct {
 	getBounds   func(T)
+	isEnable    bool
 	loopOffsets [8]utility.Vector
 	cache       [9]utility.Bounder
 }
@@ -36,6 +37,7 @@ func newColliderComponentBase[T utility.Bounder](getBounds func(T)) *colliderCom
 	}
 
 	c := &colliderComponentBase[T]{
+		isEnable:    true,
 		getBounds:   getBounds,
 		loopOffsets: os,
 	}
@@ -54,6 +56,14 @@ func (c *colliderComponentBase[T]) UpdateColliderBounds() {
 	}
 }
 
+func (c *colliderComponentBase[T]) EnableColliderBounds() {
+	c.isEnable = true
+}
+
+func (c *colliderComponentBase[T]) DisableColliderBounds() {
+	c.isEnable = false
+}
+
 func (c *colliderComponentBase[T]) GetRealFirstColliderBounds() utility.Bounder {
 	return c.cache[0]
 }
@@ -63,6 +73,22 @@ func (c *colliderComponentBase[T]) GetRealColliderBounds() []utility.Bounder {
 		return c.cache[:]
 	} else {
 		return c.cache[:1]
+	}
+}
+
+func (c *colliderComponentBase[T]) GetFirstColliderBounds() utility.Bounder {
+	if c.isEnable {
+		return c.GetRealFirstColliderBounds()
+	} else {
+		return nil
+	}
+}
+
+func (c *colliderComponentBase[T]) GetColliderBounds() []utility.Bounder {
+	if c.isEnable {
+		return c.GetRealColliderBounds()
+	} else {
+		return c.cache[:0]
 	}
 }
 

@@ -51,8 +51,12 @@ type Bounder interface {
 
 type ColliderBase interface {
 	UpdateColliderBounds()
+	EnableColliderBounds()
+	DisableColliderBounds()
 	GetRealFirstColliderBounds() Bounder
 	GetRealColliderBounds() []Bounder
+	GetFirstColliderBounds() Bounder
+	GetColliderBounds() []Bounder
 }
 
 type Collider interface {

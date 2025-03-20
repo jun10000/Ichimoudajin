@@ -29,7 +29,7 @@ func GetColliderBounds[T ColliderComparable](colliders []T, excepts Set[T]) func
 				continue
 			}
 
-			for _, b := range c.GetRealColliderBounds() {
+			for _, b := range c.GetColliderBounds() {
 				if !yield(c, b) {
 					return
 				}

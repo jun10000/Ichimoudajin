@@ -91,6 +91,9 @@ func (a *Destroyer) Finish() {
 		excepts.Add(p)
 	}
 	_, a.targets, _ = utility.IntersectAll(l.MovableColliders, a.circle, excepts)
+	for _, t := range a.targets {
+		t.DisableColliderBounds()
+	}
 
 	a.status = DestroyerStatusShrinking
 }
