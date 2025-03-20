@@ -42,6 +42,7 @@ type Transformer interface {
 }
 
 type Bounder interface {
+	ToCircle() *CircleF
 	CenterLocation() Vector
 	Offset(x, y float64, output Bounder) Bounder
 	IntersectTo(target Bounder) (result bool, normal *Vector)

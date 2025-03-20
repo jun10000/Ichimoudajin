@@ -31,6 +31,10 @@ func (c *CircleF) Draw(screen *ebiten.Image, borderWidth float32, borderColor co
 	vector.StrokeCircle(screen, cx, cy, cr, borderWidth, borderColor, antialias)
 }
 
+func (c *CircleF) ToCircle() *CircleF {
+	return c
+}
+
 func (c *CircleF) CenterLocation() Vector {
 	return ClampLocation(NewVector(c.OrgX, c.OrgY))
 }

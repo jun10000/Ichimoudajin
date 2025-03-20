@@ -34,7 +34,7 @@ func NewDestroyer() *Destroyer {
 		circle: utility.NewCircleF(0, 0, 0),
 
 		GrowSpeed:   1,
-		ShrinkSpeed: 10,
+		ShrinkSpeed: 2,
 		MaxRadius:   120,
 		BorderWidth: 2,
 		BorderColor: utility.ColorLightBlue.ToRGBA(0xff),
@@ -57,7 +57,34 @@ func (a *Destroyer) Tick() {
 		a.circle.Radius -= a.ShrinkSpeed
 		if a.circle.Radius <= 0 {
 			a.circle.Radius = 0
-			a.execute()
+		}
+
+		tTrashes := make([]utility.MovableCollider, 0)
+		cLocation := a.circle.CenterLocation()
+		cRadius := a.circle.Radius
+		for _, t := range a.targets {
+			tCircle := t.GetRealFirstColliderBounds().ToCircle()
+			tLocation := tCircle.CenterLocation()
+			tRadius := tCircle.Radius
+			if cRadius <= tRadius {
+				tTrashes = append(tTrashes, t)
+				continue
+			}
+
+			dtLength, dtNormal := cLocation.Sub(tLocation).Decompose()
+			dtLength -= cRadius - tRadius
+			if dtLength > 0 {
+				t.AddLocation(dtNormal.MulF(dtLength))
+			}
+		}
+
+		for _, t := range tTrashes {
+			a.targets = utility.RemoveSliceItem(a.targets, t)
+			utility.GetLevel().Remove(t)
+		}
+
+		if cRadius == 0 {
+			a.status = DestroyerStatusDisable
 		}
 	}
 }
@@ -96,13 +123,4 @@ func (a *Destroyer) Finish() {
 	}
 
 	a.status = DestroyerStatusShrinking
-}
-
-func (a *Destroyer) execute() {
-	l := utility.GetLevel()
-	for _, c := range a.targets {
-		l.Remove(c)
-	}
-
-	a.status = DestroyerStatusDisable
 }
