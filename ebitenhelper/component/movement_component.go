@@ -35,7 +35,7 @@ func (c *MovementComponent) addLocationForce(offset utility.Vector) {
 }
 
 func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceResult[utility.Collider] {
-	bounds := c.parent.GetFirstColliderBounds()
+	bounds := c.parent.GetFirstBounds()
 	if bounds == nil {
 		c.addLocationForce(offset)
 		return utility.NewTraceResult[utility.Collider](offset)

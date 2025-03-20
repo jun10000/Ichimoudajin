@@ -22,14 +22,14 @@ func NewTraceResult[T ColliderComparable](offset Vector) *TraceResult[T] {
 	}
 }
 
-func GetColliderBounds[T ColliderComparable](colliders []T, excepts Set[T]) func(yield func(T, Bounder) bool) {
+func GetBoundsCollection[T ColliderComparable](colliders []T, excepts Set[T]) func(yield func(T, Bounder) bool) {
 	return func(yield func(T, Bounder) bool) {
 		for _, c := range colliders {
 			if excepts != nil && excepts.Contains(c) {
 				continue
 			}
 
-			for _, b := range c.GetColliderBounds() {
+			for _, b := range c.GetBounds() {
 				if !yield(c, b) {
 					return
 				}
@@ -39,7 +39,7 @@ func GetColliderBounds[T ColliderComparable](colliders []T, excepts Set[T]) func
 }
 
 func Intersect[T ColliderComparable](colliders []T, target Bounder, excepts Set[T]) (result bool, collider T, normal *Vector) {
-	for c, b := range GetColliderBounds(colliders, excepts) {
+	for c, b := range GetBoundsCollection(colliders, excepts) {
 		r, n := target.IntersectTo(b)
 		if r {
 			return true, c, n
@@ -54,7 +54,7 @@ func IntersectAll[T ColliderComparable](colliders []T, target Bounder, excepts S
 	rcs := make([]T, 0, len(colliders))
 	rn := ZeroVector()
 
-	for c, b := range GetColliderBounds(colliders, excepts) {
+	for c, b := range GetBoundsCollection(colliders, excepts) {
 		r, n := target.IntersectTo(b)
 		if r {
 			rr = true

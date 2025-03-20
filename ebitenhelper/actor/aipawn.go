@@ -20,7 +20,7 @@ func NewAIPawn(location utility.Vector, rotation float64, scale utility.Vector) 
 	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
 	a.AIControllerComponent = component.NewAIControllerComponent(a)
 	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
-	a.UpdateColliderBounds()
+	a.UpdateBounds()
 	return a
 }
 

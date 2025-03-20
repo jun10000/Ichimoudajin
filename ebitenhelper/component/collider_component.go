@@ -49,26 +49,26 @@ func newColliderComponentBase[T utility.Bounder](getBounds func(T)) *colliderCom
 	return c
 }
 
-func (c *colliderComponentBase[T]) UpdateColliderBounds() {
+func (c *colliderComponentBase[T]) UpdateBounds() {
 	c.getBounds(c.cache[0].(T))
 	for i, v := range c.loopOffsets {
 		c.cache[0].Offset(v.X, v.Y, c.cache[i+1])
 	}
 }
 
-func (c *colliderComponentBase[T]) EnableColliderBounds() {
+func (c *colliderComponentBase[T]) EnableBounds() {
 	c.isEnable = true
 }
 
-func (c *colliderComponentBase[T]) DisableColliderBounds() {
+func (c *colliderComponentBase[T]) DisableBounds() {
 	c.isEnable = false
 }
 
-func (c *colliderComponentBase[T]) GetRealFirstColliderBounds() utility.Bounder {
+func (c *colliderComponentBase[T]) GetRealFirstBounds() utility.Bounder {
 	return c.cache[0]
 }
 
-func (c *colliderComponentBase[T]) GetRealColliderBounds() []utility.Bounder {
+func (c *colliderComponentBase[T]) GetRealBounds() []utility.Bounder {
 	if utility.GetLevel().IsLooping {
 		return c.cache[:]
 	} else {
@@ -76,17 +76,17 @@ func (c *colliderComponentBase[T]) GetRealColliderBounds() []utility.Bounder {
 	}
 }
 
-func (c *colliderComponentBase[T]) GetFirstColliderBounds() utility.Bounder {
+func (c *colliderComponentBase[T]) GetFirstBounds() utility.Bounder {
 	if c.isEnable {
-		return c.GetRealFirstColliderBounds()
+		return c.GetRealFirstBounds()
 	} else {
 		return nil
 	}
 }
 
-func (c *colliderComponentBase[T]) GetColliderBounds() []utility.Bounder {
+func (c *colliderComponentBase[T]) GetBounds() []utility.Bounder {
 	if c.isEnable {
-		return c.GetRealColliderBounds()
+		return c.GetRealBounds()
 	} else {
 		return c.cache[:0]
 	}
@@ -128,10 +128,10 @@ func NewColliderComponent[T utility.Bounder](transform *utility.Transform, getBo
 
 func (c *ColliderComponent[T]) SetLocation(value utility.Vector) {
 	c.Transform.SetLocation(value)
-	c.UpdateColliderBounds()
+	c.UpdateBounds()
 }
 
 func (c *ColliderComponent[T]) SetScale(value utility.Vector) {
 	c.Transform.SetScale(value)
-	c.UpdateColliderBounds()
+	c.UpdateBounds()
 }

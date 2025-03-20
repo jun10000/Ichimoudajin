@@ -26,7 +26,7 @@ func NewPawn(location utility.Vector, rotation float64, scale utility.Vector) *P
 
 	a.destroyer = NewDestroyer()
 
-	a.UpdateColliderBounds()
+	a.UpdateBounds()
 	return a
 }
 

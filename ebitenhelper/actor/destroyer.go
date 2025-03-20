@@ -63,7 +63,7 @@ func (a *Destroyer) Tick() {
 		cLocation := a.circle.CenterLocation()
 		cRadius := a.circle.Radius
 		for _, t := range a.targets {
-			tCircle := t.GetRealFirstColliderBounds().ToCircle()
+			tCircle := t.GetRealFirstBounds().ToCircle()
 			tLocation := tCircle.CenterLocation()
 			tRadius := tCircle.Radius
 			if cRadius <= tRadius {
@@ -119,7 +119,7 @@ func (a *Destroyer) Finish() {
 	}
 	_, a.targets, _ = utility.IntersectAll(l.MovableColliders, a.circle, excepts)
 	for _, t := range a.targets {
-		t.DisableColliderBounds()
+		t.DisableBounds()
 	}
 
 	a.status = DestroyerStatusShrinking
