@@ -51,8 +51,8 @@ type Bounder interface {
 
 type ColliderBase interface {
 	UpdateColliderBounds()
-	GetMainColliderBounds() Bounder
-	GetColliderBounds() []Bounder
+	GetRealFirstColliderBounds() Bounder
+	GetRealColliderBounds() []Bounder
 }
 
 type Collider interface {

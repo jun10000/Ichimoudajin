@@ -140,8 +140,8 @@ func (l *Level) EmptyTrashes() {
 }
 
 func (l *Level) AIMove(self MovableCollider, target Collider) {
-	srl := self.GetMainColliderBounds().CenterLocation()
-	trl := target.GetMainColliderBounds().CenterLocation()
+	srl := self.GetRealFirstColliderBounds().CenterLocation()
+	trl := target.GetRealFirstColliderBounds().CenterLocation()
 	spl := l.RealToPFLocation(srl)
 	tpl := l.RealToPFLocation(trl)
 

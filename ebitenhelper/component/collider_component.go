@@ -54,11 +54,11 @@ func (c *colliderComponentBase[T]) UpdateColliderBounds() {
 	}
 }
 
-func (c *colliderComponentBase[T]) GetMainColliderBounds() utility.Bounder {
+func (c *colliderComponentBase[T]) GetRealFirstColliderBounds() utility.Bounder {
 	return c.cache[0]
 }
 
-func (c *colliderComponentBase[T]) GetColliderBounds() []utility.Bounder {
+func (c *colliderComponentBase[T]) GetRealColliderBounds() []utility.Bounder {
 	if utility.GetLevel().IsLooping {
 		return c.cache[:]
 	} else {
