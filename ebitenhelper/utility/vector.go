@@ -3,6 +3,7 @@ package utility
 import (
 	"fmt"
 	"math"
+	"math/rand/v2"
 )
 
 type Vector struct {
@@ -16,6 +17,14 @@ func NewVector(x float64, y float64) Vector {
 
 func NewVectorPtr(x float64, y float64) *Vector {
 	return &Vector{X: x, Y: y}
+}
+
+func RandomVector() Vector {
+	return Vector{rand.Float64(), rand.Float64()}
+}
+
+func RandomVectorPtr() *Vector {
+	return &Vector{rand.Float64(), rand.Float64()}
 }
 
 func ZeroVector() Vector {
