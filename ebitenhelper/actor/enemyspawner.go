@@ -7,14 +7,16 @@ import (
 type EnemySpawner struct {
 	tickIndex int
 
-	SpawnSeconds    float32
-	SpawnRetryCount int
+	SpawnSeconds          float32
+	SpawnRetryCount       int
+	InvalidPlayerDistance float64
 }
 
 func NewEnemySpawner() *EnemySpawner {
 	return &EnemySpawner{
-		SpawnSeconds:    3,
-		SpawnRetryCount: 5,
+		SpawnSeconds:          3,
+		SpawnRetryCount:       10,
+		InvalidPlayerDistance: 300,
 	}
 }
 
@@ -24,19 +26,24 @@ func (a *EnemySpawner) Spawn() {
 
 	p := NewAIPawn(utility.ZeroVector(), 0, utility.NewVector(1, 1))
 	p.Image = img
-	p.MaxSpeed = 200
+	p.MaxSpeed = 150
 
 	ss := utility.GetScreenSize().ToVector()
 	lv := utility.GetLevel()
+	pll := lv.Players[0].GetLocation()
 	for range a.SpawnRetryCount {
 		l := utility.RandomVectorPtr().Mul(ss)
 		p.SetLocation(l)
-		ok, _, _ := utility.Intersect(lv.Colliders, p.GetRealFirstBounds(), nil)
 
-		if !ok {
-			lv.Add(p)
-			return
+		if ok, _, _ := utility.Intersect(lv.Colliders, p.GetRealFirstBounds(), nil); ok {
+			continue
 		}
+		if pll.Sub(l).Length2() < a.InvalidPlayerDistance*a.InvalidPlayerDistance {
+			continue
+		}
+
+		lv.Add(p)
+		return
 	}
 }
 
