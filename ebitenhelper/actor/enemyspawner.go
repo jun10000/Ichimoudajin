@@ -35,6 +35,7 @@ func (a *EnemySpawner) Spawn() {
 		l := utility.RandomVectorPtr().Mul(ss)
 		p.SetLocation(l)
 
+		// Constraints
 		if ok, _, _ := utility.Intersect(lv.Colliders, p.GetRealFirstBounds(), nil); ok {
 			continue
 		}
@@ -42,6 +43,7 @@ func (a *EnemySpawner) Spawn() {
 			continue
 		}
 
+		// When pass
 		lv.Add(p)
 		return
 	}
