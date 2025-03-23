@@ -112,9 +112,6 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 		log.Println("Loaded map version is not 1.10")
 		log.Println("This may cause problem")
 	}
-	if data.Class != "EbitenhelperMap" {
-		log.Println("Loaded map's class is not EbitenhelperMap")
-	}
 
 	// Start building TileMap
 	ret := TileMap{
