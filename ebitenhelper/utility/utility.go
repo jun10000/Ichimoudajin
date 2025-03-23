@@ -1,13 +1,10 @@
 package utility
 
 import (
-	"fmt"
 	"image"
 	"log"
 	"math"
-	"reflect"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -144,39 +141,4 @@ func DegreeToRadian(degree float64) float64 {
 
 func RadianToDegree(radian float64) float64 {
 	return radian / math.Pi * 180.0
-}
-
-func RuneToInt(r rune) int {
-	return int(r - '0')
-}
-
-func ConvertFromString(str string, typeTo reflect.Type) (any, error) {
-	switch typeTo {
-	case reflect.TypeOf(bool(false)):
-		v, err := strconv.ParseBool(str)
-		if err != nil {
-			return nil, err
-		}
-		return v, nil
-	case reflect.TypeOf(int(0)):
-		v, err := strconv.Atoi(str)
-		if err != nil {
-			return nil, err
-		}
-		return v, nil
-	case reflect.TypeOf(float64(0)):
-		v, err := strconv.ParseFloat(str, 64)
-		if err != nil {
-			return nil, err
-		}
-		return v, nil
-	case reflect.TypeOf((*ebiten.Image)(nil)):
-		v, err := GetImageFromFile(str)
-		if err != nil {
-			return nil, err
-		}
-		return v, nil
-	default:
-		return nil, fmt.Errorf("found unsupported convertion type: %s", typeTo)
-	}
 }
