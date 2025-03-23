@@ -2,7 +2,9 @@ package tilemap
 
 import (
 	"log"
+	"reflect"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -22,160 +24,73 @@ type tileMapObjectLayerObjectXML struct {
 	Properties []tileMapObjectLayerObjectPropertyXML `xml:"properties>property"`
 }
 
-func (o *tileMapObjectLayerObjectXML) CreatePawn() (*actor.Pawn, error) {
-	l := utility.NewVector(o.LocationX, o.LocationY)
-	sz := utility.NewVector(o.SizeX, o.SizeY)
-	ret := actor.NewPawn(l, 0, utility.DefaultScale())
-
-	for _, property := range o.Properties {
-		switch property.Name {
-		case "Accel":
-			err := utility.StringToFloat(property.Value, &ret.Accel)
-			if err != nil {
-				return nil, err
-			}
-		case "Decel":
-			err := utility.StringToFloat(property.Value, &ret.Decel)
-			if err != nil {
-				return nil, err
-			}
-		case "FPS":
-			err := utility.StringToInt(property.Value, &ret.FPS)
-			if err != nil {
-				return nil, err
-			}
-		case "FrameCount":
-			err := utility.StringToInt(property.Value, &ret.FrameCount)
-			if err != nil {
-				return nil, err
-			}
-		case "FrameDirectionMap":
-			clear(ret.FrameDirectionMap)
-			for _, v := range property.Value {
-				ret.FrameDirectionMap = append(ret.FrameDirectionMap, utility.RuneToInt(v))
-			}
-		case "FrameSizeX":
-			err := utility.StringToInt(property.Value, &ret.FrameSize.X)
-			if err != nil {
-				return nil, err
-			}
-		case "FrameSizeY":
-			err := utility.StringToInt(property.Value, &ret.FrameSize.Y)
-			if err != nil {
-				return nil, err
-			}
-		case "Image":
-			img, err := utility.GetImageFromFile(property.Value)
-			if err != nil {
-				return nil, err
-			}
-			ret.Image = img
-		case "MaxSpeed":
-			err := utility.StringToFloat(property.Value, &ret.MaxSpeed)
-			if err != nil {
-				return nil, err
-			}
-		case "RotationDeg":
-			var deg float64
-			err := utility.StringToFloat(property.Value, &deg)
-			if err != nil {
-				return nil, err
-			}
-			ret.SetRotation(utility.DegreeToRadian(deg))
-		default:
-			log.Printf("Found unknown Tiled object (%s) property: %s = %s\n",
-				o.Name, property.Name, property.Value)
-		}
-	}
-
-	// Calculate scale
-	s := sz.Div(ret.FrameSize.ToVector())
-	ret.SetScale(s)
-
-	return ret, nil
-}
-
-func (o *tileMapObjectLayerObjectXML) CreateAIPawn() (*actor.AIPawn, error) {
-	l := utility.NewVector(o.LocationX, o.LocationY)
-	sz := utility.NewVector(o.SizeX, o.SizeY)
-	ret := actor.NewAIPawn(l, 0, utility.DefaultScale())
-
-	for _, property := range o.Properties {
-		switch property.Name {
-		case "Accel":
-			err := utility.StringToFloat(property.Value, &ret.Accel)
-			if err != nil {
-				return nil, err
-			}
-		case "Decel":
-			err := utility.StringToFloat(property.Value, &ret.Decel)
-			if err != nil {
-				return nil, err
-			}
-		case "FPS":
-			err := utility.StringToInt(property.Value, &ret.FPS)
-			if err != nil {
-				return nil, err
-			}
-		case "FrameCount":
-			err := utility.StringToInt(property.Value, &ret.FrameCount)
-			if err != nil {
-				return nil, err
-			}
-		case "FrameDirectionMap":
-			clear(ret.FrameDirectionMap)
-			for _, v := range property.Value {
-				ret.FrameDirectionMap = append(ret.FrameDirectionMap, utility.RuneToInt(v))
-			}
-		case "FrameSizeX":
-			err := utility.StringToInt(property.Value, &ret.FrameSize.X)
-			if err != nil {
-				return nil, err
-			}
-		case "FrameSizeY":
-			err := utility.StringToInt(property.Value, &ret.FrameSize.Y)
-			if err != nil {
-				return nil, err
-			}
-		case "Image":
-			img, err := utility.GetImageFromFile(property.Value)
-			if err != nil {
-				return nil, err
-			}
-			ret.Image = img
-		case "MaxSpeed":
-			err := utility.StringToFloat(property.Value, &ret.MaxSpeed)
-			if err != nil {
-				return nil, err
-			}
-		case "RotationDeg":
-			var deg float64
-			err := utility.StringToFloat(property.Value, &deg)
-			if err != nil {
-				return nil, err
-			}
-			ret.SetRotation(utility.DegreeToRadian(deg))
-		default:
-			log.Printf("Found unknown Tiled object (%s) property: %s = %s\n",
-				o.Name, property.Name, property.Value)
-		}
-	}
-
-	// Calculate scale
-	s := sz.Div(ret.FrameSize.ToVector())
-	ret.SetScale(s)
-
-	return ret, nil
-}
-
 func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
+	var ret any
 	switch o.Class {
 	case "Pawn":
-		return o.CreatePawn()
+		l := utility.NewVector(o.LocationX, o.LocationY)
+		ret = actor.NewPawn(l, 0, utility.DefaultScale())
 	case "AIPawn":
-		return o.CreateAIPawn()
+		l := utility.NewVector(o.LocationX, o.LocationY)
+		ret = actor.NewAIPawn(l, 0, utility.DefaultScale())
 	default:
 		log.Println("Found unsupported Tiled map object class: " + o.Class)
 		return nil, nil
 	}
+
+	retv := reflect.ValueOf(ret).Elem()
+	for _, property := range o.Properties {
+		if m := retv.MethodByName("Set" + property.Name); m.IsValid() {
+			mtype := m.Type()
+			if mtype.NumIn() != 1 {
+				log.Printf("Set%s method has invalid argument counts\n", property.Name)
+				continue
+			}
+
+			switch mtype.In(0) {
+			case reflect.TypeOf(float64(0)):
+				var v float64
+				err := utility.StringToFloat(property.Value, &v)
+				if err != nil {
+					return nil, err
+				}
+				m.Call([]reflect.Value{reflect.ValueOf(v)})
+			case reflect.TypeOf((*ebiten.Image)(nil)):
+				img, err := utility.GetImageFromFile(property.Value)
+				if err != nil {
+					return nil, err
+				}
+				m.Call([]reflect.Value{reflect.ValueOf(img)})
+			default:
+				log.Printf("Found unsupported argument type %s\n", mtype.In(0))
+			}
+		} else if f := retv.FieldByName(property.Name); f.CanSet() {
+			switch f.Type() {
+			case reflect.TypeOf(float64(0)):
+				var v float64
+				err := utility.StringToFloat(property.Value, &v)
+				if err != nil {
+					return nil, err
+				}
+				f.Set(reflect.ValueOf(v))
+			case reflect.TypeOf((*ebiten.Image)(nil)):
+				img, err := utility.GetImageFromFile(property.Value)
+				if err != nil {
+					return nil, err
+				}
+				f.Set(reflect.ValueOf(img))
+			default:
+				log.Printf("Found unsupported field type %s\n", f.Type())
+			}
+		} else {
+			log.Printf("Found unknown property (%s) in %s\n", property.Name, o.Name)
+		}
+	}
+
+	// Calculate scale
+	// sz := utility.NewVector(o.SizeX, o.SizeY)
+	// s := sz.Div(ret.FrameSize.ToVector())
+	// ret.SetScale(s)
+
+	return ret, nil
 }

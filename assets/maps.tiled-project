@@ -11,69 +11,6 @@
     ],
     "propertyTypes": [
         {
-            "color": "#ffff4400",
-            "drawFill": true,
-            "id": 3,
-            "members": [
-                {
-                    "name": "Accel",
-                    "type": "float",
-                    "value": 8000
-                },
-                {
-                    "name": "Decel",
-                    "type": "float",
-                    "value": 8000
-                },
-                {
-                    "name": "FPS",
-                    "type": "int",
-                    "value": 4
-                },
-                {
-                    "name": "FrameCount",
-                    "type": "int",
-                    "value": 3
-                },
-                {
-                    "name": "FrameDirectionMap",
-                    "type": "string",
-                    "value": "0123"
-                },
-                {
-                    "name": "FrameSizeX",
-                    "type": "int",
-                    "value": 32
-                },
-                {
-                    "name": "FrameSizeY",
-                    "type": "int",
-                    "value": 32
-                },
-                {
-                    "name": "Image",
-                    "type": "file",
-                    "value": ""
-                },
-                {
-                    "name": "MaxSpeed",
-                    "type": "float",
-                    "value": 200
-                },
-                {
-                    "name": "RotationDeg",
-                    "type": "float",
-                    "value": 0
-                }
-            ],
-            "name": "AIPawn",
-            "type": "class",
-            "useAs": [
-                "object",
-                "project"
-            ]
-        },
-        {
             "color": "#ffa0a0a4",
             "drawFill": true,
             "id": 4,
@@ -88,69 +25,6 @@
             "type": "class",
             "useAs": [
                 "map",
-                "project"
-            ]
-        },
-        {
-            "color": "#ff00aaff",
-            "drawFill": true,
-            "id": 1,
-            "members": [
-                {
-                    "name": "Accel",
-                    "type": "float",
-                    "value": 8000
-                },
-                {
-                    "name": "Decel",
-                    "type": "float",
-                    "value": 8000
-                },
-                {
-                    "name": "FPS",
-                    "type": "int",
-                    "value": 4
-                },
-                {
-                    "name": "FrameCount",
-                    "type": "int",
-                    "value": 3
-                },
-                {
-                    "name": "FrameDirectionMap",
-                    "type": "string",
-                    "value": "0123"
-                },
-                {
-                    "name": "FrameSizeX",
-                    "type": "int",
-                    "value": 32
-                },
-                {
-                    "name": "FrameSizeY",
-                    "type": "int",
-                    "value": 32
-                },
-                {
-                    "name": "Image",
-                    "type": "file",
-                    "value": ""
-                },
-                {
-                    "name": "MaxSpeed",
-                    "type": "float",
-                    "value": 200
-                },
-                {
-                    "name": "RotationDeg",
-                    "type": "float",
-                    "value": 0
-                }
-            ],
-            "name": "Pawn",
-            "type": "class",
-            "useAs": [
-                "object",
                 "project"
             ]
         }
