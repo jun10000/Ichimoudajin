@@ -37,6 +37,8 @@ func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
 		ret = actor.NewPawn(location, rotation, scale)
 	case "AIPawn":
 		ret = actor.NewAIPawn(location, rotation, scale)
+	case "EnemySpawner":
+		ret = actor.NewEnemySpawner()
 	default:
 		log.Printf("Found unknown class in %s: %s\n", o.Name, o.Class)
 		return nil, nil
