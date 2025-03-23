@@ -2,11 +2,8 @@ package tilemap
 
 import (
 	"fmt"
-	"log"
 	"reflect"
-	"strconv"
 
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -52,71 +49,29 @@ func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
 	retv := reflect.ValueOf(ret).Elem()
 	for _, property := range o.Properties {
 		if m := retv.MethodByName("Set" + property.Name); m.IsValid() {
+			// Search method
 			mtype := m.Type()
 			if mtype.NumIn() != 1 {
-				log.Printf("Found invalid method in %s: Set%s\n", o.Name, property.Name)
-				continue
+				return nil, fmt.Errorf("found invalid method in %s: Set%s", o.Name, property.Name)
 			}
 
-			switch mtype.In(0) {
-			case reflect.TypeOf(bool(false)):
-				v, err := strconv.ParseBool(property.Value)
-				if err != nil {
-					return nil, err
-				}
-				m.Call([]reflect.Value{reflect.ValueOf(v)})
-			case reflect.TypeOf(int(0)):
-				v, err := strconv.Atoi(property.Value)
-				if err != nil {
-					return nil, err
-				}
-				m.Call([]reflect.Value{reflect.ValueOf(v)})
-			case reflect.TypeOf(float64(0)):
-				v, err := strconv.ParseFloat(property.Value, 64)
-				if err != nil {
-					return nil, err
-				}
-				m.Call([]reflect.Value{reflect.ValueOf(v)})
-			case reflect.TypeOf((*ebiten.Image)(nil)):
-				img, err := utility.GetImageFromFile(property.Value)
-				if err != nil {
-					return nil, err
-				}
-				m.Call([]reflect.Value{reflect.ValueOf(img)})
-			default:
-				log.Printf("Found unknown argument type in Set%s: %s\n", property.Name, mtype.In(0))
+			v, err := utility.ConvertFromString(property.Value, mtype.In(0))
+			if err != nil {
+				return nil, err
 			}
+
+			m.Call([]reflect.Value{reflect.ValueOf(v)})
 		} else if f := retv.FieldByName(property.Name); f.CanSet() {
-			switch f.Type() {
-			case reflect.TypeOf(bool(false)):
-				v, err := strconv.ParseBool(property.Value)
-				if err != nil {
-					return nil, err
-				}
-				f.Set(reflect.ValueOf(v))
-			case reflect.TypeOf(int(0)):
-				v, err := strconv.Atoi(property.Value)
-				if err != nil {
-					return nil, err
-				}
-				f.Set(reflect.ValueOf(v))
-			case reflect.TypeOf(float64(0)):
-				v, err := strconv.ParseFloat(property.Value, 64)
-				if err != nil {
-					return nil, err
-				}
-				f.Set(reflect.ValueOf(v))
-			case reflect.TypeOf((*ebiten.Image)(nil)):
-				img, err := utility.GetImageFromFile(property.Value)
-				if err != nil {
-					return nil, err
-				}
-				f.Set(reflect.ValueOf(img))
-			default:
-				log.Printf("Found unknown field type in %s: %s\n", property.Name, f.Type())
+			// Search field
+			v, err := utility.ConvertFromString(property.Value, f.Type())
+			if err != nil {
+				return nil, err
 			}
+
+			f.Set(reflect.ValueOf(v))
 		} else {
-			log.Printf("Found unknown property in %s: %s\n", o.Name, property.Name)
+			// Search failed
+			return nil, fmt.Errorf("found unknown property in %s: %s", o.Name, property.Name)
 		}
 	}
 
