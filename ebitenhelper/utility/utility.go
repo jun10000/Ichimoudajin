@@ -5,7 +5,6 @@ import (
 	"log"
 	"math"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -146,34 +145,4 @@ func RadianToDegree(radian float64) float64 {
 
 func RuneToInt(r rune) int {
 	return int(r - '0')
-}
-
-func StringToBool(str string, output *bool) error {
-	v, err := strconv.ParseBool(str)
-	if err != nil {
-		return err
-	}
-
-	*output = v
-	return nil
-}
-
-func StringToInt(str string, output *int) error {
-	v, err := strconv.Atoi(str)
-	if err != nil {
-		return err
-	}
-
-	*output = v
-	return nil
-}
-
-func StringToFloat(str string, output *float64) error {
-	v, err := strconv.ParseFloat(str, 64)
-	if err != nil {
-		return err
-	}
-
-	*output = v
-	return nil
 }

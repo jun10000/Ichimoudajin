@@ -123,10 +123,11 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	for _, dataProperty := range data.Properties {
 		switch dataProperty.Name {
 		case "IsLooping":
-			err := utility.StringToBool(dataProperty.Value, &ret.IsLooping)
+			res, err := strconv.ParseBool(dataProperty.Value)
 			if err != nil {
 				return err
 			}
+			ret.IsLooping = res
 		}
 	}
 

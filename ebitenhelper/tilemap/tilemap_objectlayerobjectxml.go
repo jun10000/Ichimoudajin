@@ -3,6 +3,7 @@ package tilemap
 import (
 	"log"
 	"reflect"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
@@ -55,9 +56,20 @@ func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
 			}
 
 			switch mtype.In(0) {
+			case reflect.TypeOf(bool(false)):
+				v, err := strconv.ParseBool(property.Value)
+				if err != nil {
+					return nil, err
+				}
+				m.Call([]reflect.Value{reflect.ValueOf(v)})
+			case reflect.TypeOf(int(0)):
+				v, err := strconv.Atoi(property.Value)
+				if err != nil {
+					return nil, err
+				}
+				m.Call([]reflect.Value{reflect.ValueOf(v)})
 			case reflect.TypeOf(float64(0)):
-				var v float64
-				err := utility.StringToFloat(property.Value, &v)
+				v, err := strconv.ParseFloat(property.Value, 64)
 				if err != nil {
 					return nil, err
 				}
@@ -73,9 +85,20 @@ func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
 			}
 		} else if f := retv.FieldByName(property.Name); f.CanSet() {
 			switch f.Type() {
+			case reflect.TypeOf(bool(false)):
+				v, err := strconv.ParseBool(property.Value)
+				if err != nil {
+					return nil, err
+				}
+				f.Set(reflect.ValueOf(v))
+			case reflect.TypeOf(int(0)):
+				v, err := strconv.Atoi(property.Value)
+				if err != nil {
+					return nil, err
+				}
+				f.Set(reflect.ValueOf(v))
 			case reflect.TypeOf(float64(0)):
-				var v float64
-				err := utility.StringToFloat(property.Value, &v)
+				v, err := strconv.ParseFloat(property.Value, 64)
 				if err != nil {
 					return nil, err
 				}
