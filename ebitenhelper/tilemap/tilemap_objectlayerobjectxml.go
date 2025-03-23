@@ -1,6 +1,7 @@
 package tilemap
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 	"strconv"
@@ -25,27 +26,29 @@ type tileMapObjectLayerObjectXML struct {
 	Properties []tileMapObjectLayerObjectPropertyXML `xml:"properties>property"`
 }
 
-func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
+func (o *tileMapObjectLayerObjectXML) NewActor() (any, error) {
 	location := utility.NewVector(o.LocationX, o.LocationY)
 	rotation := float64(0)
 	scale := utility.DefaultScale()
 
-	// Create actor from tiled class name and
-	// Set transform
-	var ret any
 	switch o.Class {
 	case "Pawn":
-		ret = actor.NewPawn(location, rotation, scale)
+		return actor.NewPawn(location, rotation, scale), nil
 	case "AIPawn":
-		ret = actor.NewAIPawn(location, rotation, scale)
+		return actor.NewAIPawn(location, rotation, scale), nil
 	case "EnemySpawner":
-		ret = actor.NewEnemySpawner()
+		return actor.NewEnemySpawner(), nil
 	default:
-		log.Printf("Found unknown class in %s: %s\n", o.Name, o.Class)
-		return nil, nil
+		return nil, fmt.Errorf("found unknown class in %s: %s", o.Name, o.Class)
+	}
+}
+
+func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
+	ret, err := o.NewActor()
+	if err != nil {
+		return nil, err
 	}
 
-	// Set other values
 	retv := reflect.ValueOf(ret).Elem()
 	for _, property := range o.Properties {
 		if m := retv.MethodByName("Set" + property.Name); m.IsValid() {
