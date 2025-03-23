@@ -13,13 +13,7 @@ type EnemySpawner struct {
 }
 
 func (a *EnemySpawner) Spawn() {
-	img, err := utility.GetImageFromFile("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ2.png")
-	utility.PanicIfError(err)
-
-	p := ActorGenerator.NewAIPawn(utility.ZeroVector(), 0, utility.NewVector(1, 1))
-	p.Image = img
-	p.MaxSpeed = 150
-
+	p := ActorGenerator.NewAIPawn2(utility.ZeroVector(), 0, utility.NewVector(1, 1))
 	ss := utility.GetScreenSize().ToVector()
 	lv := utility.GetLevel()
 	pll := lv.Players[0].GetLocation()

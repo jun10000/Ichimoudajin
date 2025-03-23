@@ -61,6 +61,17 @@ func (g ActorGeneratorStruct) NewAIPawn(location utility.Vector, rotation float6
 	return a
 }
 
+// NewAIPawn2 creates another version of AIPawn
+func (g ActorGeneratorStruct) NewAIPawn2(location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
+	img, err := utility.GetImageFromFile("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ2.png")
+	utility.PanicIfError(err)
+
+	a := g.NewAIPawn(location, rotation, scale)
+	a.Image = img
+	a.MaxSpeed = 100
+	return a
+}
+
 func (g ActorGeneratorStruct) NewAnimatedActor(location utility.Vector, rotation float64, scale utility.Vector) *AnimatedActor {
 	a := &AnimatedActor{}
 	a.StaticTransform = utility.NewStaticTransform(location, rotation, scale)
