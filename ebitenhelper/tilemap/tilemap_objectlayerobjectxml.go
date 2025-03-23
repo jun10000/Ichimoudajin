@@ -24,20 +24,11 @@ type tileMapObjectLayerObjectXML struct {
 }
 
 func (o *tileMapObjectLayerObjectXML) NewActor() (any, error) {
-	location := utility.NewVector(o.LocationX, o.LocationY)
-	rotation := float64(0)
-	scale := utility.DefaultScale()
-
-	switch o.Class {
-	case "Pawn":
-		return actor.NewPawn(location, rotation, scale), nil
-	case "AIPawn":
-		return actor.NewAIPawn(location, rotation, scale), nil
-	case "EnemySpawner":
-		return actor.NewEnemySpawner(), nil
-	default:
-		return nil, fmt.Errorf("found unknown class in %s: %s", o.Name, o.Class)
-	}
+	l := utility.NewVector(o.LocationX, o.LocationY)
+	r := float64(0)
+	s := utility.DefaultScale()
+	sz := utility.NewVector(o.SizeX, o.SizeY)
+	return actor.ActorGenerator.NewActorByName(o.Class, l, r, s, sz)
 }
 
 func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {

@@ -10,17 +10,6 @@ type BlockingArea struct {
 	size utility.Vector
 }
 
-func NewBlockingArea(location utility.Vector, size utility.Vector) *BlockingArea {
-	t := utility.NewStaticTransform(location, 0, utility.DefaultScale())
-
-	a := &BlockingArea{}
-	a.StaticColliderComponent = component.NewStaticColliderComponent(t, a.GetRectangleBounds)
-	a.size = size
-
-	a.UpdateBounds()
-	return a
-}
-
 func (a *BlockingArea) GetRectangleBounds(output *utility.RectangleF) {
 	l := a.GetLocation()
 	output.MinX = l.X

@@ -15,21 +15,6 @@ type Pawn struct {
 	destroyer *Destroyer
 }
 
-func NewPawn(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
-	t := utility.NewTransform(location, rotation, scale)
-
-	a := &Pawn{}
-	a.MovementComponent = component.NewMovementComponent(a)
-	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
-	a.ControllerComponent = component.NewControllerComponent(a)
-	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
-
-	a.destroyer = NewDestroyer()
-
-	a.UpdateBounds()
-	return a
-}
-
 func (a *Pawn) Children() []any {
 	return []any{
 		a.destroyer,

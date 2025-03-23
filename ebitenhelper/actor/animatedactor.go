@@ -9,10 +9,3 @@ type AnimatedActor struct {
 	*utility.StaticTransform
 	*component.DrawAnimationComponent
 }
-
-func NewAnimatedActor(location utility.Vector, rotation float64, scale utility.Vector) *AnimatedActor {
-	a := &AnimatedActor{}
-	a.StaticTransform = utility.NewStaticTransform(location, rotation, scale)
-	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
-	return a
-}

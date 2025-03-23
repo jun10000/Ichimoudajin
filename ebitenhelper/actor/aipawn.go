@@ -12,18 +12,6 @@ type AIPawn struct {
 	*component.ColliderComponent[*utility.CircleF]
 }
 
-func NewAIPawn(location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
-	t := utility.NewTransform(location, rotation, scale)
-
-	a := &AIPawn{}
-	a.MovementComponent = component.NewMovementComponent(a)
-	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
-	a.AIControllerComponent = component.NewAIControllerComponent(a)
-	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
-	a.UpdateBounds()
-	return a
-}
-
 func (a *AIPawn) Tick() {
 	a.MovementComponent.Tick()
 	a.DrawAnimationComponent.Tick()
