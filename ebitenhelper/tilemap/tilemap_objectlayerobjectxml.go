@@ -25,25 +25,30 @@ type tileMapObjectLayerObjectXML struct {
 }
 
 func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
+	location := utility.NewVector(o.LocationX, o.LocationY)
+	rotation := float64(0)
+	scale := utility.DefaultScale()
+
+	// Create actor from tiled class name and
+	// Set transform
 	var ret any
 	switch o.Class {
 	case "Pawn":
-		l := utility.NewVector(o.LocationX, o.LocationY)
-		ret = actor.NewPawn(l, 0, utility.DefaultScale())
+		ret = actor.NewPawn(location, rotation, scale)
 	case "AIPawn":
-		l := utility.NewVector(o.LocationX, o.LocationY)
-		ret = actor.NewAIPawn(l, 0, utility.DefaultScale())
+		ret = actor.NewAIPawn(location, rotation, scale)
 	default:
-		log.Println("Found unsupported Tiled map object class: " + o.Class)
+		log.Printf("Found unknown class in %s: %s\n", o.Name, o.Class)
 		return nil, nil
 	}
 
+	// Set other values
 	retv := reflect.ValueOf(ret).Elem()
 	for _, property := range o.Properties {
 		if m := retv.MethodByName("Set" + property.Name); m.IsValid() {
 			mtype := m.Type()
 			if mtype.NumIn() != 1 {
-				log.Printf("Set%s method has invalid argument counts\n", property.Name)
+				log.Printf("Found invalid method in %s: Set%s\n", o.Name, property.Name)
 				continue
 			}
 
@@ -62,7 +67,7 @@ func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
 				}
 				m.Call([]reflect.Value{reflect.ValueOf(img)})
 			default:
-				log.Printf("Found unsupported argument type %s\n", mtype.In(0))
+				log.Printf("Found unknown argument type in Set%s: %s\n", property.Name, mtype.In(0))
 			}
 		} else if f := retv.FieldByName(property.Name); f.CanSet() {
 			switch f.Type() {
@@ -80,17 +85,12 @@ func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
 				}
 				f.Set(reflect.ValueOf(img))
 			default:
-				log.Printf("Found unsupported field type %s\n", f.Type())
+				log.Printf("Found unknown field type in %s: %s\n", property.Name, f.Type())
 			}
 		} else {
-			log.Printf("Found unknown property (%s) in %s\n", property.Name, o.Name)
+			log.Printf("Found unknown property in %s: %s\n", o.Name, property.Name)
 		}
 	}
-
-	// Calculate scale
-	// sz := utility.NewVector(o.SizeX, o.SizeY)
-	// s := sz.Div(ret.FrameSize.ToVector())
-	// ret.SetScale(s)
 
 	return ret, nil
 }
