@@ -63,22 +63,16 @@ func (g ActorGeneratorStruct) NewAIPawn(location utility.Vector, rotation float6
 
 // NewAIPawn1 creates another version of AIPawn
 func (g ActorGeneratorStruct) NewAIPawn1(location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
-	img, err := utility.GetImageFromFile("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
-	utility.PanicIfError(err)
-
 	a := g.NewAIPawn(location, rotation, scale)
-	a.Image = img
+	a.Image = utility.GetImageFromFileP("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
 	a.MaxSpeed = 150
 	return a
 }
 
 // NewAIPawn2 creates another version of AIPawn
 func (g ActorGeneratorStruct) NewAIPawn2(location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
-	img, err := utility.GetImageFromFile("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ2.png")
-	utility.PanicIfError(err)
-
 	a := g.NewAIPawn(location, rotation, scale)
-	a.Image = img
+	a.Image = utility.GetImageFromFileP("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ2.png")
 	a.MaxSpeed = 100
 	return a
 }
@@ -147,10 +141,8 @@ func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64,
 
 // NewPawn1 creates another version of Pawn
 func (g ActorGeneratorStruct) NewPawn1(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
-	img, err := utility.GetImageFromFile("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
-	utility.PanicIfError(err)
-
 	a := g.NewPawn(location, rotation, scale)
-	a.Image = img
+	a.Image = utility.GetImageFromFileP("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
+	a.MaxSpeed = 200
 	return a
 }

@@ -124,6 +124,12 @@ func GetImageFromFile(filename string) (*ebiten.Image, error) {
 	return img, nil
 }
 
+func GetImageFromFileP(filename string) *ebiten.Image {
+	img, err := GetImageFromFile(filename)
+	PanicIfError(err)
+	return img
+}
+
 type GamepadAxisKey struct {
 	ID   ebiten.GamepadID
 	Axis ebiten.StandardGamepadAxis
