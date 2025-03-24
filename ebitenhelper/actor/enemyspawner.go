@@ -12,6 +12,14 @@ type EnemySpawner struct {
 	InvalidPlayerDistance float64
 }
 
+func (g ActorGeneratorStruct) NewEnemySpawner() *EnemySpawner {
+	return &EnemySpawner{
+		SpawnSeconds:          3,
+		SpawnRetryCount:       10,
+		InvalidPlayerDistance: 300,
+	}
+}
+
 func (a *EnemySpawner) Spawn() {
 	p := ActorGenerator.NewAIPawn2(utility.ZeroVector(), 0, utility.NewVector(1, 1))
 	ss := utility.GetScreenSize().ToVector()

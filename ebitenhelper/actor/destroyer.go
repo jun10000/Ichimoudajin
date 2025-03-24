@@ -32,6 +32,20 @@ type Destroyer struct {
 	FillColor   color.Color
 }
 
+func (g ActorGeneratorStruct) NewDestroyer() *Destroyer {
+	return &Destroyer{
+		status: DestroyerStatusDisable,
+		circle: utility.NewCircleF(0, 0, 0),
+
+		GrowSpeed:   1,
+		ShrinkSpeed: 2,
+		MaxRadius:   120,
+		BorderWidth: 2,
+		BorderColor: utility.ColorLightBlue.ToRGBA(0xff),
+		FillColor:   utility.ColorLightBlue.ToRGBA(0x20),
+	}
+}
+
 func (a *Destroyer) ZOrder() int {
 	return utility.ZOrderEffect
 }

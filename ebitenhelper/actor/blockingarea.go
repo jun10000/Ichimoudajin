@@ -10,6 +10,17 @@ type BlockingArea struct {
 	size utility.Vector
 }
 
+func (g ActorGeneratorStruct) NewBlockingArea(location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector) *BlockingArea {
+	t := utility.NewStaticTransform(location, rotation, scale)
+
+	a := &BlockingArea{}
+	a.StaticColliderComponent = component.NewStaticColliderComponent(t, a.GetRectangleBounds)
+	a.size = size
+
+	a.UpdateBounds()
+	return a
+}
+
 func (a *BlockingArea) GetRectangleBounds(output *utility.RectangleF) {
 	l := a.GetLocation()
 	output.MinX = l.X

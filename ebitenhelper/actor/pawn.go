@@ -15,6 +15,29 @@ type Pawn struct {
 	destroyer *Destroyer
 }
 
+func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
+	t := utility.NewTransform(location, rotation, scale)
+
+	a := &Pawn{}
+	a.MovementComponent = component.NewMovementComponent(a)
+	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
+	a.ControllerComponent = component.NewControllerComponent(a)
+	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
+
+	a.destroyer = g.NewDestroyer()
+
+	a.UpdateBounds()
+	return a
+}
+
+// NewPawn1 creates another version of Pawn
+func (g ActorGeneratorStruct) NewPawn1(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
+	a := g.NewPawn(location, rotation, scale)
+	a.Image = utility.GetImageFromFileP("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
+	a.MaxSpeed = 200
+	return a
+}
+
 func (a *Pawn) Children() []any {
 	return []any{
 		a.destroyer,
