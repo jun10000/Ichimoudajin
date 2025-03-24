@@ -1,9 +1,12 @@
 package actor
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
+	"github.com/jun10000/Ichimoudajin/assets"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
@@ -19,6 +22,7 @@ type Destroyer struct {
 	status  DestroyerStatus
 	circle  *utility.CircleF
 	targets []utility.MovableCollider
+	points  int
 
 	GrowSpeed   float64
 	ShrinkSpeed float64
@@ -64,9 +68,11 @@ func (a *Destroyer) Tick() {
 			}
 		}
 
+		lv := utility.GetLevel()
 		for _, t := range tTrashes {
 			a.targets = utility.RemoveSliceItem(a.targets, t)
-			utility.GetLevel().Remove(t)
+			lv.Remove(t)
+			a.points += 1
 		}
 
 		if cRadius == 0 {
@@ -75,10 +81,22 @@ func (a *Destroyer) Tick() {
 	}
 }
 
+// refactor
+var ff, err2 = assets.Assets.Open("fonts/LCDPHONE.ttf")
+var ffs, err = text.NewGoTextFaceSource(ff)
+
 func (a *Destroyer) Draw(screen *ebiten.Image) {
 	if a.status != DestroyerStatusDisable {
 		a.circle.Draw(screen, a.BorderWidth, a.BorderColor, a.FillColor, true)
 	}
+
+	// refactor
+	pstr := fmt.Sprintf("%d", a.points)
+	op := &text.DrawOptions{}
+	text.Draw(screen, pstr, &text.GoTextFace{
+		Source: ffs,
+		Size:   16,
+	}, op)
 }
 
 func (a *Destroyer) Start(location utility.Vector) {

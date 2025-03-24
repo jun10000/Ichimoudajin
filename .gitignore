@@ -1,5 +1,6 @@
 desktop.ini
 __debug_bin*
 *.tiled-session
-/assets/images
 /assets/*.pfd
+/assets/images
+/assets/fonts

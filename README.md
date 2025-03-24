@@ -16,3 +16,7 @@
   by [ぴぽやネット](https://pipoya.net/)
 - [マップチップ　32×32～](https://pipoya.net/sozai/assets/map-chip_tileset32/)
   by [ぴぽやネット](https://pipoya.net/)
+
+### フォント
+- [LCD Phone](https://www.dafont.com/lcd-phone.font)
+  by [Grafito Design](https://www.dafont.com/raul-andres-perez-canseco.d1591)
