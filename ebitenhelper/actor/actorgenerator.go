@@ -13,6 +13,12 @@ func init() {
 	ActorGenerator = NewActorGeneratorStruct()
 }
 
+type ExtraTextInfo struct {
+	Size  float64
+	Text  string
+	Color utility.RGB
+}
+
 type ActorGeneratorStruct struct {
 	refValue reflect.Value
 }
@@ -23,14 +29,14 @@ func NewActorGeneratorStruct() ActorGeneratorStruct {
 	return g
 }
 
-func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector) (any, error) {
+func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, actorName string, extra any) (any, error) {
 	m := g.refValue.MethodByName("New" + name)
 	if !m.IsValid() {
 		return nil, fmt.Errorf("method 'New%s' is not found", name)
 	}
 
 	argc := m.Type().NumIn()
-	if argc > 4 {
+	if argc > 6 {
 		return nil, fmt.Errorf("method New%s has invalid argument counts: %d", name, argc)
 	}
 
@@ -39,6 +45,8 @@ func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vecto
 		reflect.ValueOf(rotation),
 		reflect.ValueOf(scale),
 		reflect.ValueOf(size),
+		reflect.ValueOf(actorName),
+		reflect.ValueOf(extra),
 	}
 	ret := m.Call(argv[:argc])
 	if len(ret) == 0 {

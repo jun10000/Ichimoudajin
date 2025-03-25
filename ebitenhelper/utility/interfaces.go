@@ -108,3 +108,7 @@ type ZHolder interface {
 type Parenter interface {
 	Children() []any
 }
+
+type Namer interface {
+	GetName() string
+}

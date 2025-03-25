@@ -5,8 +5,6 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/text/v2"
-	"github.com/jun10000/Ichimoudajin/assets"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
@@ -95,22 +93,17 @@ func (a *Destroyer) Tick() {
 	}
 }
 
-// refactor
-var ff, err2 = assets.Assets.Open("fonts/LCDPHONE.ttf")
-var ffs, err = text.NewGoTextFaceSource(ff)
-
 func (a *Destroyer) Draw(screen *ebiten.Image) {
 	if a.status != DestroyerStatusDisable {
 		a.circle.Draw(screen, a.BorderWidth, a.BorderColor, a.FillColor, true)
 	}
 
-	// refactor
+	// to do
 	pstr := fmt.Sprintf("%d", a.points)
-	op := &text.DrawOptions{}
-	text.Draw(screen, pstr, &text.GoTextFace{
-		Source: ffs,
-		Size:   16,
-	}, op)
+	w := utility.GetLevel().GetFirstActorByName("PointWidget")
+	if tw, ok := w.(*TextWidget); ok {
+		tw.Text = pstr
+	}
 }
 
 func (a *Destroyer) Start(location utility.Vector) {

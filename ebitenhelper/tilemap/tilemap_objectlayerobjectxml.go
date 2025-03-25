@@ -13,6 +13,23 @@ type tileMapObjectLayerObjectPropertyXML struct {
 	Value string `xml:"value,attr"`
 }
 
+type tileMapObjectLayerObjectTextXML struct {
+	PixelSize float64 `xml:"pixelsize,attr"`
+	Color     string  `xml:"color,attr"`
+	Value     string  `xml:",chardata"`
+}
+
+func (t *tileMapObjectLayerObjectTextXML) CreateExtraTextInfo() *actor.ExtraTextInfo {
+	c, err := utility.HexColorToRGB(t.Color)
+	utility.PanicIfError(err)
+
+	return &actor.ExtraTextInfo{
+		Size:  t.PixelSize,
+		Text:  t.Value,
+		Color: c,
+	}
+}
+
 type tileMapObjectLayerObjectXML struct {
 	Name       string                                `xml:"name,attr"`
 	Class      string                                `xml:"type,attr"`
@@ -21,6 +38,7 @@ type tileMapObjectLayerObjectXML struct {
 	SizeX      float64                               `xml:"width,attr"`
 	SizeY      float64                               `xml:"height,attr"`
 	Properties []tileMapObjectLayerObjectPropertyXML `xml:"properties>property"`
+	Text       *tileMapObjectLayerObjectTextXML      `xml:"text"`
 }
 
 func (o *tileMapObjectLayerObjectXML) NewActor() (any, error) {
@@ -28,7 +46,13 @@ func (o *tileMapObjectLayerObjectXML) NewActor() (any, error) {
 	r := float64(0)
 	s := utility.DefaultScale()
 	sz := utility.NewVector(o.SizeX, o.SizeY)
-	return actor.ActorGenerator.NewActorByName(o.Class, l, r, s, sz)
+
+	var extra any
+	if o.Text != nil {
+		extra = o.Text.CreateExtraTextInfo()
+	}
+
+	return actor.ActorGenerator.NewActorByName(o.Class, l, r, s, sz, o.Name, extra)
 }
 
 func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {

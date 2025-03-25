@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/assets"
 )
 
@@ -16,7 +17,8 @@ const (
 
 	ZOrderDefault = 0
 	ZOrderEffect  = 1
-	ZOrderMax     = ZOrderEffect
+	ZOrderWidget  = 2
+	ZOrderMax     = ZOrderWidget
 )
 
 var (
@@ -128,6 +130,34 @@ func GetImageFromFileP(filename string) *ebiten.Image {
 	img, err := GetImageFromFile(filename)
 	PanicIfError(err)
 	return img
+}
+
+var ebitenFonts = NewSmap[string, *text.GoTextFaceSource]()
+
+func GetFontFromFile(filename string) (*text.GoTextFaceSource, error) {
+	if ff, ok := ebitenFonts.Load(filename); ok {
+		return ff, nil
+	}
+
+	f, err := assets.Assets.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	defer f.Close()
+	ff, err := text.NewGoTextFaceSource(f)
+	if err != nil {
+		return nil, err
+	}
+
+	ebitenFonts.Store(filename, ff)
+	return ff, nil
+}
+
+func GetFontFromFileP(filename string) *text.GoTextFaceSource {
+	ff, err := GetFontFromFile(filename)
+	PanicIfError(err)
+	return ff
 }
 
 type GamepadAxisKey struct {

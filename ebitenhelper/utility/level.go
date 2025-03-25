@@ -27,6 +27,7 @@ type Level struct {
 	AITickers        []AITicker
 	Tickers          []Ticker
 	Drawers          [][]Drawer
+	Namers           *Smap[string, []Namer]
 	DebugDraws       []func(screen *ebiten.Image)
 	Trashes          []any
 }
@@ -48,6 +49,7 @@ func NewLevel(name string, isLooping bool) *Level {
 		AITickers:        make([]AITicker, 0, InitialAITickerCap),
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
 		Drawers:          make([][]Drawer, 0, ZOrderMax+1),
+		Namers:           NewSmap[string, []Namer](),
 		DebugDraws:       make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
 		Trashes:          make([]any, 0, InitialTrashCap),
 	}
@@ -85,6 +87,14 @@ func (l *Level) Add(actor any) {
 		}
 
 		l.Drawers[z] = append(l.Drawers[z], a)
+	}
+	if a, ok := actor.(Namer); ok {
+		n := a.GetName()
+		if vs, ok := l.Namers.Load(n); ok {
+			l.Namers.Store(n, append(vs, a))
+		} else {
+			l.Namers.Store(n, []Namer{a})
+		}
 	}
 
 	if a, ok := actor.(Parenter); ok {
@@ -128,6 +138,12 @@ func (l *Level) EmptyTrashes() {
 
 			l.Drawers[z] = RemoveSliceItem(l.Drawers[z], a)
 		}
+		if a, ok := actor.(Namer); ok {
+			n := a.GetName()
+			if vs, ok := l.Namers.Load(n); ok {
+				l.Namers.Store(n, RemoveSliceItem(vs, a))
+			}
+		}
 
 		if a, ok := actor.(Parenter); ok {
 			for _, ac := range a.Children() {
@@ -137,6 +153,23 @@ func (l *Level) EmptyTrashes() {
 	}
 
 	l.Trashes = l.Trashes[:0]
+}
+
+func (l *Level) GetActorsByName(name string) []Namer {
+	if ret, ok := l.Namers.Load(name); ok {
+		return ret
+	} else {
+		return []Namer{}
+	}
+}
+
+func (l *Level) GetFirstActorByName(name string) Namer {
+	ret := l.GetActorsByName(name)
+	if len(ret) == 0 {
+		return nil
+	}
+
+	return ret[0]
 }
 
 func (l *Level) AIMove(self MovableCollider, target Collider) {
