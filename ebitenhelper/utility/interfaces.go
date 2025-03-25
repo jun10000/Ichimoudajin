@@ -89,6 +89,14 @@ type Player interface {
 	MovableCollider
 }
 
+type BeginPlayer interface {
+	BeginPlay()
+}
+
+type EndPlayer interface {
+	EndPlay()
+}
+
 type AITicker interface {
 	AITick()
 }

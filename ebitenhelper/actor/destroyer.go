@@ -17,10 +17,11 @@ const (
 )
 
 type Destroyer struct {
-	status  DestroyerStatus
-	circle  *utility.CircleF
-	targets []utility.MovableCollider
-	points  int
+	status      DestroyerStatus
+	circle      *utility.CircleF
+	targets     []utility.MovableCollider
+	points      int
+	pointWidget *TextWidget
 
 	GrowSpeed   float64
 	ShrinkSpeed float64
@@ -46,6 +47,13 @@ func (g ActorGeneratorStruct) NewDestroyer() *Destroyer {
 
 func (a *Destroyer) ZOrder() int {
 	return utility.ZOrderEffect
+}
+
+func (a *Destroyer) BeginPlay() {
+	wa := utility.GetLevel().GetFirstActorByName("PointWidget")
+	if tw, ok := wa.(*TextWidget); ok {
+		a.pointWidget = tw
+	}
 }
 
 func (a *Destroyer) Tick() {
@@ -91,18 +99,17 @@ func (a *Destroyer) Tick() {
 			a.status = DestroyerStatusDisable
 		}
 	}
+
+	a.ApplyPointsToWidget()
+}
+
+func (a *Destroyer) ApplyPointsToWidget() {
+	a.pointWidget.Text = fmt.Sprintf("%d", a.points)
 }
 
 func (a *Destroyer) Draw(screen *ebiten.Image) {
 	if a.status != DestroyerStatusDisable {
 		a.circle.Draw(screen, a.BorderWidth, a.BorderColor, a.FillColor, true)
-	}
-
-	// to do
-	pstr := fmt.Sprintf("%d", a.points)
-	w := utility.GetLevel().GetFirstActorByName("PointWidget")
-	if tw, ok := w.(*TextWidget); ok {
-		tw.Text = pstr
 	}
 }
 

@@ -24,6 +24,8 @@ type Level struct {
 	MovableColliders []MovableCollider
 	InputReceivers   []InputReceiver
 	Players          []Player
+	BeginPlayers     []BeginPlayer
+	EndPlayers       []EndPlayer
 	AITickers        []AITicker
 	Tickers          []Ticker
 	Drawers          [][]Drawer
@@ -46,6 +48,8 @@ func NewLevel(name string, isLooping bool) *Level {
 		MovableColliders: make([]MovableCollider, 0, InitialMovableColliderCap),
 		InputReceivers:   make([]InputReceiver, 0, InitialInputReceiverCap),
 		Players:          make([]Player, 0, InitialPlayerCap),
+		BeginPlayers:     make([]BeginPlayer, 0, InitialBeginPlayerCap),
+		EndPlayers:       make([]EndPlayer, 0, InitialEndPlayerCap),
 		AITickers:        make([]AITicker, 0, InitialAITickerCap),
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
 		Drawers:          make([][]Drawer, 0, ZOrderMax+1),
@@ -69,6 +73,12 @@ func (l *Level) Add(actor any) {
 	}
 	if a, ok := actor.(Player); ok {
 		l.Players = append(l.Players, a)
+	}
+	if a, ok := actor.(BeginPlayer); ok {
+		l.BeginPlayers = append(l.BeginPlayers, a)
+	}
+	if a, ok := actor.(EndPlayer); ok {
+		l.EndPlayers = append(l.EndPlayers, a)
 	}
 	if a, ok := actor.(AITicker); ok {
 		l.AITickers = append(l.AITickers, a)
@@ -124,6 +134,12 @@ func (l *Level) EmptyTrashes() {
 		if a, ok := actor.(Player); ok {
 			l.Players = RemoveSliceItem(l.Players, a)
 		}
+		if a, ok := actor.(BeginPlayer); ok {
+			l.BeginPlayers = RemoveSliceItem(l.BeginPlayers, a)
+		}
+		if a, ok := actor.(EndPlayer); ok {
+			l.EndPlayers = RemoveSliceItem(l.EndPlayers, a)
+		}
 		if a, ok := actor.(AITicker); ok {
 			l.AITickers = RemoveSliceItem(l.AITickers, a)
 		}
@@ -155,21 +171,24 @@ func (l *Level) EmptyTrashes() {
 	l.Trashes = l.Trashes[:0]
 }
 
-func (l *Level) GetActorsByName(name string) []Namer {
-	if ret, ok := l.Namers.Load(name); ok {
-		return ret
-	} else {
-		return []Namer{}
+func (l *Level) GetActorsByName(name string) func(yield func(Namer) bool) {
+	return func(yield func(Namer) bool) {
+		if ret, ok := l.Namers.Load(name); ok {
+			for _, a := range ret {
+				if !yield(a) {
+					return
+				}
+			}
+		}
 	}
 }
 
 func (l *Level) GetFirstActorByName(name string) Namer {
-	ret := l.GetActorsByName(name)
-	if len(ret) == 0 {
-		return nil
+	for a := range l.GetActorsByName(name) {
+		return a
 	}
 
-	return ret[0]
+	return nil
 }
 
 func (l *Level) AIMove(self MovableCollider, target Collider) {

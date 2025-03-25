@@ -43,6 +43,8 @@ var (
 	InitialMovableColliderCap = 32
 	InitialInputReceiverCap   = 1
 	InitialPlayerCap          = 1
+	InitialBeginPlayerCap     = 1
+	InitialEndPlayerCap       = 1
 	InitialAITickerCap        = 32
 	InitialTickerCap          = 32
 	InitialDrawerCap          = 128
@@ -98,16 +100,40 @@ func GetLevel() *Level {
 }
 
 func SetLevel(level *Level) error {
+	// Check level
 	if level == nil {
 		return errors.New("loaded level is empty")
 	}
 
-	currentLevel = level
-	if IsDebugMode() {
-		return level.LoadOrBuildPFCache()
-	} else {
-		return level.LoadPFCache()
+	// Execute all EndPlay
+	if currentLevel != nil {
+		for _, a := range currentLevel.EndPlayers {
+			a.EndPlay()
+		}
 	}
+
+	// Change level
+	currentLevel = level
+
+	// Create PF cache
+	if IsDebugMode() {
+		err := level.LoadOrBuildPFCache()
+		if err != nil {
+			return err
+		}
+	} else {
+		err := level.LoadPFCache()
+		if err != nil {
+			return err
+		}
+	}
+
+	// Execute all BeginPlay
+	for _, a := range level.BeginPlayers {
+		a.BeginPlay()
+	}
+
+	return nil
 }
 
 var ebitenImages = NewSmap[string, *ebiten.Image]()
