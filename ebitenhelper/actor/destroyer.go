@@ -3,6 +3,7 @@ package actor
 import (
 	"fmt"
 	"image/color"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
@@ -50,10 +51,13 @@ func (a *Destroyer) ZOrder() int {
 }
 
 func (a *Destroyer) BeginPlay() {
-	wa := utility.GetLevel().GetFirstActorByName("PointWidget")
-	if tw, ok := wa.(*TextWidget); ok {
-		a.pointWidget = tw
+	wName := "PointWidget"
+	w, ok := utility.GetFirstActorByName[*TextWidget](wName)
+	if !ok {
+		log.Panicf("actor '%s' not found", wName)
 	}
+
+	a.pointWidget = w
 }
 
 func (a *Destroyer) Tick() {

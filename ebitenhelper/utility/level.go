@@ -171,11 +171,17 @@ func (l *Level) EmptyTrashes() {
 	l.Trashes = l.Trashes[:0]
 }
 
-func (l *Level) GetActorsByName(name string) func(yield func(Namer) bool) {
-	return func(yield func(Namer) bool) {
-		if ret, ok := l.Namers.Load(name); ok {
-			for _, a := range ret {
-				if !yield(a) {
+func GetActorsByName[T Namer](name string) func(yield func(T) bool) {
+	return func(yield func(T) bool) {
+		l := GetLevel()
+		aSlice, ok := l.Namers.Load(name)
+		if !ok {
+			return
+		}
+
+		for _, a := range aSlice {
+			if ret, ok := a.(T); ok {
+				if !yield(ret) {
 					return
 				}
 			}
@@ -183,12 +189,12 @@ func (l *Level) GetActorsByName(name string) func(yield func(Namer) bool) {
 	}
 }
 
-func (l *Level) GetFirstActorByName(name string) Namer {
-	for a := range l.GetActorsByName(name) {
-		return a
+func GetFirstActorByName[T Namer](name string) (actor T, ok bool) {
+	for ret := range GetActorsByName[T](name) {
+		return ret, true
 	}
 
-	return nil
+	return *new(T), false
 }
 
 func (l *Level) AIMove(self MovableCollider, target Collider) {
