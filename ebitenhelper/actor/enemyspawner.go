@@ -24,6 +24,10 @@ func (a *EnemySpawner) Spawn() {
 	p := ActorGenerator.NewAIPawn2(utility.ZeroVector(), 0, utility.NewVector(1, 1))
 	ss := utility.GetScreenSize().ToVector()
 	lv := utility.GetLevel()
+	if len(lv.Players) == 0 {
+		return
+	}
+
 	pll := lv.Players[0].GetLocation()
 	for range a.SpawnRetryCount {
 		l := utility.RandomVectorPtr().Mul(ss)

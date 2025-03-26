@@ -114,10 +114,6 @@ type ZHolder interface {
 	ZOrder() int
 }
 
-type Parenter interface {
-	Children() []any
-}
-
 type Namer interface {
 	GetName() string
 }

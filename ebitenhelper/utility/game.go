@@ -39,6 +39,7 @@ var (
 	ColorGray       = RGB{0x80, 0x80, 0x80}
 	ColorBlack      = RGB{0x00, 0x00, 0x00}
 
+	InitialActorCap           = 128
 	InitialStaticColliderCap  = 128
 	InitialMovableColliderCap = 32
 	InitialInputReceiverCap   = 1

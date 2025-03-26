@@ -29,7 +29,6 @@ func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64,
 	a.ControllerComponent = component.NewControllerComponent(a)
 	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
 
-	a.destroyer = g.NewDestroyer()
 	a.currentHP = 3
 
 	a.MaxHP = 3
@@ -46,9 +45,11 @@ func (g ActorGeneratorStruct) NewPawn1(location utility.Vector, rotation float64
 	return a
 }
 
-func (a *Pawn) Children() []any {
-	return []any{
-		a.destroyer,
+func (a *Pawn) BeginPlay() {
+	if d, ok := utility.GetFirstActor[*Destroyer](); ok {
+		a.destroyer = d
+	} else {
+		log.Panicln("actor 'Destroyer' is not found")
 	}
 }
 
@@ -80,10 +81,19 @@ func (a *Pawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
 func (a *Pawn) AddHP(delta int) {
 	a.currentHP += delta
 	if a.currentHP <= 0 {
-		log.Println("died!")
+		a.ReceiveDeath()
 	} else if a.currentHP > a.MaxHP {
 		a.currentHP = a.MaxHP
 	}
 
+	a.ApplyHPToWidget()
+}
+
+func (a *Pawn) ReceiveDeath() {
+	utility.GetLevel().Remove(a)
+	log.Println("Player died!")
+}
+
+func (a *Pawn) ApplyHPToWidget() {
 	log.Printf("HP: %d", a.currentHP)
 }

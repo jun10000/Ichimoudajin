@@ -19,6 +19,7 @@ type Level struct {
 	AIGridSize    Vector
 	AIPathfinding *AStar
 
+	Actors           []any
 	Colliders        []Collider
 	StaticColliders  []Collider
 	MovableColliders []MovableCollider
@@ -43,6 +44,7 @@ func NewLevel(name string, isLooping bool) *Level {
 		AIGridSize:    NewVector(32, 32),
 		AIPathfinding: NewAStar(),
 
+		Actors:           make([]any, 0, InitialActorCap),
 		Colliders:        make([]Collider, 0, InitialStaticColliderCap+InitialMovableColliderCap),
 		StaticColliders:  make([]Collider, 0, InitialStaticColliderCap),
 		MovableColliders: make([]MovableCollider, 0, InitialMovableColliderCap),
@@ -60,6 +62,8 @@ func NewLevel(name string, isLooping bool) *Level {
 }
 
 func (l *Level) Add(actor any) {
+	l.Actors = append(l.Actors, actor)
+
 	if a, ok := actor.(Collider); ok {
 		l.Colliders = append(l.Colliders, a)
 		if m, ok := a.(MovableCollider); ok {
@@ -106,12 +110,6 @@ func (l *Level) Add(actor any) {
 			l.Namers.Store(n, []Namer{a})
 		}
 	}
-
-	if a, ok := actor.(Parenter); ok {
-		for _, ac := range a.Children() {
-			l.Add(ac)
-		}
-	}
 }
 
 func (l *Level) Remove(actor any) {
@@ -120,6 +118,8 @@ func (l *Level) Remove(actor any) {
 
 func (l *Level) EmptyTrashes() {
 	for _, actor := range l.Trashes {
+		l.Actors = RemoveSliceItem(l.Actors, actor)
+
 		if a, ok := actor.(Collider); ok {
 			l.Colliders = RemoveSliceItem(l.Colliders, a)
 			if m, ok := a.(MovableCollider); ok {
@@ -160,15 +160,30 @@ func (l *Level) EmptyTrashes() {
 				l.Namers.Store(n, RemoveSliceItem(vs, a))
 			}
 		}
-
-		if a, ok := actor.(Parenter); ok {
-			for _, ac := range a.Children() {
-				l.Remove(ac)
-			}
-		}
 	}
 
 	l.Trashes = l.Trashes[:0]
+}
+
+func GetActors[T any]() func(yield func(T) bool) {
+	return func(yield func(T) bool) {
+		l := GetLevel()
+		for _, a := range l.Actors {
+			if ret, ok := a.(T); ok {
+				if !yield(ret) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func GetFirstActor[T any]() (actor T, ok bool) {
+	for ret := range GetActors[T]() {
+		return ret, true
+	}
+
+	return *new(T), false
 }
 
 func GetActorsByName[T Namer](name string) func(yield func(T) bool) {
