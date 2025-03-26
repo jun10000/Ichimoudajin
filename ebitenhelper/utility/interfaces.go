@@ -58,6 +58,7 @@ type ColliderBase interface {
 	GetRealBounds() []Bounder
 	GetFirstBounds() Bounder
 	GetBounds() []Bounder
+	ReceiveHit(sender Collider, receiver Collider, hitResult *TraceResult[Collider])
 }
 
 type Collider interface {

@@ -51,6 +51,9 @@ func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceRes
 		} else {
 			c.addLocationForce(r.TraceOffset.Add(*r.HitNormal))
 		}
+
+		c.parent.ReceiveHit(c.parent, r.HitCollider, r)
+		r.HitCollider.ReceiveHit(c.parent, r.HitCollider, r)
 	} else {
 		c.addLocationForce(r.InputOffset)
 	}

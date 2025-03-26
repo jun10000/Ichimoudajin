@@ -92,6 +92,9 @@ func (c *colliderComponentBase[T]) GetBounds() []utility.Bounder {
 	}
 }
 
+func (c *colliderComponentBase[T]) ReceiveHit(sender utility.Collider, receiver utility.Collider, hitResult *utility.TraceResult[utility.Collider]) {
+}
+
 /*
 StaticColliderComponent gives actors Collider and StaticTransformer role.
 Available T type is pointer.

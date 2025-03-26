@@ -1,6 +1,8 @@
 package actor
 
 import (
+	"log"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
@@ -13,6 +15,9 @@ type Pawn struct {
 	*component.ColliderComponent[*utility.CircleF]
 
 	destroyer *Destroyer
+	currentHP int
+
+	MaxHP int
 }
 
 func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
@@ -25,6 +30,9 @@ func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64,
 	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
 
 	a.destroyer = g.NewDestroyer()
+	a.currentHP = 3
+
+	a.MaxHP = 3
 
 	a.UpdateBounds()
 	return a
@@ -61,4 +69,27 @@ func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.
 func (a *Pawn) Tick() {
 	a.MovementComponent.Tick()
 	a.DrawAnimationComponent.Tick()
+}
+
+func (a *Pawn) ReceiveHit(sender utility.Collider, receiver utility.Collider, hitResult *utility.TraceResult[utility.Collider]) {
+	if sender == a {
+		if _, ok := receiver.(*AIPawn); ok {
+			a.AddHP(-1)
+		}
+	} else if receiver == a {
+		if _, ok := sender.(*AIPawn); ok {
+			a.AddHP(-1)
+		}
+	}
+}
+
+func (a *Pawn) AddHP(delta int) {
+	a.currentHP += delta
+	if a.currentHP <= 0 {
+		log.Println("died!")
+	} else if a.currentHP > a.MaxHP {
+		a.currentHP = a.MaxHP
+	}
+
+	log.Printf("HP: %d", a.currentHP)
 }
