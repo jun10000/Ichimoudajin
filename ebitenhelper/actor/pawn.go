@@ -71,15 +71,9 @@ func (a *Pawn) Tick() {
 	a.DrawAnimationComponent.Tick()
 }
 
-func (a *Pawn) ReceiveHit(sender utility.Collider, receiver utility.Collider, hitResult *utility.TraceResult[utility.Collider]) {
-	if sender == a {
-		if _, ok := receiver.(*AIPawn); ok {
-			a.AddHP(-1)
-		}
-	} else if receiver == a {
-		if _, ok := sender.(*AIPawn); ok {
-			a.AddHP(-1)
-		}
+func (a *Pawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
+	if _, ok := result.HitCollider.(*AIPawn); ok {
+		a.AddHP(-1)
 	}
 }
 

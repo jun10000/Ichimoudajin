@@ -44,3 +44,9 @@ func (a *AIPawn) Tick() {
 	a.MovementComponent.Tick()
 	a.DrawAnimationComponent.Tick()
 }
+
+func (a *AIPawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
+	if p, ok := result.HitCollider.(*Pawn); ok {
+		p.AddHP(-1)
+	}
+}

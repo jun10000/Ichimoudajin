@@ -92,7 +92,7 @@ func (c *colliderComponentBase[T]) GetBounds() []utility.Bounder {
 	}
 }
 
-func (c *colliderComponentBase[T]) ReceiveHit(sender utility.Collider, receiver utility.Collider, hitResult *utility.TraceResult[utility.Collider]) {
+func (c *colliderComponentBase[T]) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
 }
 
 /*
