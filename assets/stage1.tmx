@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="22" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="26">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="22" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="27">
  <properties>
   <property name="IsLooping" type="bool" value="true"/>
  </properties>
@@ -153,6 +153,9 @@
  <objectgroup id="16" name="Widgets">
   <object id="21" name="PointWidget" type="LCDTextWidget" x="10" y="10" width="210" height="38">
    <text fontfamily="lcd phone" pixelsize="32" color="#ffffff">POINTS XXX</text>
+  </object>
+  <object id="26" name="GameOverWidget" type="LCDTextWidget" x="448" y="320" width="384" height="64" visible="0">
+   <text fontfamily="lcd phone" pixelsize="64" color="#ffffff">GAME OVER</text>
   </object>
   <object id="25" name="HPWidget" type="LCDTextWidget" x="10" y="48" width="210" height="38">
    <text fontfamily="lcd phone" pixelsize="32" color="#ffffff">HP XXX</text>

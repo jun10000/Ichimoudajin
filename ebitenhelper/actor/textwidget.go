@@ -10,12 +10,13 @@ import (
 type TextWidget struct {
 	*component.WidgetComponent
 
-	Text     string
-	FontFace *text.GoTextFace
-	Color    utility.RGB
+	Text      string
+	FontFace  *text.GoTextFace
+	Color     utility.RGB
+	IsVisible bool
 }
 
-func (g ActorGeneratorStruct) NewTextWidget(location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, name string, extra any) *TextWidget {
+func (g ActorGeneratorStruct) NewTextWidget(location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, name string, extra any, isVisible bool) *TextWidget {
 	a := &TextWidget{}
 	a.WidgetComponent = component.NewWidgetComponent(location, size, name)
 
@@ -35,17 +36,23 @@ func (g ActorGeneratorStruct) NewTextWidget(location utility.Vector, rotation fl
 		a.Color = utility.ColorWhite
 	}
 
+	a.IsVisible = isVisible
+
 	return a
 }
 
 // NewLCDTextWidget is another version of NewTextWidget
-func (g ActorGeneratorStruct) NewLCDTextWidget(location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, name string, extra any) *TextWidget {
-	a := g.NewTextWidget(location, rotation, scale, size, name, extra)
+func (g ActorGeneratorStruct) NewLCDTextWidget(location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, name string, extra any, isVisible bool) *TextWidget {
+	a := g.NewTextWidget(location, rotation, scale, size, name, extra, isVisible)
 	a.FontFace.Source = utility.GetFontFromFileP("fonts/LCDPHONE.ttf")
 	return a
 }
 
 func (w *TextWidget) Draw(screen *ebiten.Image) {
+	if !w.IsVisible {
+		return
+	}
+
 	l := w.GetLocation()
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(l.X, l.Y)

@@ -28,7 +28,8 @@ type Pawn struct {
 	invincibleTimer  *utility.CallTimer
 	currentHP        int
 	destroyer        *Destroyer
-	widget           *TextWidget
+	hpWidget         *TextWidget
+	gameoverWidget   *TextWidget
 
 	MaxHP                 int
 	InvincibleSeconds     float32
@@ -72,9 +73,15 @@ func (a *Pawn) BeginPlay() {
 	}
 
 	if w, ok := utility.GetFirstActorByName[*TextWidget]("HPWidget"); ok {
-		a.widget = w
+		a.hpWidget = w
 	} else {
 		log.Panicln("actor 'HPWidget' is not found")
+	}
+
+	if w, ok := utility.GetFirstActorByName[*TextWidget]("GameOverWidget"); ok {
+		a.gameoverWidget = w
+	} else {
+		log.Panicln("actor 'GameOverWidget' is not found")
 	}
 }
 
@@ -119,7 +126,7 @@ func (a *Pawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
 }
 
 func (a *Pawn) ApplyHPToWidget() {
-	a.widget.Text = fmt.Sprintf("HP %d", a.currentHP)
+	a.hpWidget.Text = fmt.Sprintf("HP %d", a.currentHP)
 }
 
 func (a *Pawn) AddHP(delta int) {
@@ -131,7 +138,6 @@ func (a *Pawn) AddHP(delta int) {
 		}
 
 		if a.currentHP <= 0 {
-			a.currentHP = 0
 			a.state = PawnStateYararechatta
 			a.ReceiveDeath()
 		} else if delta < 0 {
@@ -152,5 +158,6 @@ func (a *Pawn) AddHP(delta int) {
 
 func (a *Pawn) ReceiveDeath() {
 	utility.GetLevel().Remove(a)
-	log.Println("Player died!")
+	a.hpWidget.IsVisible = false
+	a.gameoverWidget.IsVisible = true
 }

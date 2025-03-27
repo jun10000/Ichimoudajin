@@ -29,14 +29,14 @@ func NewActorGeneratorStruct() ActorGeneratorStruct {
 	return g
 }
 
-func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, actorName string, extra any) (any, error) {
+func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, actorName string, extra any, isVisible bool) (any, error) {
 	m := g.refValue.MethodByName("New" + name)
 	if !m.IsValid() {
 		return nil, fmt.Errorf("method 'New%s' is not found", name)
 	}
 
 	argc := m.Type().NumIn()
-	if argc > 6 {
+	if argc > 7 {
 		return nil, fmt.Errorf("method New%s has invalid argument counts: %d", name, argc)
 	}
 
@@ -47,6 +47,7 @@ func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vecto
 		reflect.ValueOf(size),
 		reflect.ValueOf(actorName),
 		reflect.ValueOf(extra),
+		reflect.ValueOf(isVisible),
 	}
 	ret := m.Call(argv[:argc])
 	if len(ret) == 0 {
