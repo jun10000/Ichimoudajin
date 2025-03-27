@@ -18,6 +18,7 @@ const (
 )
 
 type Pawn struct {
+	*component.ActorCom
 	*component.MovementCom
 	*component.DrawAnimationCom
 	*component.ControllerCom
@@ -35,10 +36,11 @@ type Pawn struct {
 	InvincibleDrawSeconds float32
 }
 
-func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
+func (g ActorGeneratorStruct) NewPawn(name string, location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
 	t := utility.NewTransform(location, rotation, scale)
 
 	a := &Pawn{}
+	a.ActorCom = component.NewActorCom(name)
 	a.MovementCom = component.NewMovementCom(a)
 	a.DrawAnimationCom = component.NewDrawAnimationCom(a)
 	a.ControllerCom = component.NewControllerCom(a)
@@ -57,8 +59,8 @@ func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64,
 }
 
 // NewPawn1 creates another version of Pawn
-func (g ActorGeneratorStruct) NewPawn1(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
-	a := g.NewPawn(location, rotation, scale)
+func (g ActorGeneratorStruct) NewPawn1(name string, location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
+	a := g.NewPawn(name, location, rotation, scale)
 	a.Image = utility.GetImageFromFileP("images/ぴぽやキャラチップ32出力素材/現代系/女_スーツ1.png")
 	a.MaxSpeed = 200
 	return a

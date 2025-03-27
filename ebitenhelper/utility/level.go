@@ -30,7 +30,7 @@ type Level struct {
 	AITickers        []AITicker
 	Tickers          []Ticker
 	Drawers          [][]Drawer
-	Namers           *Smap[string, []Namer]
+	Namers           *Smap[string, []Actor]
 	DebugDraws       []func(screen *ebiten.Image)
 	Trashes          []any
 }
@@ -55,7 +55,7 @@ func NewLevel(name string, isLooping bool) *Level {
 		AITickers:        make([]AITicker, 0, InitialAITickerCap),
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
 		Drawers:          make([][]Drawer, 0, ZOrderMax+1),
-		Namers:           NewSmap[string, []Namer](),
+		Namers:           NewSmap[string, []Actor](),
 		DebugDraws:       make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
 		Trashes:          make([]any, 0, InitialTrashCap),
 	}
@@ -102,12 +102,12 @@ func (l *Level) Add(actor any) {
 
 		l.Drawers[z] = append(l.Drawers[z], a)
 	}
-	if a, ok := actor.(Namer); ok {
+	if a, ok := actor.(Actor); ok {
 		n := a.GetName()
 		if vs, ok := l.Namers.Load(n); ok {
 			l.Namers.Store(n, append(vs, a))
 		} else {
-			l.Namers.Store(n, []Namer{a})
+			l.Namers.Store(n, []Actor{a})
 		}
 	}
 }
@@ -154,7 +154,7 @@ func (l *Level) EmptyTrashes() {
 
 			l.Drawers[z] = RemoveSliceItem(l.Drawers[z], a)
 		}
-		if a, ok := actor.(Namer); ok {
+		if a, ok := actor.(Actor); ok {
 			n := a.GetName()
 			if vs, ok := l.Namers.Load(n); ok {
 				l.Namers.Store(n, RemoveSliceItem(vs, a))
@@ -186,7 +186,7 @@ func GetFirstActor[T any]() (actor T, ok bool) {
 	return *new(T), false
 }
 
-func GetActorsByName[T Namer](name string) func(yield func(T) bool) {
+func GetActorsByName[T Actor](name string) func(yield func(T) bool) {
 	return func(yield func(T) bool) {
 		l := GetLevel()
 		aSlice, ok := l.Namers.Load(name)
@@ -204,7 +204,7 @@ func GetActorsByName[T Namer](name string) func(yield func(T) bool) {
 	}
 }
 
-func GetFirstActorByName[T Namer](name string) (actor T, ok bool) {
+func GetFirstActorByName[T Actor](name string) (actor T, ok bool) {
 	for ret := range GetActorsByName[T](name) {
 		return ret, true
 	}

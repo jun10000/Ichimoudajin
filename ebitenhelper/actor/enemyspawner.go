@@ -1,17 +1,20 @@
 package actor
 
 import (
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
 type EnemySpawner struct {
+	*component.ActorCom
 	SpawnSeconds          float32
 	SpawnRetryCount       int
 	InvalidPlayerDistance float64
 }
 
-func (g ActorGeneratorStruct) NewEnemySpawner() *EnemySpawner {
+func (g ActorGeneratorStruct) NewEnemySpawner(name string) *EnemySpawner {
 	return &EnemySpawner{
+		ActorCom:              component.NewActorCom(name),
 		SpawnSeconds:          3,
 		SpawnRetryCount:       10,
 		InvalidPlayerDistance: 300,
@@ -19,7 +22,7 @@ func (g ActorGeneratorStruct) NewEnemySpawner() *EnemySpawner {
 }
 
 func (a *EnemySpawner) Spawn() {
-	p := ActorGenerator.NewAIPawn2(utility.ZeroVector(), 0, utility.NewVector(1, 1))
+	p := ActorGenerator.NewAIPawn2("SpawnedEnemy", utility.ZeroVector(), 0, utility.NewVector(1, 1))
 	ss := utility.GetScreenSize().ToVector()
 	lv := utility.GetLevel()
 	if len(lv.Players) == 0 {

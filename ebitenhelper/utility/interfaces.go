@@ -2,6 +2,10 @@ package utility
 
 import "github.com/hajimehoshi/ebiten/v2"
 
+type Actor interface {
+	GetName() string
+}
+
 type StaticLocator interface {
 	GetLocation() Vector
 }
@@ -114,8 +118,4 @@ type Drawer interface {
 
 type ZHolder interface {
 	ZOrder() int
-}
-
-type Namer interface {
-	GetName() string
 }

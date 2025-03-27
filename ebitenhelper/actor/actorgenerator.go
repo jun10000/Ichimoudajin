@@ -41,13 +41,13 @@ func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vecto
 	}
 
 	argv := []reflect.Value{
+		reflect.ValueOf(actorName),
 		reflect.ValueOf(location),
 		reflect.ValueOf(rotation),
 		reflect.ValueOf(scale),
 		reflect.ValueOf(size),
-		reflect.ValueOf(actorName),
-		reflect.ValueOf(extra),
 		reflect.ValueOf(isVisible),
+		reflect.ValueOf(extra),
 	}
 	ret := m.Call(argv[:argc])
 	if len(ret) == 0 {

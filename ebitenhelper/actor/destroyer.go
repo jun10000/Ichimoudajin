@@ -19,6 +19,7 @@ const (
 )
 
 type Destroyer struct {
+	*component.ActorCom
 	*component.DrawCom
 	status      DestroyerStatus
 	circle      *utility.CircleF
@@ -34,11 +35,12 @@ type Destroyer struct {
 	FillColor   color.Color
 }
 
-func (g ActorGeneratorStruct) NewDestroyer() *Destroyer {
+func (g ActorGeneratorStruct) NewDestroyer(name string) *Destroyer {
 	return &Destroyer{
-		DrawCom: component.NewDrawCom(),
-		status:  DestroyerStatusDisable,
-		circle:  utility.NewCircleF(0, 0, 0),
+		ActorCom: component.NewActorCom(name),
+		DrawCom:  component.NewDrawCom(),
+		status:   DestroyerStatusDisable,
+		circle:   utility.NewCircleF(0, 0, 0),
 
 		GrowSpeed:   1,
 		ShrinkSpeed: 2,

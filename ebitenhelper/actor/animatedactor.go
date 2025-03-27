@@ -6,12 +6,14 @@ import (
 )
 
 type AnimatedActor struct {
+	*component.ActorCom
 	*utility.StaticTransform
 	*component.DrawAnimationCom
 }
 
-func (g ActorGeneratorStruct) NewAnimatedActor(location utility.Vector, rotation float64, scale utility.Vector) *AnimatedActor {
+func (g ActorGeneratorStruct) NewAnimatedActor(name string, location utility.Vector, rotation float64, scale utility.Vector) *AnimatedActor {
 	a := &AnimatedActor{}
+	a.ActorCom = component.NewActorCom(name)
 	a.StaticTransform = utility.NewStaticTransform(location, rotation, scale)
 	a.DrawAnimationCom = component.NewDrawAnimationCom(a)
 	return a
