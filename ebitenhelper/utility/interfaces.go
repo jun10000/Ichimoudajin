@@ -123,7 +123,7 @@ type Drawer interface {
 	Draw(screen *ebiten.Image)
 }
 
-type ZHolder interface {
+type ZSpecifiedDrawer interface {
 	Drawer
 	ZOrder() int
 }

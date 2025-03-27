@@ -98,7 +98,7 @@ func (l *Level) Add(actor Actor) {
 	}
 	if a, ok := actor.(Drawer); ok {
 		z := ZOrderDefault
-		if az, ok := a.(ZHolder); ok {
+		if az, ok := a.(ZSpecifiedDrawer); ok {
 			z = az.ZOrder()
 		}
 
@@ -150,7 +150,7 @@ func (l *Level) EmptyTrashes() {
 		}
 		if a, ok := actor.(Drawer); ok {
 			z := ZOrderDefault
-			if az, ok := a.(ZHolder); ok {
+			if az, ok := a.(ZSpecifiedDrawer); ok {
 				z = az.ZOrder()
 			}
 
