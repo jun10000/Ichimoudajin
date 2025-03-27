@@ -1,6 +1,7 @@
 package actor
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -15,6 +16,7 @@ type Pawn struct {
 	*component.ColliderComponent[*utility.CircleF]
 
 	destroyer *Destroyer
+	widget    *TextWidget
 	currentHP int
 
 	MaxHP int
@@ -51,6 +53,12 @@ func (a *Pawn) BeginPlay() {
 	} else {
 		log.Panicln("actor 'Destroyer' is not found")
 	}
+
+	if w, ok := utility.GetFirstActorByName[*TextWidget]("HPWidget"); ok {
+		a.widget = w
+	} else {
+		log.Panicln("actor 'HPWidget' is not found")
+	}
 }
 
 func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.PressState, pos utility.Point) {
@@ -70,12 +78,17 @@ func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.
 func (a *Pawn) Tick() {
 	a.MovementComponent.Tick()
 	a.DrawAnimationComponent.Tick()
+	a.ApplyHPToWidget()
 }
 
 func (a *Pawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
 	if _, ok := result.HitCollider.(*AIPawn); ok {
 		a.AddHP(-1)
 	}
+}
+
+func (a *Pawn) ApplyHPToWidget() {
+	a.widget.Text = fmt.Sprintf("HP %d", a.currentHP)
 }
 
 func (a *Pawn) AddHP(delta int) {
@@ -85,15 +98,9 @@ func (a *Pawn) AddHP(delta int) {
 	} else if a.currentHP > a.MaxHP {
 		a.currentHP = a.MaxHP
 	}
-
-	a.ApplyHPToWidget()
 }
 
 func (a *Pawn) ReceiveDeath() {
 	utility.GetLevel().Remove(a)
 	log.Println("Player died!")
-}
-
-func (a *Pawn) ApplyHPToWidget() {
-	log.Printf("HP: %d", a.currentHP)
 }

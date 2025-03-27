@@ -108,7 +108,7 @@ func (a *Destroyer) Tick() {
 }
 
 func (a *Destroyer) ApplyPointsToWidget() {
-	a.pointWidget.Text = fmt.Sprintf("%d", a.points)
+	a.pointWidget.Text = fmt.Sprintf("POINTS %d", a.points)
 }
 
 func (a *Destroyer) Draw(screen *ebiten.Image) {
