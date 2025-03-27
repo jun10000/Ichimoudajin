@@ -107,6 +107,8 @@ type Ticker interface {
 }
 
 type Drawer interface {
+	GetVisibility() bool
+	SetVisibility(isVisible bool)
 	Draw(screen *ebiten.Image)
 }
 

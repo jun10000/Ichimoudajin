@@ -8,16 +8,17 @@ import (
 )
 
 type TextWidget struct {
+	*component.DrawCom
 	*component.WidgetCom
 
-	Text      string
-	FontFace  *text.GoTextFace
-	Color     utility.RGB
-	IsVisible bool
+	Text     string
+	FontFace *text.GoTextFace
+	Color    utility.RGB
 }
 
 func (g ActorGeneratorStruct) NewTextWidget(location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, name string, extra any, isVisible bool) *TextWidget {
 	a := &TextWidget{}
+	a.DrawCom = component.NewDrawCom()
 	a.WidgetCom = component.NewWidgetCom(location, size, name)
 
 	if e, ok := extra.(*ExtraTextInfo); ok {
@@ -36,7 +37,7 @@ func (g ActorGeneratorStruct) NewTextWidget(location utility.Vector, rotation fl
 		a.Color = utility.ColorWhite
 	}
 
-	a.IsVisible = isVisible
+	a.SetVisibility(isVisible)
 
 	return a
 }
@@ -49,10 +50,6 @@ func (g ActorGeneratorStruct) NewLCDTextWidget(location utility.Vector, rotation
 }
 
 func (w *TextWidget) Draw(screen *ebiten.Image) {
-	if !w.IsVisible {
-		return
-	}
-
 	l := w.GetLocation()
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(l.X, l.Y)

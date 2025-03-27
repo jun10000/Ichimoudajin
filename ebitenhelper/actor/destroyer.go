@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
@@ -18,6 +19,7 @@ const (
 )
 
 type Destroyer struct {
+	*component.DrawCom
 	status      DestroyerStatus
 	circle      *utility.CircleF
 	targets     []utility.MovableCollider
@@ -34,8 +36,9 @@ type Destroyer struct {
 
 func (g ActorGeneratorStruct) NewDestroyer() *Destroyer {
 	return &Destroyer{
-		status: DestroyerStatusDisable,
-		circle: utility.NewCircleF(0, 0, 0),
+		DrawCom: component.NewDrawCom(),
+		status:  DestroyerStatusDisable,
+		circle:  utility.NewCircleF(0, 0, 0),
 
 		GrowSpeed:   1,
 		ShrinkSpeed: 2,

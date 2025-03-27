@@ -6,6 +6,7 @@ import (
 )
 
 type DrawImageCom struct {
+	*DrawCom
 	parent utility.StaticTransformer
 
 	Image *ebiten.Image
@@ -13,7 +14,8 @@ type DrawImageCom struct {
 
 func NewDrawImageCom(parent utility.StaticTransformer) *DrawImageCom {
 	return &DrawImageCom{
-		parent: parent,
+		DrawCom: NewDrawCom(),
+		parent:  parent,
 	}
 }
 

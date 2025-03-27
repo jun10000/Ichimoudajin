@@ -335,7 +335,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	for _, ds := range lv.Drawers {
 		for _, d := range ds {
-			d.Draw(screen)
+			if d.GetVisibility() {
+				d.Draw(screen)
+			}
 		}
 	}
 

@@ -8,6 +8,7 @@ import (
 )
 
 type DrawAnimationCom struct {
+	*DrawCom
 	parent utility.StaticTransformer
 
 	Image             *ebiten.Image
@@ -19,7 +20,8 @@ type DrawAnimationCom struct {
 
 func NewDrawAnimationCom(parent utility.StaticTransformer) *DrawAnimationCom {
 	return &DrawAnimationCom{
-		parent: parent,
+		DrawCom: NewDrawCom(),
+		parent:  parent,
 
 		FrameCount:        3,
 		FrameSize:         utility.NewPoint(32, 32),

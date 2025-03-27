@@ -155,6 +155,6 @@ func (a *Pawn) AddHP(delta int) {
 
 func (a *Pawn) ReceiveDeath() {
 	utility.GetLevel().Remove(a)
-	a.hpWidget.IsVisible = false
-	a.gameoverWidget.IsVisible = true
+	a.hpWidget.SetVisibility(false)
+	a.gameoverWidget.SetVisibility(true)
 }
