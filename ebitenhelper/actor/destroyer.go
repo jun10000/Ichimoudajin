@@ -46,8 +46,8 @@ func (g ActorGeneratorStruct) NewDestroyer(name string) *Destroyer {
 		ShrinkSpeed: 2,
 		MaxRadius:   120,
 		BorderWidth: 2,
-		BorderColor: utility.ColorLightBlue.ToRGBA(0xff),
-		FillColor:   utility.ColorLightBlue.ToRGBA(0x20),
+		BorderColor: utility.ColorOrange,
+		FillColor:   utility.ColorOrange.ToNRGBA(0x40),
 	}
 }
 

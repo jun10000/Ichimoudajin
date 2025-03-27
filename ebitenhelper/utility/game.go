@@ -64,11 +64,14 @@ var (
 		0: ColorRed,
 	}
 
-	DebugIsShowTraceResult = false
-	DebugTraceResultLength = 30.0
+	DebugIsShowTraceResult               = false
+	DebugTraceResultLength               = 30.0
+	DebugTraceResultOffsetColor          = ColorLightGreen
+	DebugTraceResultRemainingOffsetColor = ColorWhite
+	DebugTraceResultHitNormalColor       = ColorRed
 
 	DebugIsShowAIPath = false
-	DebugAIPathColor  = ColorGreen
+	DebugAIPathColor  = ColorGreen.ToNRGBA(0x30)
 )
 
 var windowTitle = "Game"

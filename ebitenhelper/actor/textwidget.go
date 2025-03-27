@@ -46,6 +46,6 @@ func (w *TextWidget) Draw(screen *ebiten.Image) {
 	l := w.GetLocation()
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(l.X, l.Y)
-	op.ColorScale.ScaleWithColor(w.Color.ToRGBA(0xff))
+	op.ColorScale.ScaleWithColor(w.Color)
 	text.Draw(screen, w.Text, w.FontFace, op)
 }

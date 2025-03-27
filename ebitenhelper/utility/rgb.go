@@ -13,9 +13,15 @@ func (c RGB) RGBA() (r, g, b, a uint32) {
 	g |= g << 8
 	b = uint32(c.B)
 	b |= b << 8
+	a = uint32(0xff)
+	a |= a << 8
 	return
 }
 
 func (c RGB) ToRGBA(alpha uint8) color.RGBA {
 	return color.RGBA{c.R, c.G, c.B, alpha}
+}
+
+func (c RGB) ToNRGBA(alpha uint8) color.NRGBA {
+	return color.NRGBA{c.R, c.G, c.B, alpha}
 }
