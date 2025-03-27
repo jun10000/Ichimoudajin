@@ -43,21 +43,18 @@ type tileMapObjectLayerObjectXML struct {
 }
 
 func (o *tileMapObjectLayerObjectXML) NewActor() (utility.Actor, error) {
-	l := utility.NewVector(o.LocationX, o.LocationY)
-	r := float64(0)
-	s := utility.DefaultScale()
-	sz := utility.NewVector(o.SizeX, o.SizeY)
-	v := true
+	op := actor.NewGenerateActorOptions()
+	op.Name = o.Name
+	op.Location = utility.NewVector(o.LocationX, o.LocationY)
+	op.Size = utility.NewVector(o.SizeX, o.SizeY)
 	if o.Visible != nil {
-		v = (*o.Visible != 0)
+		op.IsVisible = (*o.Visible != 0)
 	}
-
-	var extra any
 	if o.Text != nil {
-		extra = o.Text.CreateExtraTextInfo()
+		op.ExtraText = o.Text.CreateExtraTextInfo()
 	}
 
-	return actor.ActorGenerator.NewActorByName(o.Class, l, r, s, sz, o.Name, extra, v)
+	return actor.ActorGenerator.NewActorByTypeName(o.Class, op)
 }
 
 func (o *tileMapObjectLayerObjectXML) CreateActor() (utility.Actor, error) {

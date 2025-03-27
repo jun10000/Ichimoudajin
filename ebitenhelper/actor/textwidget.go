@@ -17,27 +17,18 @@ type TextWidget struct {
 	Color    utility.RGB
 }
 
-func (g ActorGeneratorStruct) NewTextWidget(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, isVisible bool, extra any) *TextWidget {
+func (g ActorGeneratorStruct) NewTextWidget(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, isVisible bool, extra *ExtraTextInfo) *TextWidget {
 	a := &TextWidget{}
 	a.ActorCom = component.NewActorCom(name)
 	a.DrawCom = component.NewDrawCom()
 	a.WidgetCom = component.NewWidgetCom(location, size)
 
-	if e, ok := extra.(*ExtraTextInfo); ok {
-		a.Text = e.Text
-		a.FontFace = &text.GoTextFace{
-			Source: nil,
-			Size:   e.Size,
-		}
-		a.Color = e.Color
-	} else {
-		a.Text = "Text"
-		a.FontFace = &text.GoTextFace{
-			Source: nil,
-			Size:   16,
-		}
-		a.Color = utility.ColorWhite
+	a.Text = extra.Text
+	a.FontFace = &text.GoTextFace{
+		Source: nil,
+		Size:   extra.Size,
 	}
+	a.Color = extra.Color
 
 	a.SetVisibility(isVisible)
 
@@ -45,7 +36,7 @@ func (g ActorGeneratorStruct) NewTextWidget(name string, location utility.Vector
 }
 
 // NewLCDTextWidget is another version of NewTextWidget
-func (g ActorGeneratorStruct) NewLCDTextWidget(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, isVisible bool, extra any) *TextWidget {
+func (g ActorGeneratorStruct) NewLCDTextWidget(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, isVisible bool, extra *ExtraTextInfo) *TextWidget {
 	a := g.NewTextWidget(name, location, rotation, scale, size, isVisible, extra)
 	a.FontFace.Source = utility.GetFontFromFileP("fonts/LCDPHONE.ttf")
 	return a
