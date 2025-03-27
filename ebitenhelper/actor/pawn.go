@@ -9,17 +9,30 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
+type PawnStates int
+
+const (
+	PawnStateNormal PawnStates = iota
+	PawnStateInvincible
+	PawnStateYararechatta
+)
+
 type Pawn struct {
 	*component.MovementComponent
 	*component.DrawAnimationComponent
 	*component.ControllerComponent
 	*component.ColliderComponent[*utility.CircleF]
 
-	destroyer *Destroyer
-	widget    *TextWidget
-	currentHP int
+	currentTickIndex int
+	state            PawnStates
+	invincibleTimer  *utility.CallTimer
+	currentHP        int
+	destroyer        *Destroyer
+	widget           *TextWidget
 
-	MaxHP int
+	MaxHP                 int
+	InvincibleSeconds     float32
+	InvincibleDrawSeconds float32
 }
 
 func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64, scale utility.Vector) *Pawn {
@@ -31,9 +44,13 @@ func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64,
 	a.ControllerComponent = component.NewControllerComponent(a)
 	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
 
+	a.state = PawnStateNormal
+	a.invincibleTimer = utility.NewCallTimer()
 	a.currentHP = 3
 
 	a.MaxHP = 3
+	a.InvincibleSeconds = 3
+	a.InvincibleDrawSeconds = 0.06
 
 	a.UpdateBounds()
 	return a
@@ -76,9 +93,23 @@ func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.
 }
 
 func (a *Pawn) Tick() {
+	a.currentTickIndex++
+	a.invincibleTimer.Tick()
 	a.MovementComponent.Tick()
 	a.DrawAnimationComponent.Tick()
 	a.ApplyHPToWidget()
+}
+
+func (a *Pawn) Draw(screen *ebiten.Image) {
+	switch a.state {
+	case PawnStateNormal:
+		a.DrawAnimationComponent.Draw(screen)
+	case PawnStateInvincible:
+		ni := int(float32(a.currentTickIndex) / (float32(utility.TickCount) * a.InvincibleDrawSeconds))
+		if ni%2 == 0 {
+			a.DrawAnimationComponent.Draw(screen)
+		}
+	}
 }
 
 func (a *Pawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
@@ -92,11 +123,30 @@ func (a *Pawn) ApplyHPToWidget() {
 }
 
 func (a *Pawn) AddHP(delta int) {
-	a.currentHP += delta
-	if a.currentHP <= 0 {
-		a.ReceiveDeath()
-	} else if a.currentHP > a.MaxHP {
-		a.currentHP = a.MaxHP
+	switch a.state {
+	case PawnStateNormal:
+		a.currentHP += delta
+		if a.currentHP > a.MaxHP {
+			a.currentHP = a.MaxHP
+		}
+
+		if a.currentHP <= 0 {
+			a.currentHP = 0
+			a.state = PawnStateYararechatta
+			a.ReceiveDeath()
+		} else if delta < 0 {
+			a.state = PawnStateInvincible
+			a.invincibleTimer.StartCallTimer(func() {
+				a.state = PawnStateNormal
+			}, a.InvincibleSeconds)
+		}
+	case PawnStateInvincible:
+		if delta > 0 {
+			a.currentHP += delta
+			if a.currentHP > a.MaxHP {
+				a.currentHP = a.MaxHP
+			}
+		}
 	}
 }
 
