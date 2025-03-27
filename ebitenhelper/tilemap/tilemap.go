@@ -69,7 +69,7 @@ type TileMapTileLayerCell struct {
 
 type TileMapObjectLayerObject struct {
 	Name  string
-	Actor any
+	Actor utility.Actor
 }
 
 type TileMapTileset struct {
@@ -214,8 +214,8 @@ func (m *TileMap) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	return nil
 }
 
-func (m *TileMap) ToActors() func(yield func(any) bool) {
-	return func(yield func(any) bool) {
+func (m *TileMap) ToActors() func(yield func(utility.Actor) bool) {
+	return func(yield func(utility.Actor) bool) {
 		mapSize := m.MapSize.Mul(m.TileSize)
 		collisionMap := NewTileCollisionMap(m.MapSize)
 		landscape := actor.ActorGenerator.NewImageActor("Landscape", utility.ZeroVector(), 0, utility.DefaultScale())

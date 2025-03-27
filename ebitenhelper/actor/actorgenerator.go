@@ -29,7 +29,7 @@ func NewActorGeneratorStruct() ActorGeneratorStruct {
 	return g
 }
 
-func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, actorName string, extra any, isVisible bool) (any, error) {
+func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, actorName string, extra any, isVisible bool) (utility.Actor, error) {
 	m := g.refValue.MethodByName("New" + name)
 	if !m.IsValid() {
 		return nil, fmt.Errorf("method 'New%s' is not found", name)
@@ -54,5 +54,5 @@ func (g ActorGeneratorStruct) NewActorByName(name string, location utility.Vecto
 		return nil, fmt.Errorf("method New%s does not return value", name)
 	}
 
-	return ret[0].Interface(), nil
+	return ret[0].Interface().(utility.Actor), nil
 }

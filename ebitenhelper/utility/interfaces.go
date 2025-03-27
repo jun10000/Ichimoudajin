@@ -2,10 +2,6 @@ package utility
 
 import "github.com/hajimehoshi/ebiten/v2"
 
-type Actor interface {
-	GetName() string
-}
-
 type StaticLocator interface {
 	GetLocation() Vector
 }
@@ -54,7 +50,12 @@ type Bounder interface {
 	IntersectFromCircle(src *CircleF) (result bool, normal *Vector)
 }
 
+type Actor interface {
+	GetName() string
+}
+
 type ColliderBase interface {
+	Actor
 	UpdateBounds()
 	EnableBounds()
 	DisableBounds()
@@ -83,6 +84,7 @@ type ColliderComparable interface {
 }
 
 type InputReceiver interface {
+	Actor
 	ReceiveKeyInput(key ebiten.Key, state PressState)
 	ReceiveMouseButtonInput(button ebiten.MouseButton, state PressState, pos Point)
 	ReceiveGamepadButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState)
@@ -95,27 +97,33 @@ type Player interface {
 }
 
 type BeginPlayer interface {
+	Actor
 	BeginPlay()
 }
 
 type EndPlayer interface {
+	Actor
 	EndPlay()
 }
 
 type AITicker interface {
+	Actor
 	AITick()
 }
 
 type Ticker interface {
+	Actor
 	Tick()
 }
 
 type Drawer interface {
+	Actor
 	GetVisibility() bool
 	SetVisibility(isVisible bool)
 	Draw(screen *ebiten.Image)
 }
 
 type ZHolder interface {
+	Drawer
 	ZOrder() int
 }

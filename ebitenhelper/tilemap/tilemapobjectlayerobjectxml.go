@@ -42,7 +42,7 @@ type tileMapObjectLayerObjectXML struct {
 	Text       *tileMapObjectLayerObjectTextXML      `xml:"text"`
 }
 
-func (o *tileMapObjectLayerObjectXML) NewActor() (any, error) {
+func (o *tileMapObjectLayerObjectXML) NewActor() (utility.Actor, error) {
 	l := utility.NewVector(o.LocationX, o.LocationY)
 	r := float64(0)
 	s := utility.DefaultScale()
@@ -60,7 +60,7 @@ func (o *tileMapObjectLayerObjectXML) NewActor() (any, error) {
 	return actor.ActorGenerator.NewActorByName(o.Class, l, r, s, sz, o.Name, extra, v)
 }
 
-func (o *tileMapObjectLayerObjectXML) CreateActor() (any, error) {
+func (o *tileMapObjectLayerObjectXML) CreateActor() (utility.Actor, error) {
 	ret, err := o.NewActor()
 	if err != nil {
 		return nil, err

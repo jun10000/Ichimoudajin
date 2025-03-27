@@ -19,7 +19,7 @@ type Level struct {
 	AIGridSize    Vector
 	AIPathfinding *AStar
 
-	Actors           []any
+	Actors           []Actor
 	Colliders        []Collider
 	StaticColliders  []Collider
 	MovableColliders []MovableCollider
@@ -30,9 +30,9 @@ type Level struct {
 	AITickers        []AITicker
 	Tickers          []Ticker
 	Drawers          [][]Drawer
-	Namers           *Smap[string, []Actor]
+	NamedActors      *Smap[string, []Actor]
 	DebugDraws       []func(screen *ebiten.Image)
-	Trashes          []any
+	Trashes          []Actor
 }
 
 func NewLevel(name string, isLooping bool) *Level {
@@ -44,7 +44,8 @@ func NewLevel(name string, isLooping bool) *Level {
 		AIGridSize:    NewVector(32, 32),
 		AIPathfinding: NewAStar(),
 
-		Actors:           make([]any, 0, InitialActorCap),
+		Actors:           make([]Actor, 0, InitialActorCap),
+		NamedActors:      NewSmap[string, []Actor](),
 		Colliders:        make([]Collider, 0, InitialStaticColliderCap+InitialMovableColliderCap),
 		StaticColliders:  make([]Collider, 0, InitialStaticColliderCap),
 		MovableColliders: make([]MovableCollider, 0, InitialMovableColliderCap),
@@ -55,14 +56,19 @@ func NewLevel(name string, isLooping bool) *Level {
 		AITickers:        make([]AITicker, 0, InitialAITickerCap),
 		Tickers:          make([]Ticker, 0, InitialTickerCap),
 		Drawers:          make([][]Drawer, 0, ZOrderMax+1),
-		Namers:           NewSmap[string, []Actor](),
 		DebugDraws:       make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
-		Trashes:          make([]any, 0, InitialTrashCap),
+		Trashes:          make([]Actor, 0, InitialTrashCap),
 	}
 }
 
-func (l *Level) Add(actor any) {
+func (l *Level) Add(actor Actor) {
 	l.Actors = append(l.Actors, actor)
+	n := actor.GetName()
+	if vs, ok := l.NamedActors.Load(n); ok {
+		l.NamedActors.Store(n, append(vs, actor))
+	} else {
+		l.NamedActors.Store(n, []Actor{actor})
+	}
 
 	if a, ok := actor.(Collider); ok {
 		l.Colliders = append(l.Colliders, a)
@@ -102,23 +108,19 @@ func (l *Level) Add(actor any) {
 
 		l.Drawers[z] = append(l.Drawers[z], a)
 	}
-	if a, ok := actor.(Actor); ok {
-		n := a.GetName()
-		if vs, ok := l.Namers.Load(n); ok {
-			l.Namers.Store(n, append(vs, a))
-		} else {
-			l.Namers.Store(n, []Actor{a})
-		}
-	}
 }
 
-func (l *Level) Remove(actor any) {
+func (l *Level) Remove(actor Actor) {
 	l.Trashes = append(l.Trashes, actor)
 }
 
 func (l *Level) EmptyTrashes() {
 	for _, actor := range l.Trashes {
 		l.Actors = RemoveSliceItem(l.Actors, actor)
+		n := actor.GetName()
+		if vs, ok := l.NamedActors.Load(n); ok {
+			l.NamedActors.Store(n, RemoveSliceItem(vs, actor))
+		}
 
 		if a, ok := actor.(Collider); ok {
 			l.Colliders = RemoveSliceItem(l.Colliders, a)
@@ -154,18 +156,12 @@ func (l *Level) EmptyTrashes() {
 
 			l.Drawers[z] = RemoveSliceItem(l.Drawers[z], a)
 		}
-		if a, ok := actor.(Actor); ok {
-			n := a.GetName()
-			if vs, ok := l.Namers.Load(n); ok {
-				l.Namers.Store(n, RemoveSliceItem(vs, a))
-			}
-		}
 	}
 
 	l.Trashes = l.Trashes[:0]
 }
 
-func GetActors[T any]() func(yield func(T) bool) {
+func GetActors[T Actor]() func(yield func(T) bool) {
 	return func(yield func(T) bool) {
 		l := GetLevel()
 		for _, a := range l.Actors {
@@ -178,7 +174,7 @@ func GetActors[T any]() func(yield func(T) bool) {
 	}
 }
 
-func GetFirstActor[T any]() (actor T, ok bool) {
+func GetFirstActor[T Actor]() (actor T, ok bool) {
 	for ret := range GetActors[T]() {
 		return ret, true
 	}
@@ -189,7 +185,7 @@ func GetFirstActor[T any]() (actor T, ok bool) {
 func GetActorsByName[T Actor](name string) func(yield func(T) bool) {
 	return func(yield func(T) bool) {
 		l := GetLevel()
-		aSlice, ok := l.Namers.Load(name)
+		aSlice, ok := l.NamedActors.Load(name)
 		if !ok {
 			return
 		}
