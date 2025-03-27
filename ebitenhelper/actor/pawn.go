@@ -23,13 +23,12 @@ type Pawn struct {
 	*component.ControllerCom
 	*component.ColliderCom[*utility.CircleF]
 
-	currentTickIndex int
-	state            PawnStates
-	invincibleTimer  *utility.CallTimer
-	currentHP        int
-	destroyer        *Destroyer
-	hpWidget         *TextWidget
-	gameoverWidget   *TextWidget
+	state           PawnStates
+	invincibleTimer *utility.CallTimer
+	currentHP       int
+	destroyer       *Destroyer
+	hpWidget        *TextWidget
+	gameoverWidget  *TextWidget
 
 	MaxHP                 int
 	InvincibleSeconds     float32
@@ -100,10 +99,8 @@ func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.
 }
 
 func (a *Pawn) Tick() {
-	a.currentTickIndex++
 	a.invincibleTimer.Tick()
 	a.MovementCom.Tick()
-	a.DrawAnimationCom.Tick()
 	a.ApplyHPToWidget()
 }
 
@@ -112,7 +109,7 @@ func (a *Pawn) Draw(screen *ebiten.Image) {
 	case PawnStateNormal:
 		a.DrawAnimationCom.Draw(screen)
 	case PawnStateInvincible:
-		ni := int(float32(a.currentTickIndex) / (float32(utility.TickCount) * a.InvincibleDrawSeconds))
+		ni := int(float32(utility.GetTickIndex()) / (float32(utility.TickCount) * a.InvincibleDrawSeconds))
 		if ni%2 == 0 {
 			a.DrawAnimationCom.Draw(screen)
 		}

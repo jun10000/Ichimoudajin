@@ -8,8 +8,7 @@ import (
 )
 
 type DrawAnimationCom struct {
-	parent    utility.StaticTransformer
-	tickIndex int
+	parent utility.StaticTransformer
 
 	Image             *ebiten.Image
 	FrameCount        int
@@ -29,18 +28,10 @@ func NewDrawAnimationCom(parent utility.StaticTransformer) *DrawAnimationCom {
 	}
 }
 
-func (c *DrawAnimationCom) Tick() {
-	if c.Image == nil {
-		return
-	}
-
-	c.tickIndex++
-}
-
 func (c *DrawAnimationCom) Draw(screen *ebiten.Image) {
 	// Determine sub image index X (Pose)
 	idxe := 2*c.FrameCount - 2
-	idx := (c.tickIndex * c.FPS / utility.TickCount) % idxe
+	idx := (utility.GetTickIndex() * c.FPS / utility.TickCount) % idxe
 	if idx >= c.FrameCount {
 		idx = idxe - idx
 	}

@@ -137,6 +137,12 @@ func SetLevel(level *Level) error {
 	return nil
 }
 
+var tickIndex = 0
+
+func GetTickIndex() int {
+	return tickIndex
+}
+
 var ebitenImages = NewSmap[string, *ebiten.Image]()
 
 func GetImageFromFile(filename string) (*ebiten.Image, error) {
@@ -233,6 +239,8 @@ func PlayGame(firstlevel *Level) {
 }
 
 func (g *Game) Update() error {
+	tickIndex++
+
 	g.pressedKeys = inpututil.AppendJustPressedKeys(g.pressedKeys[:0])
 	g.releasedKeys = inpututil.AppendJustReleasedKeys(g.releasedKeys[:0])
 	g.pressingKeys = inpututil.AppendPressedKeys(g.pressingKeys[:0])

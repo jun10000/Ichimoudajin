@@ -5,8 +5,6 @@ import (
 )
 
 type EnemySpawner struct {
-	tickIndex int
-
 	SpawnSeconds          float32
 	SpawnRetryCount       int
 	InvalidPlayerDistance float64
@@ -48,8 +46,7 @@ func (a *EnemySpawner) Spawn() {
 }
 
 func (a *EnemySpawner) Tick() {
-	a.tickIndex++
-	if a.tickIndex%int(utility.TickCount*a.SpawnSeconds) == 0 {
+	if utility.GetTickIndex()%int(utility.TickCount*a.SpawnSeconds) == 0 {
 		a.Spawn()
 	}
 }

@@ -40,11 +40,6 @@ func (g ActorGeneratorStruct) NewAIPawn2(location utility.Vector, rotation float
 	return a
 }
 
-func (a *AIPawn) Tick() {
-	a.MovementCom.Tick()
-	a.DrawAnimationCom.Tick()
-}
-
 func (a *AIPawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
 	if p, ok := result.HitCollider.(*Pawn); ok {
 		p.AddHP(-1)

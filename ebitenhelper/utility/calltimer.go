@@ -3,7 +3,6 @@ package utility
 type CallTimer struct {
 	isRunning     bool
 	runningFunc   func()
-	tickIndex     int
 	tickGoalIndex int
 }
 
@@ -16,8 +15,7 @@ func (c *CallTimer) Tick() {
 		return
 	}
 
-	c.tickIndex++
-	if c.tickIndex >= c.tickGoalIndex {
+	if GetTickIndex() >= c.tickGoalIndex {
 		c.runningFunc()
 		c.isRunning = false
 	}
@@ -30,8 +28,7 @@ func (c *CallTimer) StartCallTimer(f func(), seconds float32) {
 
 	c.isRunning = true
 	c.runningFunc = f
-	c.tickIndex = 0
-	c.tickGoalIndex = int(seconds * TickCount)
+	c.tickGoalIndex = GetTickIndex() + int(seconds*TickCount)
 }
 
 func (c *CallTimer) StopCallTimer() {
