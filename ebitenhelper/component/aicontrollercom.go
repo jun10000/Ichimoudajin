@@ -2,17 +2,17 @@ package component
 
 import "github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 
-type AIControllerComponent struct {
+type AIControllerCom struct {
 	parent utility.MovableCollider
 }
 
-func NewAIControllerComponent(parent utility.MovableCollider) *AIControllerComponent {
-	return &AIControllerComponent{
+func NewAIControllerCom(parent utility.MovableCollider) *AIControllerCom {
+	return &AIControllerCom{
 		parent: parent,
 	}
 }
 
-func (a *AIControllerComponent) AITick() {
+func (a *AIControllerCom) AITick() {
 	l := utility.GetLevel()
 	if len(l.Players) == 0 {
 		return

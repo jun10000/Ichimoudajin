@@ -7,17 +7,17 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type ControllerComponent struct {
+type ControllerCom struct {
 	parent utility.MovableCollider
 }
 
-func NewControllerComponent(parent utility.MovableCollider) *ControllerComponent {
-	return &ControllerComponent{
+func NewControllerCom(parent utility.MovableCollider) *ControllerCom {
+	return &ControllerCom{
 		parent: parent,
 	}
 }
 
-func (c *ControllerComponent) ReceiveKeyInput(key ebiten.Key, state utility.PressState) {
+func (c *ControllerCom) ReceiveKeyInput(key ebiten.Key, state utility.PressState) {
 	switch key {
 	case ebiten.KeyEscape:
 		os.Exit(0)
@@ -39,13 +39,13 @@ func (c *ControllerComponent) ReceiveKeyInput(key ebiten.Key, state utility.Pres
 	}
 }
 
-func (c *ControllerComponent) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.PressState, pos utility.Point) {
+func (c *ControllerCom) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.PressState, pos utility.Point) {
 }
 
-func (c *ControllerComponent) ReceiveGamepadButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state utility.PressState) {
+func (c *ControllerCom) ReceiveGamepadButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state utility.PressState) {
 }
 
-func (c *ControllerComponent) ReceiveGamepadAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
+func (c *ControllerCom) ReceiveGamepadAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
 	if -utility.GamepadDeadZone < value && value < utility.GamepadDeadZone {
 		return
 	}

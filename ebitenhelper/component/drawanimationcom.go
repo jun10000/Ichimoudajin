@@ -7,7 +7,7 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type DrawAnimationComponent struct {
+type DrawAnimationCom struct {
 	parent    utility.StaticTransformer
 	tickIndex int
 
@@ -18,8 +18,8 @@ type DrawAnimationComponent struct {
 	FrameDirectionMap []int // Front, Left, Right, Back
 }
 
-func NewDrawAnimationComponent(parent utility.StaticTransformer) *DrawAnimationComponent {
-	return &DrawAnimationComponent{
+func NewDrawAnimationCom(parent utility.StaticTransformer) *DrawAnimationCom {
+	return &DrawAnimationCom{
 		parent: parent,
 
 		FrameCount:        3,
@@ -29,7 +29,7 @@ func NewDrawAnimationComponent(parent utility.StaticTransformer) *DrawAnimationC
 	}
 }
 
-func (c *DrawAnimationComponent) Tick() {
+func (c *DrawAnimationCom) Tick() {
 	if c.Image == nil {
 		return
 	}
@@ -37,7 +37,7 @@ func (c *DrawAnimationComponent) Tick() {
 	c.tickIndex++
 }
 
-func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
+func (c *DrawAnimationCom) Draw(screen *ebiten.Image) {
 	// Determine sub image index X (Pose)
 	idxe := 2*c.FrameCount - 2
 	idx := (c.tickIndex * c.FPS / utility.TickCount) % idxe
@@ -68,7 +68,7 @@ func (c *DrawAnimationComponent) Draw(screen *ebiten.Image) {
 	))
 }
 
-func (c *DrawAnimationComponent) GetRectangleBounds(output *utility.RectangleF) {
+func (c *DrawAnimationCom) GetRectangleBounds(output *utility.RectangleF) {
 	l := c.parent.GetLocation()
 	s := c.parent.GetScale()
 
@@ -78,7 +78,7 @@ func (c *DrawAnimationComponent) GetRectangleBounds(output *utility.RectangleF) 
 	output.MaxY = l.Y + float64(c.FrameSize.Y)*s.Y
 }
 
-func (c *DrawAnimationComponent) GetCircleBounds(output *utility.CircleF) {
+func (c *DrawAnimationCom) GetCircleBounds(output *utility.CircleF) {
 	l := c.parent.GetLocation()
 	s := c.parent.GetScale()
 	sz := c.FrameSize.ToVector().Mul(s)

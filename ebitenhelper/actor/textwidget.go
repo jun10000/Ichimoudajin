@@ -8,7 +8,7 @@ import (
 )
 
 type TextWidget struct {
-	*component.WidgetComponent
+	*component.WidgetCom
 
 	Text      string
 	FontFace  *text.GoTextFace
@@ -18,7 +18,7 @@ type TextWidget struct {
 
 func (g ActorGeneratorStruct) NewTextWidget(location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector, name string, extra any, isVisible bool) *TextWidget {
 	a := &TextWidget{}
-	a.WidgetComponent = component.NewWidgetComponent(location, size, name)
+	a.WidgetCom = component.NewWidgetCom(location, size, name)
 
 	if e, ok := extra.(*ExtraTextInfo); ok {
 		a.Text = e.Text

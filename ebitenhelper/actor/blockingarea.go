@@ -6,7 +6,7 @@ import (
 )
 
 type BlockingArea struct {
-	*component.StaticColliderComponent[*utility.RectangleF]
+	*component.StaticColliderCom[*utility.RectangleF]
 	size utility.Vector
 }
 
@@ -14,7 +14,7 @@ func (g ActorGeneratorStruct) NewBlockingArea(location utility.Vector, rotation 
 	t := utility.NewStaticTransform(location, rotation, scale)
 
 	a := &BlockingArea{}
-	a.StaticColliderComponent = component.NewStaticColliderComponent(t, a.GetRectangleBounds)
+	a.StaticColliderCom = component.NewStaticColliderCom(t, a.GetRectangleBounds)
 	a.size = size
 
 	a.UpdateBounds()

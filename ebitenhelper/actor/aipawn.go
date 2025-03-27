@@ -6,20 +6,20 @@ import (
 )
 
 type AIPawn struct {
-	*component.MovementComponent
-	*component.DrawAnimationComponent
-	*component.AIControllerComponent
-	*component.ColliderComponent[*utility.CircleF]
+	*component.MovementCom
+	*component.DrawAnimationCom
+	*component.AIControllerCom
+	*component.ColliderCom[*utility.CircleF]
 }
 
 func (g ActorGeneratorStruct) NewAIPawn(location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
 	t := utility.NewTransform(location, rotation, scale)
 
 	a := &AIPawn{}
-	a.MovementComponent = component.NewMovementComponent(a)
-	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
-	a.AIControllerComponent = component.NewAIControllerComponent(a)
-	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
+	a.MovementCom = component.NewMovementCom(a)
+	a.DrawAnimationCom = component.NewDrawAnimationCom(a)
+	a.AIControllerCom = component.NewAIControllerCom(a)
+	a.ColliderCom = component.NewColliderCom(t, a.GetCircleBounds)
 	a.UpdateBounds()
 	return a
 }
@@ -41,8 +41,8 @@ func (g ActorGeneratorStruct) NewAIPawn2(location utility.Vector, rotation float
 }
 
 func (a *AIPawn) Tick() {
-	a.MovementComponent.Tick()
-	a.DrawAnimationComponent.Tick()
+	a.MovementCom.Tick()
+	a.DrawAnimationCom.Tick()
 }
 
 func (a *AIPawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {

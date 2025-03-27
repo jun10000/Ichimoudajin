@@ -5,18 +5,18 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type DrawImageComponent struct {
+type DrawImageCom struct {
 	parent utility.StaticTransformer
 
 	Image *ebiten.Image
 }
 
-func NewDrawImageComponent(parent utility.StaticTransformer) *DrawImageComponent {
-	return &DrawImageComponent{
+func NewDrawImageCom(parent utility.StaticTransformer) *DrawImageCom {
+	return &DrawImageCom{
 		parent: parent,
 	}
 }
 
-func (c *DrawImageComponent) Draw(screen *ebiten.Image) {
+func (c *DrawImageCom) Draw(screen *ebiten.Image) {
 	utility.DrawImage(screen, c.Image, c.parent)
 }

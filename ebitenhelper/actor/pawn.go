@@ -18,10 +18,10 @@ const (
 )
 
 type Pawn struct {
-	*component.MovementComponent
-	*component.DrawAnimationComponent
-	*component.ControllerComponent
-	*component.ColliderComponent[*utility.CircleF]
+	*component.MovementCom
+	*component.DrawAnimationCom
+	*component.ControllerCom
+	*component.ColliderCom[*utility.CircleF]
 
 	currentTickIndex int
 	state            PawnStates
@@ -40,10 +40,10 @@ func (g ActorGeneratorStruct) NewPawn(location utility.Vector, rotation float64,
 	t := utility.NewTransform(location, rotation, scale)
 
 	a := &Pawn{}
-	a.MovementComponent = component.NewMovementComponent(a)
-	a.DrawAnimationComponent = component.NewDrawAnimationComponent(a)
-	a.ControllerComponent = component.NewControllerComponent(a)
-	a.ColliderComponent = component.NewColliderComponent(t, a.GetCircleBounds)
+	a.MovementCom = component.NewMovementCom(a)
+	a.DrawAnimationCom = component.NewDrawAnimationCom(a)
+	a.ControllerCom = component.NewControllerCom(a)
+	a.ColliderCom = component.NewColliderCom(t, a.GetCircleBounds)
 
 	a.state = PawnStateNormal
 	a.invincibleTimer = utility.NewCallTimer()
@@ -86,7 +86,7 @@ func (a *Pawn) BeginPlay() {
 }
 
 func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.PressState, pos utility.Point) {
-	a.ControllerComponent.ReceiveMouseButtonInput(button, state, pos)
+	a.ControllerCom.ReceiveMouseButtonInput(button, state, pos)
 	if button != ebiten.MouseButtonLeft {
 		return
 	}
@@ -102,19 +102,19 @@ func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.
 func (a *Pawn) Tick() {
 	a.currentTickIndex++
 	a.invincibleTimer.Tick()
-	a.MovementComponent.Tick()
-	a.DrawAnimationComponent.Tick()
+	a.MovementCom.Tick()
+	a.DrawAnimationCom.Tick()
 	a.ApplyHPToWidget()
 }
 
 func (a *Pawn) Draw(screen *ebiten.Image) {
 	switch a.state {
 	case PawnStateNormal:
-		a.DrawAnimationComponent.Draw(screen)
+		a.DrawAnimationCom.Draw(screen)
 	case PawnStateInvincible:
 		ni := int(float32(a.currentTickIndex) / (float32(utility.TickCount) * a.InvincibleDrawSeconds))
 		if ni%2 == 0 {
-			a.DrawAnimationComponent.Draw(screen)
+			a.DrawAnimationCom.Draw(screen)
 		}
 	}
 }

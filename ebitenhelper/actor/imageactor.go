@@ -7,12 +7,12 @@ import (
 
 type ImageActor struct {
 	*utility.StaticTransform
-	*component.DrawImageComponent
+	*component.DrawImageCom
 }
 
 func (g ActorGeneratorStruct) NewImageActor(location utility.Vector, rotation float64, scale utility.Vector) *ImageActor {
 	a := &ImageActor{}
 	a.StaticTransform = utility.NewStaticTransform(location, rotation, scale)
-	a.DrawImageComponent = component.NewDrawImageComponent(a)
+	a.DrawImageCom = component.NewDrawImageCom(a)
 	return a
 }

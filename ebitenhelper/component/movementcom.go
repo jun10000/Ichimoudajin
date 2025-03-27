@@ -6,7 +6,7 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type MovementComponent struct {
+type MovementCom struct {
 	parent     utility.MovableCollider
 	velocity   utility.Vector
 	inputAccel utility.Vector
@@ -16,8 +16,8 @@ type MovementComponent struct {
 	MaxSpeed float64
 }
 
-func NewMovementComponent(parent utility.MovableCollider) *MovementComponent {
-	return &MovementComponent{
+func NewMovementCom(parent utility.MovableCollider) *MovementCom {
+	return &MovementCom{
 		parent: parent,
 
 		Accel:    8000,
@@ -26,15 +26,15 @@ func NewMovementComponent(parent utility.MovableCollider) *MovementComponent {
 	}
 }
 
-func (c *MovementComponent) AddInput(normal utility.Vector, scale float64) {
+func (c *MovementCom) AddInput(normal utility.Vector, scale float64) {
 	c.inputAccel = c.inputAccel.Add(normal.Normalize().MulF(scale))
 }
 
-func (c *MovementComponent) addLocationForce(offset utility.Vector) {
+func (c *MovementCom) addLocationForce(offset utility.Vector) {
 	c.parent.SetLocation(c.parent.GetLocation().Add(offset))
 }
 
-func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceResult[utility.Collider] {
+func (c *MovementCom) AddLocation(offset utility.Vector) *utility.TraceResult[utility.Collider] {
 	bounds := c.parent.GetFirstBounds()
 	if bounds == nil {
 		c.addLocationForce(offset)
@@ -60,7 +60,7 @@ func (c *MovementComponent) AddLocation(offset utility.Vector) *utility.TraceRes
 	return r
 }
 
-func (c *MovementComponent) Tick() {
+func (c *MovementCom) Tick() {
 	// Update movement from input
 	if !c.inputAccel.IsZero() {
 		ia := c.inputAccel.Normalize()
