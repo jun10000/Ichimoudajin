@@ -30,29 +30,34 @@ func RemoveAllStrings(src string, targets ...string) string {
 	return ret
 }
 
-func CallMethodByName(parent reflect.Value, name string, args ...any) ([]any, error) {
-	m := parent.MethodByName(name)
+func CallMethodByName(parent any, name string, args ...any) ([]any, error) {
+	if parent == nil {
+		return nil, fmt.Errorf("argument 'parent' in CallMethodByName is nil")
+	}
+
+	m := reflect.ValueOf(parent).MethodByName(name)
 	if !m.IsValid() {
 		return nil, fmt.Errorf("method '%s' is not found", name)
 	}
 
-	rargs := make([]reflect.Value, 0, 4)
+	argc := len(args)
+	rargc := m.Type().NumIn()
+	if rargc > argc {
+		return nil, fmt.Errorf("method '%s' has invalid argument counts: %d", name, rargc)
+	}
+
+	rargs := make([]reflect.Value, 0, argc)
 	for _, arg := range args {
 		rargs = append(rargs, reflect.ValueOf(arg))
 	}
 
-	rargc := m.Type().NumIn()
-	if rargc > len(args) {
-		return nil, fmt.Errorf("method '%s' has invalid argument counts: %d", name, rargc)
+	rrets := m.Call(rargs[:rargc])
+	rets := make([]any, 0, len(rrets))
+	for _, ret := range rrets {
+		rets = append(rets, ret.Interface())
 	}
 
-	rret := m.Call(rargs[:rargc])
-	ret := make([]any, 0, 4)
-	for _, rr := range rret {
-		ret = append(ret, rr.Interface())
-	}
-
-	return ret, nil
+	return rets, nil
 }
 
 func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.Image {
