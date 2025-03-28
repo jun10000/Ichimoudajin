@@ -37,34 +37,23 @@ func NewNewActorOptions() *NewActorOptions {
 }
 
 type ActorGeneratorStruct struct {
-	refValue reflect.Value
+	selfRef reflect.Value
 }
 
 func NewActorGeneratorStruct() ActorGeneratorStruct {
 	g := ActorGeneratorStruct{}
-	g.refValue = reflect.ValueOf(g)
+	g.selfRef = reflect.ValueOf(g)
 	return g
 }
 
 func (g ActorGeneratorStruct) NewActorByTypeName(name string, options *NewActorOptions) (utility.Actor, error) {
-	m := g.refValue.MethodByName("New" + name)
-	if !m.IsValid() {
-		return nil, fmt.Errorf("method 'New%s' is not found", name)
+	ret, err := utility.CallMethodByName(g.selfRef, "New"+name, options)
+	if err != nil {
+		return nil, err
 	}
-
-	argv := []reflect.Value{
-		reflect.ValueOf(options),
-	}
-
-	argc := m.Type().NumIn()
-	if argc > len(argv) {
-		return nil, fmt.Errorf("method New%s has invalid argument counts: %d", name, argc)
-	}
-
-	ret := m.Call(argv[:argc])
 	if len(ret) == 0 {
 		return nil, fmt.Errorf("method New%s does not return value", name)
 	}
 
-	return ret[0].Interface().(utility.Actor), nil
+	return ret[0].(utility.Actor), nil
 }

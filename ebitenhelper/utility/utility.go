@@ -1,9 +1,11 @@
 package utility
 
 import (
+	"fmt"
 	"image"
 	"log"
 	"math"
+	"reflect"
 	"slices"
 	"strings"
 
@@ -26,6 +28,31 @@ func RemoveAllStrings(src string, targets ...string) string {
 		ret = strings.ReplaceAll(ret, s, "")
 	}
 	return ret
+}
+
+func CallMethodByName(parent reflect.Value, name string, args ...any) ([]any, error) {
+	m := parent.MethodByName(name)
+	if !m.IsValid() {
+		return nil, fmt.Errorf("method '%s' is not found", name)
+	}
+
+	rargs := make([]reflect.Value, 0, 4)
+	for _, arg := range args {
+		rargs = append(rargs, reflect.ValueOf(arg))
+	}
+
+	rargc := m.Type().NumIn()
+	if rargc > len(args) {
+		return nil, fmt.Errorf("method '%s' has invalid argument counts: %d", name, rargc)
+	}
+
+	rret := m.Call(rargs[:rargc])
+	ret := make([]any, 0, 4)
+	for _, rr := range rret {
+		ret = append(ret, rr.Interface())
+	}
+
+	return ret, nil
 }
 
 func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.Image {
