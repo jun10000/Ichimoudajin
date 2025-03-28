@@ -19,7 +19,7 @@ func (g ActorGeneratorStruct) NewAIPawn(options *NewActorOptions) *AIPawn {
 	a := &AIPawn{}
 	a.ActorCom = component.NewActorCom(options.Name)
 	a.MovementCom = component.NewMovementCom(a)
-	a.DrawAnimationCom = component.NewDrawAnimationCom(a)
+	a.DrawAnimationCom = component.NewDrawAnimationCom(a, options.IsVisible)
 	a.AIControllerCom = component.NewAIControllerCom(a)
 	a.ColliderCom = component.NewColliderCom(t, a.GetCircleBounds)
 	a.UpdateBounds()

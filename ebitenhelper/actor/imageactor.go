@@ -15,6 +15,6 @@ func (g ActorGeneratorStruct) NewImageActor(options *NewActorOptions) *ImageActo
 	a := &ImageActor{}
 	a.ActorCom = component.NewActorCom(options.Name)
 	a.StaticTransform = utility.NewStaticTransform(options.Location, options.Rotation, options.Scale)
-	a.DrawImageCom = component.NewDrawImageCom(a)
+	a.DrawImageCom = component.NewDrawImageCom(a, options.IsVisible)
 	return a
 }

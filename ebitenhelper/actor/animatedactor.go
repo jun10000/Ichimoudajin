@@ -15,6 +15,6 @@ func (g ActorGeneratorStruct) NewAnimatedActor(options *NewActorOptions) *Animat
 	a := &AnimatedActor{}
 	a.ActorCom = component.NewActorCom(options.Name)
 	a.StaticTransform = utility.NewStaticTransform(options.Location, options.Rotation, options.Scale)
-	a.DrawAnimationCom = component.NewDrawAnimationCom(a)
+	a.DrawAnimationCom = component.NewDrawAnimationCom(a, options.IsVisible)
 	return a
 }

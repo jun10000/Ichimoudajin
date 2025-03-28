@@ -18,9 +18,9 @@ type DrawAnimationCom struct {
 	FrameDirectionMap []int // Front, Left, Right, Back
 }
 
-func NewDrawAnimationCom(parent utility.StaticTransformer) *DrawAnimationCom {
+func NewDrawAnimationCom(parent utility.StaticTransformer, isVisible bool) *DrawAnimationCom {
 	return &DrawAnimationCom{
-		DrawCom: NewDrawCom(),
+		DrawCom: NewDrawCom(isVisible),
 		parent:  parent,
 
 		FrameCount:        3,

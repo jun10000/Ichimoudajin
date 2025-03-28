@@ -4,9 +4,9 @@ type DrawCom struct {
 	isVisible bool
 }
 
-func NewDrawCom() *DrawCom {
+func NewDrawCom(isVisible bool) *DrawCom {
 	return &DrawCom{
-		isVisible: true,
+		isVisible: isVisible,
 	}
 }
 

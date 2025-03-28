@@ -20,7 +20,7 @@ type TextWidget struct {
 func (g ActorGeneratorStruct) NewTextWidget(options *NewActorOptions) *TextWidget {
 	a := &TextWidget{}
 	a.ActorCom = component.NewActorCom(options.Name)
-	a.DrawCom = component.NewDrawCom()
+	a.DrawCom = component.NewDrawCom(options.IsVisible)
 	a.WidgetCom = component.NewWidgetCom(options.Location, options.Size)
 
 	a.Text = options.Text.Text
@@ -29,8 +29,6 @@ func (g ActorGeneratorStruct) NewTextWidget(options *NewActorOptions) *TextWidge
 		Size:   options.Text.Size,
 	}
 	a.Color = options.Text.Color
-
-	a.SetVisibility(options.IsVisible)
 
 	return a
 }

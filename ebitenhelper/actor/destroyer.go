@@ -38,7 +38,7 @@ type Destroyer struct {
 func (g ActorGeneratorStruct) NewDestroyer(options *NewActorOptions) *Destroyer {
 	return &Destroyer{
 		ActorCom: component.NewActorCom(options.Name),
-		DrawCom:  component.NewDrawCom(),
+		DrawCom:  component.NewDrawCom(options.IsVisible),
 		status:   DestroyerStatusDisable,
 		circle:   utility.NewCircleF(0, 0, 0),
 

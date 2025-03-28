@@ -12,9 +12,9 @@ type DrawImageCom struct {
 	Image *ebiten.Image
 }
 
-func NewDrawImageCom(parent utility.StaticTransformer) *DrawImageCom {
+func NewDrawImageCom(parent utility.StaticTransformer, isVisible bool) *DrawImageCom {
 	return &DrawImageCom{
-		DrawCom: NewDrawCom(),
+		DrawCom: NewDrawCom(isVisible),
 		parent:  parent,
 	}
 }
