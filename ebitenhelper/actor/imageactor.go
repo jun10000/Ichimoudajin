@@ -11,10 +11,10 @@ type ImageActor struct {
 	*component.DrawImageCom
 }
 
-func (g ActorGeneratorStruct) NewImageActor(name string, location utility.Vector, rotation float64, scale utility.Vector) *ImageActor {
+func (g ActorGeneratorStruct) NewImageActor(options *NewActorOptions) *ImageActor {
 	a := &ImageActor{}
-	a.ActorCom = component.NewActorCom(name)
-	a.StaticTransform = utility.NewStaticTransform(location, rotation, scale)
+	a.ActorCom = component.NewActorCom(options.Name)
+	a.StaticTransform = utility.NewStaticTransform(options.Location, options.Rotation, options.Scale)
 	a.DrawImageCom = component.NewDrawImageCom(a)
 	return a
 }

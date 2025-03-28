@@ -218,7 +218,10 @@ func (m *TileMap) ToActors() func(yield func(utility.Actor) bool) {
 	return func(yield func(utility.Actor) bool) {
 		mapSize := m.MapSize.Mul(m.TileSize)
 		collisionMap := NewTileCollisionMap(m.MapSize)
-		landscape := actor.ActorGenerator.NewImageActor("Landscape", utility.ZeroVector(), 0, utility.DefaultScale())
+
+		landscapeOptions := actor.NewNewActorOptions()
+		landscapeOptions.Name = "Landscape"
+		landscape := actor.ActorGenerator.NewImageActor(landscapeOptions)
 		landscape.Image = ebiten.NewImage(mapSize.X, mapSize.Y)
 
 		for _, layer := range m.TileLayers {

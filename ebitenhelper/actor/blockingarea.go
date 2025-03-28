@@ -11,13 +11,13 @@ type BlockingArea struct {
 	size utility.Vector
 }
 
-func (g ActorGeneratorStruct) NewBlockingArea(name string, location utility.Vector, rotation float64, scale utility.Vector, size utility.Vector) *BlockingArea {
-	t := utility.NewStaticTransform(location, rotation, scale)
+func (g ActorGeneratorStruct) NewBlockingArea(options *NewActorOptions) *BlockingArea {
+	t := utility.NewStaticTransform(options.Location, options.Rotation, options.Scale)
 
 	a := &BlockingArea{}
-	a.ActorCom = component.NewActorCom(name)
+	a.ActorCom = component.NewActorCom(options.Name)
 	a.StaticColliderCom = component.NewStaticColliderCom(t, a.GetRectangleBounds)
-	a.size = size
+	a.size = options.Size
 
 	a.UpdateBounds()
 	return a

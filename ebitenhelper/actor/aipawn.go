@@ -13,11 +13,11 @@ type AIPawn struct {
 	*component.ColliderCom[*utility.CircleF]
 }
 
-func (g ActorGeneratorStruct) NewAIPawn(name string, location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
-	t := utility.NewTransform(location, rotation, scale)
+func (g ActorGeneratorStruct) NewAIPawn(options *NewActorOptions) *AIPawn {
+	t := utility.NewTransform(options.Location, options.Rotation, options.Scale)
 
 	a := &AIPawn{}
-	a.ActorCom = component.NewActorCom(name)
+	a.ActorCom = component.NewActorCom(options.Name)
 	a.MovementCom = component.NewMovementCom(a)
 	a.DrawAnimationCom = component.NewDrawAnimationCom(a)
 	a.AIControllerCom = component.NewAIControllerCom(a)
@@ -27,16 +27,16 @@ func (g ActorGeneratorStruct) NewAIPawn(name string, location utility.Vector, ro
 }
 
 // NewAIPawn1 creates another version of AIPawn
-func (g ActorGeneratorStruct) NewAIPawn1(name string, location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
-	a := g.NewAIPawn(name, location, rotation, scale)
+func (g ActorGeneratorStruct) NewAIPawn1(options *NewActorOptions) *AIPawn {
+	a := g.NewAIPawn(options)
 	a.Image = utility.GetImageFromFileP("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ1.png")
 	a.MaxSpeed = 150
 	return a
 }
 
 // NewAIPawn2 creates another version of AIPawn
-func (g ActorGeneratorStruct) NewAIPawn2(name string, location utility.Vector, rotation float64, scale utility.Vector) *AIPawn {
-	a := g.NewAIPawn(name, location, rotation, scale)
+func (g ActorGeneratorStruct) NewAIPawn2(options *NewActorOptions) *AIPawn {
+	a := g.NewAIPawn(options)
 	a.Image = utility.GetImageFromFileP("images/ぴぽやキャラチップ32出力素材/現代系/男_スーツ2.png")
 	a.MaxSpeed = 100
 	return a

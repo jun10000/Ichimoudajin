@@ -35,9 +35,9 @@ type Destroyer struct {
 	FillColor   color.Color
 }
 
-func (g ActorGeneratorStruct) NewDestroyer(name string) *Destroyer {
+func (g ActorGeneratorStruct) NewDestroyer(options *NewActorOptions) *Destroyer {
 	return &Destroyer{
-		ActorCom: component.NewActorCom(name),
+		ActorCom: component.NewActorCom(options.Name),
 		DrawCom:  component.NewDrawCom(),
 		status:   DestroyerStatusDisable,
 		circle:   utility.NewCircleF(0, 0, 0),

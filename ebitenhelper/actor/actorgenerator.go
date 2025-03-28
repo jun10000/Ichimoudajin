@@ -13,24 +13,24 @@ func init() {
 	ActorGenerator = NewActorGeneratorStruct()
 }
 
-type GenerateActorOptions struct {
+type NewActorOptions struct {
 	Name      string
 	Location  utility.Vector
 	Rotation  float64
 	Scale     utility.Vector
 	Size      utility.Vector
 	IsVisible bool
-	ExtraText *ExtraTextInfo
+	Text      *NewActorTextOptions
 }
 
-type ExtraTextInfo struct {
+type NewActorTextOptions struct {
 	Size  float64
 	Text  string
 	Color utility.RGB
 }
 
-func NewGenerateActorOptions() *GenerateActorOptions {
-	return &GenerateActorOptions{
+func NewNewActorOptions() *NewActorOptions {
+	return &NewActorOptions{
 		Scale:     utility.DefaultScale(),
 		IsVisible: true,
 	}
@@ -46,20 +46,14 @@ func NewActorGeneratorStruct() ActorGeneratorStruct {
 	return g
 }
 
-func (g ActorGeneratorStruct) NewActorByTypeName(name string, options *GenerateActorOptions) (utility.Actor, error) {
+func (g ActorGeneratorStruct) NewActorByTypeName(name string, options *NewActorOptions) (utility.Actor, error) {
 	m := g.refValue.MethodByName("New" + name)
 	if !m.IsValid() {
 		return nil, fmt.Errorf("method 'New%s' is not found", name)
 	}
 
 	argv := []reflect.Value{
-		reflect.ValueOf(options.Name),
-		reflect.ValueOf(options.Location),
-		reflect.ValueOf(options.Rotation),
-		reflect.ValueOf(options.Scale),
-		reflect.ValueOf(options.Size),
-		reflect.ValueOf(options.IsVisible),
-		reflect.ValueOf(options.ExtraText),
+		reflect.ValueOf(options),
 	}
 
 	argc := m.Type().NumIn()

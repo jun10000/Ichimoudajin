@@ -12,9 +12,9 @@ type EnemySpawner struct {
 	InvalidPlayerDistance float64
 }
 
-func (g ActorGeneratorStruct) NewEnemySpawner(name string) *EnemySpawner {
+func (g ActorGeneratorStruct) NewEnemySpawner(options *NewActorOptions) *EnemySpawner {
 	return &EnemySpawner{
-		ActorCom:              component.NewActorCom(name),
+		ActorCom:              component.NewActorCom(options.Name),
 		SpawnSeconds:          3,
 		SpawnRetryCount:       10,
 		InvalidPlayerDistance: 300,
@@ -22,7 +22,10 @@ func (g ActorGeneratorStruct) NewEnemySpawner(name string) *EnemySpawner {
 }
 
 func (a *EnemySpawner) Spawn() {
-	p := ActorGenerator.NewAIPawn2("SpawnedEnemy", utility.ZeroVector(), 0, utility.NewVector(1, 1))
+	po := NewNewActorOptions()
+	po.Name = "SpawnedEnemy"
+	p := ActorGenerator.NewAIPawn2(po)
+
 	ss := utility.GetScreenSize().ToVector()
 	lv := utility.GetLevel()
 	if len(lv.Players) == 0 {
