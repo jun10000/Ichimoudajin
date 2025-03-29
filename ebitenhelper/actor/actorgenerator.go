@@ -3,8 +3,25 @@ package actor
 import (
 	"fmt"
 
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
+
+type NewActorTextOptions struct {
+	Text   string
+	Size   float64
+	Color  utility.RGB
+	AlignH text.Align
+	AlignV text.Align
+}
+
+func NewNewActorTextOptions() *NewActorTextOptions {
+	return &NewActorTextOptions{
+		Size:   16,
+		AlignH: text.AlignStart,
+		AlignV: text.AlignStart,
+	}
+}
 
 type NewActorOptions struct {
 	Name      string
@@ -14,12 +31,6 @@ type NewActorOptions struct {
 	Size      utility.Vector
 	IsVisible bool
 	Text      *NewActorTextOptions
-}
-
-type NewActorTextOptions struct {
-	Size  float64
-	Text  string
-	Color utility.RGB
 }
 
 func NewNewActorOptions() *NewActorOptions {

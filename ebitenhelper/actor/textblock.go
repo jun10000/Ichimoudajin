@@ -16,6 +16,8 @@ type TextBlock struct {
 	Text     string
 	FontFace *text.GoTextFace
 	Color    utility.RGB
+	AlignH   text.Align
+	AlignV   text.Align
 }
 
 func (g ActorGeneratorStruct) NewTextBlock(options *NewActorOptions) *TextBlock {
@@ -31,6 +33,8 @@ func (g ActorGeneratorStruct) NewTextBlock(options *NewActorOptions) *TextBlock 
 		Size:   options.Text.Size,
 	}
 	a.Color = options.Text.Color
+	a.AlignH = options.Text.AlignH
+	a.AlignV = options.Text.AlignV
 
 	return a
 }
@@ -42,14 +46,33 @@ func (g ActorGeneratorStruct) NewLCDTextWidget(options *NewActorOptions) *TextBl
 	return a
 }
 
-func (w *TextBlock) ZOrder() int {
+func (a *TextBlock) ZOrder() int {
 	return utility.ZOrderWidget
 }
 
-func (w *TextBlock) Draw(screen *ebiten.Image) {
-	l := w.GetLocation()
+func (a *TextBlock) Draw(screen *ebiten.Image) {
+	l := a.GetLocation()
 	op := &text.DrawOptions{}
-	op.GeoM.Translate(l.X, l.Y)
-	op.ColorScale.ScaleWithColor(w.Color)
-	text.Draw(screen, w.Text, w.FontFace, op)
+	op.ColorScale.ScaleWithColor(a.Color)
+	op.PrimaryAlign = a.AlignH
+	op.SecondaryAlign = a.AlignV
+
+	x := l.X
+	switch a.AlignH {
+	case text.AlignCenter:
+		x += a.Size.X / 2
+	case text.AlignEnd:
+		x += a.Size.X
+	}
+
+	y := l.Y
+	switch a.AlignV {
+	case text.AlignCenter:
+		y += a.Size.Y / 2
+	case text.AlignEnd:
+		y += a.Size.Y
+	}
+
+	op.GeoM.Translate(x, y)
+	text.Draw(screen, a.Text, a.FontFace, op)
 }

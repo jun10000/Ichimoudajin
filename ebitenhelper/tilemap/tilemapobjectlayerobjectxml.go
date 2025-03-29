@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -14,20 +15,41 @@ type tileMapObjectLayerObjectPropertyXML struct {
 }
 
 type tileMapObjectLayerObjectTextXML struct {
+	Value     string  `xml:",chardata"`
 	PixelSize float64 `xml:"pixelsize,attr"`
 	Color     string  `xml:"color,attr"`
-	Value     string  `xml:",chardata"`
+	HAlign    *string `xml:"halign,attr"`
+	VAlign    *string `xml:"valign,attr"`
 }
 
 func (t *tileMapObjectLayerObjectTextXML) CreateExtraTextInfo() *actor.NewActorTextOptions {
+	op := actor.NewNewActorTextOptions()
+	op.Text = t.Value
+	op.Size = t.PixelSize
+
 	c, err := utility.HexColorToRGB(t.Color)
 	utility.PanicIfError(err)
+	op.Color = c
 
-	return &actor.NewActorTextOptions{
-		Size:  t.PixelSize,
-		Text:  t.Value,
-		Color: c,
+	if t.HAlign != nil {
+		switch *t.HAlign {
+		case "center":
+			op.AlignH = text.AlignCenter
+		case "right":
+			op.AlignH = text.AlignEnd
+		}
 	}
+
+	if t.VAlign != nil {
+		switch *t.VAlign {
+		case "center":
+			op.AlignV = text.AlignCenter
+		case "bottom":
+			op.AlignV = text.AlignEnd
+		}
+	}
+
+	return op
 }
 
 type tileMapObjectLayerObjectXML struct {
