@@ -125,7 +125,7 @@ func (a *Pawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
 }
 
 func (a *Pawn) ApplyHPToWidget() {
-	a.hpWidget.Text = fmt.Sprintf("HP %d", a.currentHP)
+	a.hpWidget.Text = fmt.Sprintf("%d", a.currentHP)
 }
 
 func (a *Pawn) AddHP(delta int) {
@@ -137,6 +137,7 @@ func (a *Pawn) AddHP(delta int) {
 		}
 
 		if a.currentHP <= 0 {
+			a.currentHP = 0
 			a.state = PawnStateYararechatta
 			a.ReceiveDeath()
 		} else if delta < 0 {
@@ -157,6 +158,6 @@ func (a *Pawn) AddHP(delta int) {
 
 func (a *Pawn) ReceiveDeath() {
 	utility.GetLevel().Remove(a)
-	a.hpWidget.SetVisibility(false)
+	a.ApplyHPToWidget()
 	a.gameoverWidget.SetVisibility(true)
 }
