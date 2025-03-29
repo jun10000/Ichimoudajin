@@ -28,8 +28,8 @@ type Pawn struct {
 	invincibleTimer *utility.CallTimer
 	currentHP       int
 	destroyer       *Destroyer
-	hpWidget        *TextWidget
-	gameoverWidget  *TextWidget
+	hpWidget        *TextBlock
+	gameoverWidget  *TextBlock
 
 	MaxHP                 int
 	InvincibleSeconds     float32
@@ -73,13 +73,13 @@ func (a *Pawn) BeginPlay() {
 		log.Panicln("actor 'Destroyer' is not found")
 	}
 
-	if w, ok := utility.GetFirstActorByName[*TextWidget]("HPWidget"); ok {
+	if w, ok := utility.GetFirstActorByName[*TextBlock]("HPWidget"); ok {
 		a.hpWidget = w
 	} else {
 		log.Panicln("actor 'HPWidget' is not found")
 	}
 
-	if w, ok := utility.GetFirstActorByName[*TextWidget]("GameOverWidget"); ok {
+	if w, ok := utility.GetFirstActorByName[*TextBlock]("GameOverWidget"); ok {
 		a.gameoverWidget = w
 	} else {
 		log.Panicln("actor 'GameOverWidget' is not found")

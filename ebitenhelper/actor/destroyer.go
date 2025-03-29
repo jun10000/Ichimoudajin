@@ -25,7 +25,7 @@ type Destroyer struct {
 	circle      *utility.CircleF
 	targets     []utility.MovableCollider
 	points      int
-	pointWidget *TextWidget
+	pointWidget *TextBlock
 
 	GrowSpeed   float64
 	ShrinkSpeed float64
@@ -57,7 +57,7 @@ func (a *Destroyer) ZOrder() int {
 
 func (a *Destroyer) BeginPlay() {
 	wName := "PointWidget"
-	w, ok := utility.GetFirstActorByName[*TextWidget](wName)
+	w, ok := utility.GetFirstActorByName[*TextBlock](wName)
 	if !ok {
 		log.Panicf("actor '%s' not found", wName)
 	}

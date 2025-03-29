@@ -7,22 +7,24 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type TextWidget struct {
+type TextBlock struct {
 	*component.ActorCom
 	*component.DrawCom
-	*component.WidgetCom
+	utility.Location
 
+	Size     utility.Vector
 	Text     string
 	FontFace *text.GoTextFace
 	Color    utility.RGB
 }
 
-func (g ActorGeneratorStruct) NewTextWidget(options *NewActorOptions) *TextWidget {
-	a := &TextWidget{}
+func (g ActorGeneratorStruct) NewTextBlock(options *NewActorOptions) *TextBlock {
+	a := &TextBlock{}
 	a.ActorCom = component.NewActorCom(options.Name)
 	a.DrawCom = component.NewDrawCom(options.IsVisible)
-	a.WidgetCom = component.NewWidgetCom(options.Location, options.Size)
+	a.Location = utility.NewLocation(options.Location)
 
+	a.Size = options.Size
 	a.Text = options.Text.Text
 	a.FontFace = &text.GoTextFace{
 		Source: nil,
@@ -34,13 +36,17 @@ func (g ActorGeneratorStruct) NewTextWidget(options *NewActorOptions) *TextWidge
 }
 
 // NewLCDTextWidget is another version of NewTextWidget
-func (g ActorGeneratorStruct) NewLCDTextWidget(options *NewActorOptions) *TextWidget {
-	a := g.NewTextWidget(options)
+func (g ActorGeneratorStruct) NewLCDTextWidget(options *NewActorOptions) *TextBlock {
+	a := g.NewTextBlock(options)
 	a.FontFace.Source = utility.GetFontFromFileP("fonts/LCDPHONE.ttf")
 	return a
 }
 
-func (w *TextWidget) Draw(screen *ebiten.Image) {
+func (w *TextBlock) ZOrder() int {
+	return utility.ZOrderWidget
+}
+
+func (w *TextBlock) Draw(screen *ebiten.Image) {
 	l := w.GetLocation()
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(l.X, l.Y)
