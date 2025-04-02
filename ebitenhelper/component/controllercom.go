@@ -2,6 +2,7 @@ package component
 
 import (
 	"os"
+	"runtime"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
@@ -20,7 +21,9 @@ func NewControllerCom(parent utility.MovableCollider) *ControllerCom {
 func (c *ControllerCom) ReceiveKeyInput(key ebiten.Key, state utility.PressState) {
 	switch key {
 	case ebiten.KeyEscape:
-		os.Exit(0)
+		if runtime.GOOS != "js" {
+			os.Exit(0)
+		}
 	}
 
 	if state != utility.PressStatePressing {
