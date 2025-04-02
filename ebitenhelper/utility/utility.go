@@ -5,7 +5,9 @@ import (
 	"image"
 	"log"
 	"math"
+	"os"
 	"reflect"
+	"runtime"
 	"slices"
 	"strings"
 
@@ -58,6 +60,12 @@ func CallMethodByName(parent any, name string, args ...any) ([]any, error) {
 	}
 
 	return rets, nil
+}
+
+func Exit(code int) {
+	if runtime.GOOS != "js" {
+		os.Exit(code)
+	}
 }
 
 func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.Image {

@@ -1,9 +1,6 @@
 package component
 
 import (
-	"os"
-	"runtime"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -19,26 +16,25 @@ func NewControllerCom(parent utility.MovableCollider) *ControllerCom {
 }
 
 func (c *ControllerCom) ReceiveKeyInput(key ebiten.Key, state utility.PressState) {
-	switch key {
-	case ebiten.KeyEscape:
-		if runtime.GOOS != "js" {
-			os.Exit(0)
+	switch state {
+	case utility.PressStatePressed:
+		switch key {
+		case ebiten.KeyF11:
+			ebiten.SetFullscreen(!ebiten.IsFullscreen())
+		case ebiten.KeyEscape:
+			utility.Exit(0)
 		}
-	}
-
-	if state != utility.PressStatePressing {
-		return
-	}
-
-	switch key {
-	case ebiten.KeyUp:
-		c.parent.AddInput(utility.UpVector(), 1)
-	case ebiten.KeyDown:
-		c.parent.AddInput(utility.DownVector(), 1)
-	case ebiten.KeyLeft:
-		c.parent.AddInput(utility.LeftVector(), 1)
-	case ebiten.KeyRight:
-		c.parent.AddInput(utility.RightVector(), 1)
+	case utility.PressStatePressing:
+		switch key {
+		case ebiten.KeyUp:
+			c.parent.AddInput(utility.UpVector(), 1)
+		case ebiten.KeyDown:
+			c.parent.AddInput(utility.DownVector(), 1)
+		case ebiten.KeyLeft:
+			c.parent.AddInput(utility.LeftVector(), 1)
+		case ebiten.KeyRight:
+			c.parent.AddInput(utility.RightVector(), 1)
+		}
 	}
 }
 
