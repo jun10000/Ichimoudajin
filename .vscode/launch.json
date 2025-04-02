@@ -14,14 +14,6 @@
             "env": {
                 "debug": ""
             }
-        },
-        {
-            "name": "Launch",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}",
-            "output": "__debug_bin"
         }
     ]
 }
