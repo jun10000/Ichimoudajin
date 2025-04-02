@@ -1,7 +1,9 @@
 desktop.ini
+
 __debug_bin*
-*.tiled-session
+ichimoudajin.wasm
+ichimoudajin.exe
+
 /assets/*.pfd
 /assets/images
 /assets/fonts
-ichimoudajin.wasm
