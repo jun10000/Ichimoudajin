@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"compress/gzip"
 	"encoding/gob"
 	"math"
 	"os"
@@ -172,7 +173,13 @@ func (a *AStar) LoadCache(filename string) error {
 	}
 
 	defer f.Close()
-	d := gob.NewDecoder(f)
+	g, err := gzip.NewReader(f)
+	if err != nil {
+		return err
+	}
+
+	defer g.Close()
+	d := gob.NewDecoder(g)
 	m := map[AStarResultKey][]Point{}
 	err = d.Decode(&m)
 	if err != nil {
@@ -194,7 +201,10 @@ func (a *AStar) SaveCache(filename string) error {
 	}
 
 	defer f.Close()
-	e := gob.NewEncoder(f)
+	g := gzip.NewWriter(f)
+
+	defer g.Close()
+	e := gob.NewEncoder(g)
 	m := maps.Collect(a.cache.Range())
 	err = e.Encode(m)
 	if err != nil {
