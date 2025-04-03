@@ -29,6 +29,25 @@ type Scaler interface {
 	SetScale(value Vector)
 }
 
+type StaticSizer interface {
+	GetSize() Vector
+}
+
+type Sizer interface {
+	StaticSizer
+	SetSize() Vector
+}
+
+type StaticRectangler interface {
+	StaticLocator
+	StaticSizer
+}
+
+type Rectangler interface {
+	Locator
+	Sizer
+}
+
 type StaticTransformer interface {
 	StaticLocator
 	StaticRotator
