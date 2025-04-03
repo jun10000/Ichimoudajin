@@ -8,7 +8,7 @@ import (
 type BlockingArea struct {
 	*component.ActorCom
 	*component.StaticColliderCom[*utility.RectangleF]
-	size utility.Vector
+	utility.StaticSize
 }
 
 func (g ActorGeneratorStruct) NewBlockingArea(options *NewActorOptions) *BlockingArea {
@@ -17,7 +17,7 @@ func (g ActorGeneratorStruct) NewBlockingArea(options *NewActorOptions) *Blockin
 	a := &BlockingArea{}
 	a.ActorCom = component.NewActorCom(options.Name)
 	a.StaticColliderCom = component.NewStaticColliderCom(t, a.GetRectangleBounds)
-	a.size = options.Size
+	a.StaticSize = utility.NewStaticSize(options.Size)
 
 	a.UpdateBounds()
 	return a
@@ -25,12 +25,9 @@ func (g ActorGeneratorStruct) NewBlockingArea(options *NewActorOptions) *Blockin
 
 func (a *BlockingArea) GetRectangleBounds(output *utility.RectangleF) {
 	l := a.GetLocation()
+	sz := a.GetSize()
 	output.MinX = l.X
 	output.MinY = l.Y
-	output.MaxX = l.X + a.size.X
-	output.MaxY = l.Y + a.size.Y
-}
-
-func (a *BlockingArea) GetSize() utility.Vector {
-	return a.size
+	output.MaxX = l.X + sz.X
+	output.MaxY = l.Y + sz.Y
 }
