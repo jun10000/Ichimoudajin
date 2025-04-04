@@ -39,18 +39,18 @@ var (
 	ColorGray       = RGB{0x80, 0x80, 0x80}
 	ColorBlack      = RGB{0x00, 0x00, 0x00}
 
-	InitialActorCap           = 128
-	InitialStaticColliderCap  = 128
-	InitialMovableColliderCap = 32
-	InitialInputReceiverCap   = 1
-	InitialPlayerCap          = 1
-	InitialBeginPlayerCap     = 1
-	InitialEndPlayerCap       = 1
-	InitialAITickerCap        = 32
-	InitialTickerCap          = 32
-	InitialDrawerCap          = 128
-	InitialTrashCap           = 32
-	InitialPFResultCap        = 128
+	InitialActorCap                = 128
+	InitialStaticColliderCap       = 128
+	InitialMovableColliderCap      = 32
+	InitialInputReceivableActorCap = 1
+	InitialPlayerCap               = 1
+	InitialBeginPlayerCap          = 1
+	InitialEndPlayerCap            = 1
+	InitialAITickerCap             = 32
+	InitialTickerCap               = 32
+	InitialDrawerCap               = 128
+	InitialTrashCap                = 32
+	InitialPFResultCap             = 128
 )
 
 var (
@@ -95,6 +95,12 @@ func SetScreenSize(width int, height int) {
 	screenSize.X = width
 	screenSize.Y = height
 	ebiten.SetWindowSize(width, height)
+}
+
+var gameInstance GameInstancer
+
+func GetGameInstance[T GameInstancer]() T {
+	return gameInstance.(T)
 }
 
 var currentLevel *Level
@@ -196,6 +202,17 @@ func GetFontFromFileP(filename string) *text.GoTextFaceSource {
 	return ff
 }
 
+type GameInstanceBase struct{}
+
+func (g *GameInstanceBase) ReceiveKeyInput(key ebiten.Key, state PressState) {
+}
+func (g *GameInstanceBase) ReceiveMouseButtonInput(button ebiten.MouseButton, state PressState, pos Point) {
+}
+func (g *GameInstanceBase) ReceiveGamepadButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState) {
+}
+func (g *GameInstanceBase) ReceiveGamepadAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
+}
+
 type GamepadAxisKey struct {
 	ID   ebiten.GamepadID
 	Axis ebiten.StandardGamepadAxis
@@ -234,11 +251,50 @@ func NewGame() *Game {
 	}
 }
 
-func PlayGame(firstlevel *Level) {
+func PlayGame(instance GameInstancer, firstlevel *Level) {
 	RunDebugServer()
 
+	gameInstance = instance
 	PanicIfError(SetLevel(firstlevel))
 	PanicIfError(ebiten.RunGame(NewGame()))
+}
+
+func (g *Game) callInputReceiverEvent(receiver InputReceiver, mousePosition Point) {
+	for _, k := range g.pressedKeys {
+		receiver.ReceiveKeyInput(k, PressStatePressed)
+	}
+	for _, k := range g.releasedKeys {
+		receiver.ReceiveKeyInput(k, PressStateReleased)
+	}
+	for _, k := range g.pressingKeys {
+		receiver.ReceiveKeyInput(k, PressStatePressing)
+	}
+
+	for _, b := range g.pressedMouseButtons {
+		receiver.ReceiveMouseButtonInput(b, PressStatePressed, mousePosition)
+	}
+	for _, b := range g.releasedMouseButtons {
+		receiver.ReceiveMouseButtonInput(b, PressStateReleased, mousePosition)
+	}
+	for b := range g.pressingMouseButtons {
+		receiver.ReceiveMouseButtonInput(b, PressStatePressing, mousePosition)
+	}
+
+	for _, id := range g.gamepadIDs {
+		for _, b := range g.pressedGamepadButtons[id] {
+			receiver.ReceiveGamepadButtonInput(id, b, PressStatePressed)
+		}
+		for _, b := range g.releasedGamepadButtons[id] {
+			receiver.ReceiveGamepadButtonInput(id, b, PressStateReleased)
+		}
+		for _, b := range g.pressingGamepadButtons[id] {
+			receiver.ReceiveGamepadButtonInput(id, b, PressStatePressing)
+		}
+		for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
+			k := NewGamepadAxisKey(id, a)
+			receiver.ReceiveGamepadAxisInput(id, a, g.gamepadAxisValues[k])
+		}
+	}
 }
 
 func (g *Game) Update() error {
@@ -282,42 +338,11 @@ func (g *Game) Update() error {
 	lv := GetLevel()
 	cp := GetCursorPosition()
 
-	for _, r := range lv.InputReceivers {
-		for _, k := range g.pressedKeys {
-			r.ReceiveKeyInput(k, PressStatePressed)
-		}
-		for _, k := range g.releasedKeys {
-			r.ReceiveKeyInput(k, PressStateReleased)
-		}
-		for _, k := range g.pressingKeys {
-			r.ReceiveKeyInput(k, PressStatePressing)
-		}
-
-		for _, b := range g.pressedMouseButtons {
-			r.ReceiveMouseButtonInput(b, PressStatePressed, cp)
-		}
-		for _, b := range g.releasedMouseButtons {
-			r.ReceiveMouseButtonInput(b, PressStateReleased, cp)
-		}
-		for b := range g.pressingMouseButtons {
-			r.ReceiveMouseButtonInput(b, PressStatePressing, cp)
-		}
-
-		for _, id := range g.gamepadIDs {
-			for _, b := range g.pressedGamepadButtons[id] {
-				r.ReceiveGamepadButtonInput(id, b, PressStatePressed)
-			}
-			for _, b := range g.releasedGamepadButtons[id] {
-				r.ReceiveGamepadButtonInput(id, b, PressStateReleased)
-			}
-			for _, b := range g.pressingGamepadButtons[id] {
-				r.ReceiveGamepadButtonInput(id, b, PressStatePressing)
-			}
-			for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
-				k := NewGamepadAxisKey(id, a)
-				r.ReceiveGamepadAxisInput(id, a, g.gamepadAxisValues[k])
-			}
-		}
+	if gameInstance != nil {
+		g.callInputReceiverEvent(gameInstance, cp)
+	}
+	for _, r := range lv.InputReceivableActors {
+		g.callInputReceiverEvent(r, cp)
 	}
 
 	for _, t := range lv.AITickers {

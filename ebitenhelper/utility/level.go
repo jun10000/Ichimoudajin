@@ -19,20 +19,20 @@ type Level struct {
 	AIGridSize    Vector
 	AIPathfinding *AStar
 
-	Actors           []Actor
-	Colliders        []Collider
-	StaticColliders  []Collider
-	MovableColliders []MovableCollider
-	InputReceivers   []InputReceiver
-	Players          []Player
-	BeginPlayers     []BeginPlayer
-	EndPlayers       []EndPlayer
-	AITickers        []AITicker
-	Tickers          []Ticker
-	Drawers          [][]Drawer
-	NamedActors      *Smap[string, []Actor]
-	DebugDraws       []func(screen *ebiten.Image)
-	Trashes          []Actor
+	Actors                []Actor
+	Colliders             []Collider
+	StaticColliders       []Collider
+	MovableColliders      []MovableCollider
+	InputReceivableActors []InputReceivableActor
+	Players               []Player
+	BeginPlayers          []BeginPlayer
+	EndPlayers            []EndPlayer
+	AITickers             []AITicker
+	Tickers               []Ticker
+	Drawers               [][]Drawer
+	NamedActors           *Smap[string, []Actor]
+	DebugDraws            []func(screen *ebiten.Image)
+	Trashes               []Actor
 }
 
 func NewLevel(name string, isLooping bool) *Level {
@@ -44,20 +44,20 @@ func NewLevel(name string, isLooping bool) *Level {
 		AIGridSize:    NewVector(32, 32),
 		AIPathfinding: NewAStar(),
 
-		Actors:           make([]Actor, 0, InitialActorCap),
-		NamedActors:      NewSmap[string, []Actor](),
-		Colliders:        make([]Collider, 0, InitialStaticColliderCap+InitialMovableColliderCap),
-		StaticColliders:  make([]Collider, 0, InitialStaticColliderCap),
-		MovableColliders: make([]MovableCollider, 0, InitialMovableColliderCap),
-		InputReceivers:   make([]InputReceiver, 0, InitialInputReceiverCap),
-		Players:          make([]Player, 0, InitialPlayerCap),
-		BeginPlayers:     make([]BeginPlayer, 0, InitialBeginPlayerCap),
-		EndPlayers:       make([]EndPlayer, 0, InitialEndPlayerCap),
-		AITickers:        make([]AITicker, 0, InitialAITickerCap),
-		Tickers:          make([]Ticker, 0, InitialTickerCap),
-		Drawers:          make([][]Drawer, 0, ZOrderMax+1),
-		DebugDraws:       make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
-		Trashes:          make([]Actor, 0, InitialTrashCap),
+		Actors:                make([]Actor, 0, InitialActorCap),
+		NamedActors:           NewSmap[string, []Actor](),
+		Colliders:             make([]Collider, 0, InitialStaticColliderCap+InitialMovableColliderCap),
+		StaticColliders:       make([]Collider, 0, InitialStaticColliderCap),
+		MovableColliders:      make([]MovableCollider, 0, InitialMovableColliderCap),
+		InputReceivableActors: make([]InputReceivableActor, 0, InitialInputReceivableActorCap),
+		Players:               make([]Player, 0, InitialPlayerCap),
+		BeginPlayers:          make([]BeginPlayer, 0, InitialBeginPlayerCap),
+		EndPlayers:            make([]EndPlayer, 0, InitialEndPlayerCap),
+		AITickers:             make([]AITicker, 0, InitialAITickerCap),
+		Tickers:               make([]Ticker, 0, InitialTickerCap),
+		Drawers:               make([][]Drawer, 0, ZOrderMax+1),
+		DebugDraws:            make([]func(screen *ebiten.Image), 0, DebugInitialDrawsCap),
+		Trashes:               make([]Actor, 0, InitialTrashCap),
 	}
 }
 
@@ -78,8 +78,8 @@ func (l *Level) Add(actor Actor) {
 			l.StaticColliders = append(l.StaticColliders, a)
 		}
 	}
-	if a, ok := actor.(InputReceiver); ok {
-		l.InputReceivers = append(l.InputReceivers, a)
+	if a, ok := actor.(InputReceivableActor); ok {
+		l.InputReceivableActors = append(l.InputReceivableActors, a)
 	}
 	if a, ok := actor.(Player); ok {
 		l.Players = append(l.Players, a)
@@ -130,8 +130,8 @@ func (l *Level) EmptyTrashes() {
 				l.StaticColliders = RemoveSliceItem(l.StaticColliders, a)
 			}
 		}
-		if a, ok := actor.(InputReceiver); ok {
-			l.InputReceivers = RemoveSliceItem(l.InputReceivers, a)
+		if a, ok := actor.(InputReceivableActor); ok {
+			l.InputReceivableActors = RemoveSliceItem(l.InputReceivableActors, a)
 		}
 		if a, ok := actor.(Player); ok {
 			l.Players = RemoveSliceItem(l.Players, a)

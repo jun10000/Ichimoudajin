@@ -103,15 +103,19 @@ type ColliderComparable interface {
 }
 
 type InputReceiver interface {
-	Actor
 	ReceiveKeyInput(key ebiten.Key, state PressState)
 	ReceiveMouseButtonInput(button ebiten.MouseButton, state PressState, pos Point)
 	ReceiveGamepadButtonInput(id ebiten.GamepadID, button ebiten.StandardGamepadButton, state PressState)
 	ReceiveGamepadAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64)
 }
 
-type Player interface {
+type InputReceivableActor interface {
+	Actor
 	InputReceiver
+}
+
+type Player interface {
+	InputReceivableActor
 	MovableCollider
 }
 
@@ -145,4 +149,8 @@ type Drawer interface {
 type ZSpecifiedDrawer interface {
 	Drawer
 	ZOrder() int
+}
+
+type GameInstancer interface {
+	InputReceiver
 }

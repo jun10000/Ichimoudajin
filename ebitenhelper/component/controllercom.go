@@ -17,13 +17,6 @@ func NewControllerCom(parent utility.MovableCollider) *ControllerCom {
 
 func (c *ControllerCom) ReceiveKeyInput(key ebiten.Key, state utility.PressState) {
 	switch state {
-	case utility.PressStatePressed:
-		switch key {
-		case ebiten.KeyF11:
-			ebiten.SetFullscreen(!ebiten.IsFullscreen())
-		case ebiten.KeyEscape:
-			utility.Exit(0)
-		}
 	case utility.PressStatePressing:
 		switch key {
 		case ebiten.KeyUp:
