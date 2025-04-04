@@ -5,7 +5,6 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type CircleF struct {
@@ -23,12 +22,10 @@ func NewCircleF(orgX, orgY, radius float64) *CircleF {
 }
 
 func (c *CircleF) Draw(screen *ebiten.Image, borderWidth float32, borderColor color.Color, fillColor color.Color, antialias bool) {
-	cx := float32(c.OrgX)
-	cy := float32(c.OrgY)
+	cl := c.CenterLocation()
 	cr := float32(c.Radius)
 
-	vector.DrawFilledCircle(screen, cx, cy, cr, fillColor, antialias)
-	vector.StrokeCircle(screen, cx, cy, cr, borderWidth, borderColor, antialias)
+	DrawCircle(screen, cl, cr, borderWidth, borderColor, fillColor, antialias)
 }
 
 func (c *CircleF) ToCircle() *CircleF {

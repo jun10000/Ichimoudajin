@@ -3,6 +3,7 @@ package utility
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"log"
 	"math"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type PressState int
@@ -75,6 +77,36 @@ func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.
 
 	r := image.Rect(location.X, location.Y, location.X+size.X, location.Y+size.Y)
 	return parentimage.SubImage(r).(*ebiten.Image)
+}
+
+func DrawLine(screen *ebiten.Image, start Vector, end Vector, width float32, color color.Color, antialias bool) {
+	vector.StrokeLine(screen, float32(start.X), float32(start.Y), float32(end.X), float32(end.Y), width, color, antialias)
+}
+
+func DrawRectangle(screen *ebiten.Image, topLeft Vector, size Vector, borderWidth float32, borderColor color.Color, fillColor color.Color, antialias bool) {
+	if screen == nil || size.X <= 0 || size.Y <= 0 {
+		return
+	}
+
+	vector.DrawFilledRect(screen, float32(topLeft.X), float32(topLeft.Y), float32(size.X), float32(size.Y), fillColor, antialias)
+	if borderWidth > 0 {
+		vector.StrokeRect(screen, float32(topLeft.X), float32(topLeft.Y), float32(size.X), float32(size.Y), borderWidth, borderColor, antialias)
+	}
+}
+
+func DrawCircle(screen *ebiten.Image, center Vector, radius float32, borderWidth float32, borderColor color.Color, fillColor color.Color, antialias bool) {
+	if screen == nil || radius <= 0 {
+		return
+	}
+
+	cx := float32(center.X)
+	cy := float32(center.Y)
+	cr := float32(radius)
+
+	vector.DrawFilledCircle(screen, cx, cy, cr, fillColor, antialias)
+	if borderWidth > 0 {
+		vector.StrokeCircle(screen, cx, cy, cr, borderWidth, borderColor, antialias)
+	}
 }
 
 func DrawImage(dst *ebiten.Image, src *ebiten.Image, transform StaticTransformer) {

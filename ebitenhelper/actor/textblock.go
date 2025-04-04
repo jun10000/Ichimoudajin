@@ -1,6 +1,9 @@
 package actor
 
 import (
+	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -10,6 +13,10 @@ type TextBlock struct {
 	*component.DrawTextCom
 	utility.Location
 	utility.Size
+
+	BorderWidth float32
+	BorderColor color.Color
+	FillColor   color.Color
 }
 
 func (g ActorGeneratorStruct) NewTextBlock(options *NewActorOptions) *TextBlock {
@@ -25,6 +32,10 @@ func (g ActorGeneratorStruct) NewTextBlock(options *NewActorOptions) *TextBlock 
 	a.TextAlignH = options.Text.AlignH
 	a.TextAlignV = options.Text.AlignV
 
+	a.BorderWidth = 0
+	a.BorderColor = utility.ColorTransparent
+	a.FillColor = utility.ColorTransparent
+
 	return a
 }
 
@@ -37,4 +48,12 @@ func (g ActorGeneratorStruct) NewLCDTextWidget(options *NewActorOptions) *TextBl
 
 func (a *TextBlock) ZOrder() int {
 	return utility.ZOrderWidget
+}
+
+func (a *TextBlock) Draw(screen *ebiten.Image) {
+	l := a.GetLocation()
+	sz := a.GetSize()
+
+	utility.DrawRectangle(screen, l, sz, a.BorderWidth, a.BorderColor, a.FillColor, true)
+	a.DrawTextCom.Draw(screen)
 }

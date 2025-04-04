@@ -9,7 +9,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 var isDebugMode = false
@@ -42,7 +41,7 @@ func AddDebugDraw(event func(*ebiten.Image)) {
 func DrawDebugLine(start Vector, end Vector, color color.Color) {
 	if isDebugMode {
 		AddDebugDraw(func(screen *ebiten.Image) {
-			vector.StrokeLine(screen, float32(start.X), float32(start.Y), float32(end.X), float32(end.Y), 2, color, false)
+			DrawLine(screen, start, end, 2, color, false)
 		})
 	}
 }
@@ -50,15 +49,15 @@ func DrawDebugLine(start Vector, end Vector, color color.Color) {
 func DrawDebugRectangle(topleft Vector, size Vector, color color.Color) {
 	if isDebugMode {
 		AddDebugDraw(func(screen *ebiten.Image) {
-			vector.DrawFilledRect(screen, float32(topleft.X), float32(topleft.Y), float32(size.X), float32(size.Y), color, false)
+			DrawRectangle(screen, topleft, size, 0, color, color, false)
 		})
 	}
 }
 
-func DrawDebugCircle(center Vector, radius float64, color color.Color) {
+func DrawDebugCircle(center Vector, radius float32, color color.Color) {
 	if isDebugMode {
 		AddDebugDraw(func(screen *ebiten.Image) {
-			vector.DrawFilledCircle(screen, float32(center.X), float32(center.Y), float32(radius), color, false)
+			DrawCircle(screen, center, radius, 0, color, color, false)
 		})
 	}
 }
@@ -89,7 +88,7 @@ func DrawDebugTraceDistance(target Bounder, distance int) {
 		case *RectangleF:
 			DrawDebugRectangle(dt.TopLeft(), dt.Size(), dc)
 		case *CircleF:
-			DrawDebugCircle(dt.CenterLocation(), dt.Radius, dc)
+			DrawDebugCircle(dt.CenterLocation(), float32(dt.Radius), dc)
 		default:
 			log.Println("Drawing unknown bounder type")
 		}
