@@ -292,7 +292,12 @@ func (g *Game) callInputReceiverEvent(receiver InputReceiver, mousePosition Poin
 		}
 		for a := ebiten.StandardGamepadAxis(0); a <= ebiten.StandardGamepadAxisMax; a++ {
 			k := NewGamepadAxisKey(id, a)
-			receiver.ReceiveGamepadAxisInput(id, a, g.gamepadAxisValues[k])
+			v := g.gamepadAxisValues[k]
+			if -GamepadDeadZone < v && v < GamepadDeadZone {
+				continue
+			}
+
+			receiver.ReceiveGamepadAxisInput(id, a, v)
 		}
 	}
 }

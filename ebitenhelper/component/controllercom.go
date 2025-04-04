@@ -38,10 +38,6 @@ func (c *ControllerCom) ReceiveGamepadButtonInput(id ebiten.GamepadID, button eb
 }
 
 func (c *ControllerCom) ReceiveGamepadAxisInput(id ebiten.GamepadID, axis ebiten.StandardGamepadAxis, value float64) {
-	if -utility.GamepadDeadZone < value && value < utility.GamepadDeadZone {
-		return
-	}
-
 	switch axis {
 	case ebiten.StandardGamepadAxisLeftStickHorizontal:
 		c.parent.AddInput(utility.RightVector(), value)
