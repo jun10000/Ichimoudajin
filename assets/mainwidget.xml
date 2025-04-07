@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget version="1">
+    <hbox x="10" y="10">
+        <text>HP: </text>
+        <text name="HPText">3</text>
+    </hbox>
+    <hbox originx="100" originy="0" x="-10" y="10">
+        <text name="PointText">123</text>
+        <text> PTS</text>
+    </hbox>
+    <vbox name="GameOver" originx="50" originy="50" hide="true">
+        <text>GAME OVER</text>
+        <button name="RetryButton">Retry</button>
+    </vbox>
+</widget>
