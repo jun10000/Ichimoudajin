@@ -1,6 +1,9 @@
 package utility
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
+)
 
 type StaticLocator interface {
 	GetLocation() Vector
@@ -153,4 +156,10 @@ type ZSpecifiedDrawer interface {
 
 type GameInstancer interface {
 	InputReceiver
+}
+
+type WidgetObjecter interface {
+	GetFont() *text.GoTextFace
+	SetFont(font *text.GoTextFace)
+	Draw(screen *ebiten.Image, preferredArea *RectangleF)
 }
