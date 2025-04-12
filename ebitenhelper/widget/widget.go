@@ -61,9 +61,30 @@ type WidgetHBox struct {
 	*WidgetContainerFields
 }
 
-func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea *utility.RectangleF) {
+func (w *WidgetHBox) MinSize() utility.Vector {
+	ret := utility.ZeroVector()
+
 	for _, o := range w.Children {
+		s := o.MinSize()
+		ret.X += s.X
+		if s.Y > ret.Y {
+			ret.Y = s.Y
+		}
+	}
+
+	return ret
+}
+
+func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
+	preferredArea.MinX += w.Position.X
+	preferredArea.MinY += w.Position.Y
+
+	for _, o := range w.Children {
+		s := o.MinSize()
+		preferredArea.MaxX = preferredArea.MinX + s.X
+		preferredArea.MaxY = preferredArea.MinY + s.Y
 		o.Draw(screen, preferredArea)
+		preferredArea.MinX = preferredArea.MaxX
 	}
 }
 
@@ -71,10 +92,11 @@ type WidgetVBox struct {
 	*WidgetContainerFields
 }
 
-func (w *WidgetVBox) Draw(screen *ebiten.Image, preferredArea *utility.RectangleF) {
-	for _, o := range w.Children {
-		o.Draw(screen, preferredArea)
-	}
+func (w *WidgetVBox) MinSize() utility.Vector {
+	return utility.ZeroVector()
+}
+
+func (w *WidgetVBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
 }
 
 type WidgetText struct {
@@ -91,7 +113,7 @@ func (w *WidgetText) MinSize() utility.Vector {
 	return utility.NewVector(x, y)
 }
 
-func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea *utility.RectangleF) {
+func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
 	if w.IsHide || w.font == nil {
 		return
 	}
@@ -112,7 +134,11 @@ type WidgetButton struct {
 	Text string
 }
 
-func (w *WidgetButton) Draw(screen *ebiten.Image, preferredArea *utility.RectangleF) {
+func (w *WidgetButton) MinSize() utility.Vector {
+	return utility.ZeroVector()
+}
+
+func (w *WidgetButton) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
 
 }
 
@@ -126,7 +152,7 @@ func (a *Widget) Draw(screen *ebiten.Image) {
 	ri := screen.Bounds()
 	r := utility.NewRectangleF(float64(ri.Min.X), float64(ri.Min.Y), float64(ri.Max.X), float64(ri.Max.Y))
 	for _, o := range a.Children {
-		o.Draw(screen, r)
+		o.Draw(screen, *r)
 	}
 }
 

@@ -10,5 +10,6 @@ type WidgetObjecter interface {
 	Init(inherits WidgetCommonFields)
 	GetFont() *text.GoTextFace
 	SetFont(font *text.GoTextFace)
-	Draw(screen *ebiten.Image, preferredArea *utility.RectangleF)
+	MinSize() utility.Vector
+	Draw(screen *ebiten.Image, preferredArea utility.RectangleF)
 }
