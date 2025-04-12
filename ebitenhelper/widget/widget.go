@@ -16,6 +16,12 @@ type WidgetCommonFields struct {
 	IsHide   bool
 }
 
+func (f *WidgetCommonFields) Init(inherits WidgetCommonFields) {
+	if f.font == nil {
+		f.font = inherits.font
+	}
+}
+
 func (f *WidgetCommonFields) GetFont() *text.GoTextFace {
 	return f.font
 }
@@ -26,7 +32,19 @@ func (f *WidgetCommonFields) SetFont(font *text.GoTextFace) {
 
 type WidgetContainerFields struct {
 	*WidgetCommonFields
-	Children []utility.WidgetObjecter
+	Children []WidgetObjecter
+}
+
+func (f *WidgetContainerFields) Init(inherits WidgetCommonFields) {
+	if f.font == nil {
+		f.font = inherits.font
+	} else {
+		inherits.font = f.font
+	}
+
+	for _, o := range f.Children {
+		o.Init(inherits)
+	}
 }
 
 func (f *WidgetContainerFields) SetFont(font *text.GoTextFace) {

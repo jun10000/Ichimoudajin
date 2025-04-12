@@ -48,8 +48,8 @@ type WidgetContainerElementsXML struct {
 	Buttons []WidgetButtonXML `xml:"button"`
 }
 
-func (x WidgetContainerElementsXML) Convert() []utility.WidgetObjecter {
-	ret := make([]utility.WidgetObjecter, 0,
+func (x WidgetContainerElementsXML) Convert() []WidgetObjecter {
+	ret := make([]WidgetObjecter, 0,
 		len(x.HBoxes)+len(x.VBoxes)+len(x.Texts)+len(x.Buttons))
 	for _, c := range x.HBoxes {
 		ret = append(ret, c.Convert())
@@ -138,6 +138,7 @@ func (x WidgetXML) ToActor(name string) *Widget {
 			Children:           x.WidgetContainerElementsXML.Convert(),
 		},
 	}
+	a.Init(*a.WidgetCommonFields)
 	return a
 }
 
