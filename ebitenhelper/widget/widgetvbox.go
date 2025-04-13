@@ -24,15 +24,11 @@ func (w *WidgetVBox) MinSize() utility.Vector {
 }
 
 func (w *WidgetVBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
-	parentSize := preferredArea.Size()
-	preferredArea.MinX += parentSize.X * w.Position.X
-	preferredArea.MinY += parentSize.Y * w.Position.Y
-
+	r := w.GetAlignedArea(&preferredArea, w.MinSize())
 	for _, o := range w.Children {
 		s := o.MinSize()
-		preferredArea.MaxX = preferredArea.MinX + s.X
-		preferredArea.MaxY = preferredArea.MinY + s.Y
-		o.Draw(screen, preferredArea)
-		preferredArea.MinY = preferredArea.MaxY
+		r.MaxY = r.MinY + s.Y
+		o.Draw(screen, *r)
+		r.MinY = r.MaxY
 	}
 }
