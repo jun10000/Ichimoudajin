@@ -6,7 +6,7 @@ import (
 )
 
 type WidgetHBox struct {
-	*WidgetContainerFields
+	*WidgetContainerBase
 }
 
 func (w *WidgetHBox) MinSize() utility.Vector {

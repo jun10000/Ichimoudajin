@@ -9,7 +9,7 @@ import (
 )
 
 type WidgetText struct {
-	*WidgetCommonFields
+	*WidgetBase
 	Text        string
 	BorderWidth float64
 	BorderColor color.Color

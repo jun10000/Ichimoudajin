@@ -6,7 +6,7 @@ import (
 )
 
 type WidgetVBox struct {
-	*WidgetContainerFields
+	*WidgetContainerBase
 }
 
 func (w *WidgetVBox) MinSize() utility.Vector {

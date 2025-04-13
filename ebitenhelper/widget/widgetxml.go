@@ -10,7 +10,7 @@ import (
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
-type WidgetCommonAttributesXML struct {
+type WidgetBaseXML struct {
 	Name    string  `xml:"name,attr"`
 	OriginX float64 `xml:"originx,attr"`
 	OriginY float64 `xml:"originy,attr"`
@@ -22,7 +22,7 @@ type WidgetCommonAttributesXML struct {
 	FontSize *float64 `xml:"fontsize,attr"`
 }
 
-func (x WidgetCommonAttributesXML) Convert() *WidgetCommonFields {
+func (x WidgetBaseXML) Convert() *WidgetBase {
 	var f *text.GoTextFace
 	if x.FontFile != nil && x.FontSize != nil {
 		f = &text.GoTextFace{
@@ -31,7 +31,7 @@ func (x WidgetCommonAttributesXML) Convert() *WidgetCommonFields {
 		}
 	}
 
-	return &WidgetCommonFields{
+	return &WidgetBase{
 		font: f,
 
 		Name:     x.Name,
@@ -41,14 +41,15 @@ func (x WidgetCommonAttributesXML) Convert() *WidgetCommonFields {
 	}
 }
 
-type WidgetContainerElementsXML struct {
+type WidgetContainerBaseXML struct {
+	WidgetBaseXML
 	HBoxes  []WidgetHBoxXML   `xml:"hbox"`
 	VBoxes  []WidgetVBoxXML   `xml:"vbox"`
 	Texts   []WidgetTextXML   `xml:"text"`
 	Buttons []WidgetButtonXML `xml:"button"`
 }
 
-func (x WidgetContainerElementsXML) Convert() []WidgetObjecter {
+func (x WidgetContainerBaseXML) Convert() []WidgetObjecter {
 	ret := make([]WidgetObjecter, 0,
 		len(x.HBoxes)+len(x.VBoxes)+len(x.Texts)+len(x.Buttons))
 	for _, c := range x.HBoxes {
@@ -68,62 +69,59 @@ func (x WidgetContainerElementsXML) Convert() []WidgetObjecter {
 }
 
 type WidgetHBoxXML struct {
-	WidgetCommonAttributesXML
-	WidgetContainerElementsXML
+	WidgetContainerBaseXML
 }
 
 func (x WidgetHBoxXML) Convert() *WidgetHBox {
 	return &WidgetHBox{
-		WidgetContainerFields: &WidgetContainerFields{
-			WidgetCommonFields: x.WidgetCommonAttributesXML.Convert(),
-			Children:           x.WidgetContainerElementsXML.Convert(),
+		WidgetContainerBase: &WidgetContainerBase{
+			WidgetBase: x.WidgetBaseXML.Convert(),
+			Children:   x.WidgetContainerBaseXML.Convert(),
 		},
 	}
 }
 
 type WidgetVBoxXML struct {
-	WidgetCommonAttributesXML
-	WidgetContainerElementsXML
+	WidgetContainerBaseXML
 }
 
 func (x WidgetVBoxXML) Convert() *WidgetVBox {
 	return &WidgetVBox{
-		WidgetContainerFields: &WidgetContainerFields{
-			WidgetCommonFields: x.WidgetCommonAttributesXML.Convert(),
-			Children:           x.WidgetContainerElementsXML.Convert(),
+		WidgetContainerBase: &WidgetContainerBase{
+			WidgetBase: x.WidgetBaseXML.Convert(),
+			Children:   x.WidgetContainerBaseXML.Convert(),
 		},
 	}
 }
 
 type WidgetTextXML struct {
-	WidgetCommonAttributesXML
+	WidgetBaseXML
 	Text string `xml:",chardata"`
 }
 
 func (x WidgetTextXML) Convert() *WidgetText {
 	return &WidgetText{
-		WidgetCommonFields: x.WidgetCommonAttributesXML.Convert(),
-		Text:               x.Text,
+		WidgetBase: x.WidgetBaseXML.Convert(),
+		Text:       x.Text,
 	}
 }
 
 type WidgetButtonXML struct {
-	WidgetCommonAttributesXML
+	WidgetBaseXML
 	Text string `xml:",chardata"`
 }
 
 func (x WidgetButtonXML) Convert() *WidgetButton {
 	return &WidgetButton{
 		WidgetText: &WidgetText{
-			WidgetCommonFields: x.WidgetCommonAttributesXML.Convert(),
-			Text:               x.Text,
+			WidgetBase: x.WidgetBaseXML.Convert(),
+			Text:       x.Text,
 		},
 	}
 }
 
 type WidgetXML struct {
-	WidgetCommonAttributesXML
-	WidgetContainerElementsXML
+	WidgetContainerBaseXML
 	Version int `xml:"version,attr"`
 }
 
@@ -135,12 +133,12 @@ func (x WidgetXML) ToActor(name string) *Widget {
 	a := &Widget{
 		ActorCom: component.NewActorCom(name),
 		DrawCom:  component.NewDrawCom(!x.IsHide),
-		WidgetContainerFields: &WidgetContainerFields{
-			WidgetCommonFields: x.WidgetCommonAttributesXML.Convert(),
-			Children:           x.WidgetContainerElementsXML.Convert(),
+		WidgetContainerBase: &WidgetContainerBase{
+			WidgetBase: x.WidgetBaseXML.Convert(),
+			Children:   x.WidgetContainerBaseXML.Convert(),
 		},
 	}
-	a.Init(*a.WidgetCommonFields)
+	a.Init(*a.WidgetBase)
 	return a
 }
 

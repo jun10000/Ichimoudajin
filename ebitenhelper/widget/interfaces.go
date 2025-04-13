@@ -7,7 +7,7 @@ import (
 )
 
 type WidgetObjecter interface {
-	Init(inherits WidgetCommonFields)
+	Init(inherits WidgetBase)
 	GetFont() *text.GoTextFace
 	SetFont(font *text.GoTextFace)
 	MinSize() utility.Vector

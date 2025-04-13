@@ -9,7 +9,7 @@ import (
 type Widget struct {
 	*component.ActorCom
 	*component.DrawCom
-	*WidgetContainerFields
+	*WidgetContainerBase
 }
 
 func (a *Widget) Draw(screen *ebiten.Image) {
