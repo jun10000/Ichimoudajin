@@ -80,7 +80,7 @@ func GetSubImage(parentimage *ebiten.Image, location Point, size Point) *ebiten.
 }
 
 func DrawLine(screen *ebiten.Image, start Vector, end Vector, width float32, color color.Color, antialias bool) {
-	if screen == nil || width <= 0 {
+	if screen == nil || width <= 0 || color == nil {
 		return
 	}
 
@@ -92,10 +92,13 @@ func DrawRectangle(screen *ebiten.Image, topLeft Vector, size Vector, borderWidt
 		return
 	}
 
-	if _, _, _, a := fillColor.RGBA(); a > 0 {
-		vector.DrawFilledRect(screen, float32(topLeft.X), float32(topLeft.Y), float32(size.X), float32(size.Y), fillColor, antialias)
+	if fillColor != nil {
+		if _, _, _, a := fillColor.RGBA(); a > 0 {
+			vector.DrawFilledRect(screen, float32(topLeft.X), float32(topLeft.Y), float32(size.X), float32(size.Y), fillColor, antialias)
+		}
 	}
-	if borderWidth > 0 {
+
+	if borderColor != nil && borderWidth > 0 {
 		vector.StrokeRect(screen, float32(topLeft.X), float32(topLeft.Y), float32(size.X), float32(size.Y), borderWidth, borderColor, antialias)
 	}
 }
@@ -109,10 +112,13 @@ func DrawCircle(screen *ebiten.Image, center Vector, radius float32, borderWidth
 	cy := float32(center.Y)
 	cr := float32(radius)
 
-	if _, _, _, a := fillColor.RGBA(); a > 0 {
-		vector.DrawFilledCircle(screen, cx, cy, cr, fillColor, antialias)
+	if fillColor != nil {
+		if _, _, _, a := fillColor.RGBA(); a > 0 {
+			vector.DrawFilledCircle(screen, cx, cy, cr, fillColor, antialias)
+		}
 	}
-	if borderWidth > 0 {
+
+	if borderColor != nil && borderWidth > 0 {
 		vector.StrokeCircle(screen, cx, cy, cr, borderWidth, borderColor, antialias)
 	}
 }
