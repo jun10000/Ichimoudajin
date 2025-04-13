@@ -34,8 +34,7 @@ func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 
 	innerSize := w.MinSize()
 	outerSize := preferredArea.Size()
-	origin := w.Origin.DivF(100)
-	offset := origin.Mul(outerSize).Sub(origin.Mul(innerSize)).Add(w.Position)
+	offset := w.Origin.Mul(outerSize).Sub(w.Origin.Mul(innerSize)).Add(w.Position)
 
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(preferredArea.MinX+offset.X, preferredArea.MinY+offset.Y)
