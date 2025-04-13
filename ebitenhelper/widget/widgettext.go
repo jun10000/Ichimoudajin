@@ -8,7 +8,8 @@ import (
 
 type WidgetText struct {
 	*WidgetCommonFields
-	Text string
+	Text   string
+	Border Border
 }
 
 func (w *WidgetText) MinSize() utility.Vector {
@@ -17,6 +18,8 @@ func (w *WidgetText) MinSize() utility.Vector {
 	}
 
 	x, y := text.Measure(w.Text, w.font, 0)
+	x += w.Border.Left + w.Border.Right
+	y += w.Border.Top + w.Border.Bottom
 	return utility.NewVector(x, y)
 }
 
