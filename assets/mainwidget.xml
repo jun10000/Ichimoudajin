@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget version="1" fontfile="fonts/LCDPHONE.ttf" fontsize="36">
-    <hbox x="0.1" y="0.1">
+    <text x="0.8" y="0.3">TEST</text>
+    <hbox x="0.01" y="0.01">
         <text>HP: </text>
         <text name="HPText">3</text>
     </hbox>
-    <hbox originx="1" originy="0" x="-0.1" y="0.1">
+    <hbox originx="1" originy="0" x="-0.01" y="0.01">
         <text name="PointText">123</text>
         <text> PTS</text>
     </hbox>

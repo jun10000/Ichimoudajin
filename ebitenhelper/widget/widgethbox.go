@@ -24,8 +24,9 @@ func (w *WidgetHBox) MinSize() utility.Vector {
 }
 
 func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
-	preferredArea.MinX += w.Position.X
-	preferredArea.MinY += w.Position.Y
+	parentSize := preferredArea.Size()
+	preferredArea.MinX += parentSize.X * w.Position.X
+	preferredArea.MinY += parentSize.Y * w.Position.Y
 
 	for _, o := range w.Children {
 		s := o.MinSize()
