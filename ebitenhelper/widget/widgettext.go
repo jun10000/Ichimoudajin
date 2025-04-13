@@ -1,6 +1,8 @@
 package widget
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
@@ -8,8 +10,10 @@ import (
 
 type WidgetText struct {
 	*WidgetCommonFields
-	Text   string
-	Border Border
+	Text        string
+	BorderWidth float64
+	BorderColor color.Color
+	FillColor   color.Color
 }
 
 func (w *WidgetText) MinSize() utility.Vector {
@@ -18,8 +22,8 @@ func (w *WidgetText) MinSize() utility.Vector {
 	}
 
 	x, y := text.Measure(w.Text, w.font, 0)
-	x += w.Border.Left + w.Border.Right
-	y += w.Border.Top + w.Border.Bottom
+	x += w.BorderWidth * 2
+	y += w.BorderWidth * 2
 	return utility.NewVector(x, y)
 }
 
@@ -36,5 +40,6 @@ func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(preferredArea.MinX+offset.X, preferredArea.MinY+offset.Y)
 
+	utility.DrawRectangle(screen, preferredArea.TopLeft(), preferredArea.Size(), float32(w.BorderWidth), w.BorderColor, w.FillColor, true)
 	text.Draw(screen, w.Text, w.font, op)
 }
