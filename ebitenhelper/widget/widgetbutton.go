@@ -6,12 +6,12 @@ import (
 )
 
 type WidgetButton struct {
-	*WidgetCommonFields
-	Text string
+	*WidgetText
+	Border Border
 }
 
 func (w *WidgetButton) MinSize() utility.Vector {
-	return utility.ZeroVector()
+	return w.WidgetText.MinSize().AddXY(w.Border.Left+w.Border.Right, w.Border.Top+w.Border.Bottom)
 }
 
 func (w *WidgetButton) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {

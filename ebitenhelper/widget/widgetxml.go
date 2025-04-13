@@ -114,8 +114,10 @@ type WidgetButtonXML struct {
 
 func (x WidgetButtonXML) Convert() *WidgetButton {
 	return &WidgetButton{
-		WidgetCommonFields: x.WidgetCommonAttributesXML.Convert(),
-		Text:               x.Text,
+		WidgetText: &WidgetText{
+			WidgetCommonFields: x.WidgetCommonAttributesXML.Convert(),
+			Text:               x.Text,
+		},
 	}
 }
 

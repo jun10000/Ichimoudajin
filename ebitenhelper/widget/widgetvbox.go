@@ -10,7 +10,17 @@ type WidgetVBox struct {
 }
 
 func (w *WidgetVBox) MinSize() utility.Vector {
-	return utility.ZeroVector()
+	ret := utility.ZeroVector()
+
+	for _, o := range w.Children {
+		s := o.MinSize()
+		ret.Y += s.Y
+		if s.X > ret.X {
+			ret.X = s.X
+		}
+	}
+
+	return ret
 }
 
 func (w *WidgetVBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
