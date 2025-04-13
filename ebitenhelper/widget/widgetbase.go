@@ -28,6 +28,13 @@ func (f *WidgetCommonFields) SetFont(font *text.GoTextFace) {
 	f.font = font
 }
 
+func (f *WidgetCommonFields) GetAlignedArea(outerArea *utility.RectangleF, innerSize utility.Vector) *utility.RectangleF {
+	outerPos := outerArea.TopLeft()
+	outerSize := outerArea.Size()
+	retPos := f.Origin.Mul(outerSize).Sub(f.Origin.Mul(innerSize)).Add(f.Position.Mul(outerSize)).Add(outerPos)
+	return utility.NewRectangleF(retPos.X, retPos.Y, retPos.X+innerSize.X, retPos.Y+innerSize.Y)
+}
+
 type WidgetContainerFields struct {
 	*WidgetCommonFields
 	Children []WidgetObjecter
