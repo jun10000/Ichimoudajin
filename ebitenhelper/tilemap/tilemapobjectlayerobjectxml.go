@@ -27,7 +27,7 @@ func (t *tileMapObjectLayerObjectTextXML) CreateExtraTextInfo() *actor.NewActorT
 	op.Text = t.Value
 	op.Size = t.PixelSize
 
-	c, err := utility.HexColorToRGB(t.Color)
+	c, err := utility.HexStringToColor(t.Color)
 	utility.PanicIfError(err)
 	op.Color = c
 

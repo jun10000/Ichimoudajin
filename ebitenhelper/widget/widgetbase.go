@@ -1,6 +1,8 @@
 package widget
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -9,10 +11,13 @@ type WidgetBase struct {
 	fontFamily *text.GoTextFaceSource
 	fontSize   *float64
 
-	Name     string
-	Origin   utility.Vector
-	Position utility.Vector
-	IsHide   bool
+	Name            string
+	Origin          utility.Vector
+	Position        utility.Vector
+	IsHide          bool
+	BorderWidth     float64
+	BorderColor     color.Color
+	BackgroundColor color.Color
 }
 
 func (w *WidgetBase) Init(inherits WidgetBase) {

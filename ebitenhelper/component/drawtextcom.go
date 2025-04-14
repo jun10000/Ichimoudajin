@@ -1,6 +1,8 @@
 package component
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
@@ -13,7 +15,7 @@ type DrawTextCom struct {
 	Font       *text.GoTextFaceSource
 	FontSize   float64
 	Text       string
-	TextColor  utility.RGB
+	TextColor  color.Color
 	TextAlignH text.Align
 	TextAlignV text.Align
 }

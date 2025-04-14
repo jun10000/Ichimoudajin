@@ -11,12 +11,15 @@ import (
 )
 
 type WidgetBaseXML struct {
-	Name    string  `xml:"name,attr"`
-	OriginX float64 `xml:"originx,attr"`
-	OriginY float64 `xml:"originy,attr"`
-	X       float64 `xml:"x,attr"`
-	Y       float64 `xml:"y,attr"`
-	IsHide  bool    `xml:"hide,attr"`
+	Name            string  `xml:"name,attr"`
+	OriginX         float64 `xml:"originx,attr"`
+	OriginY         float64 `xml:"originy,attr"`
+	X               float64 `xml:"x,attr"`
+	Y               float64 `xml:"y,attr"`
+	IsHide          bool    `xml:"hide,attr"`
+	BorderWidth     float64 `xml:"borderwidth,attr"`
+	BorderColor     string  `xml:"bordercolor,attr"`
+	BackgroundColor string  `xml:"backgroundcolor,attr"`
 
 	FontFile *string  `xml:"fontfile,attr"`
 	FontSize *float64 `xml:"fontsize,attr"`
@@ -28,14 +31,20 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		f = utility.GetFontFromFileP(*x.FontFile)
 	}
 
+	bdc, _ := utility.HexStringToColor(x.BorderColor)
+	bgc, _ := utility.HexStringToColor(x.BackgroundColor)
+
 	return &WidgetBase{
 		fontFamily: f,
 		fontSize:   x.FontSize,
 
-		Name:     x.Name,
-		Origin:   utility.NewVector(x.OriginX, x.OriginY),
-		Position: utility.NewVector(x.X, x.Y),
-		IsHide:   x.IsHide,
+		Name:            x.Name,
+		Origin:          utility.NewVector(x.OriginX, x.OriginY),
+		Position:        utility.NewVector(x.X, x.Y),
+		IsHide:          x.IsHide,
+		BorderWidth:     x.BorderWidth,
+		BorderColor:     bdc,
+		BackgroundColor: bgc,
 	}
 }
 

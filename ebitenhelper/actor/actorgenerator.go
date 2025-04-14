@@ -2,6 +2,7 @@ package actor
 
 import (
 	"fmt"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
@@ -10,7 +11,7 @@ import (
 type NewActorTextOptions struct {
 	Text   string
 	Size   float64
-	Color  utility.RGB
+	Color  color.Color
 	AlignH text.Align
 	AlignV text.Align
 }
