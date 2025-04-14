@@ -24,6 +24,10 @@ func (w *WidgetHBox) MinSize() utility.Vector {
 }
 
 func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
+	if w.IsHide {
+		return
+	}
+
 	r := w.GetAlignedArea(&preferredArea, w.MinSize())
 	for _, o := range w.Children {
 		s := o.MinSize()

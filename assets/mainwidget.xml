@@ -8,8 +8,9 @@
         <text name="PointText">123</text>
         <text> PTS</text>
     </hbox>
-    <vbox name="GameOver" originx="0.5" originy="0.5" hide="true">
-        <text>GAME OVER</text>
-        <button name="RetryButton">Retry</button>
+    <!-- <vbox name="GameOver" originx="0.5" originy="0.5" hide="true"> -->
+    <vbox name="GameOver" originx="0.5" originy="0.5">
+        <text originx="0.5" fontsize="48">GAME OVER</text>
+        <button name="RetryButton" originx="0.5">Retry</button>
     </vbox>
 </widget>
