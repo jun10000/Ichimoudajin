@@ -8,8 +8,10 @@ import (
 
 type WidgetObjecter interface {
 	Init(inherits WidgetBase)
-	GetFont() *text.GoTextFace
-	SetFont(font *text.GoTextFace)
+	GetFontFamily() *text.GoTextFaceSource
+	GetFontSize() *float64
+	SetFontFamily(fontFamily *text.GoTextFaceSource)
+	SetFontSize(fontSize *float64)
 	MinSize() utility.Vector
 	Draw(screen *ebiten.Image, preferredArea utility.RectangleF)
 }

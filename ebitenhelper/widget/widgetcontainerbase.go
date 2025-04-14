@@ -7,24 +7,40 @@ type WidgetContainerBase struct {
 	Children []WidgetObjecter
 }
 
-func (f *WidgetContainerBase) Init(inherits WidgetBase) {
-	if f.font == nil {
-		f.font = inherits.font
+func (w *WidgetContainerBase) Init(inherits WidgetBase) {
+	if w.fontFamily == nil {
+		w.fontFamily = inherits.fontFamily
 	} else {
-		inherits.font = f.font
+		inherits.fontFamily = w.fontFamily
 	}
 
-	for _, o := range f.Children {
+	if w.fontSize == nil {
+		w.fontSize = inherits.fontSize
+	} else {
+		inherits.fontSize = w.fontSize
+	}
+
+	for _, o := range w.Children {
 		o.Init(inherits)
 	}
 }
 
-func (f *WidgetContainerBase) SetFont(font *text.GoTextFace) {
-	oldFont := f.font
-	f.font = font
-	for _, o := range f.Children {
-		if o.GetFont() == oldFont {
-			o.SetFont(font)
+func (w *WidgetContainerBase) SetFontFamily(fontFamily *text.GoTextFaceSource) {
+	oldFontFamily := w.fontFamily
+	w.fontFamily = fontFamily
+	for _, o := range w.Children {
+		if o.GetFontFamily() == oldFontFamily {
+			o.SetFontFamily(fontFamily)
+		}
+	}
+}
+
+func (w *WidgetContainerBase) SetFontSize(fontSize *float64) {
+	oldFontSize := w.fontSize
+	w.fontSize = fontSize
+	for _, o := range w.Children {
+		if o.GetFontSize() == oldFontSize {
+			o.SetFontSize(fontSize)
 		}
 	}
 }

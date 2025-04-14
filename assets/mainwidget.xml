@@ -10,7 +10,7 @@
     </hbox>
     <!-- <vbox name="GameOver" originx="0.5" originy="0.5" hide="true"> -->
     <vbox name="GameOver" originx="0.5" originy="0.5">
-        <text originx="0.5" fontsize="48">GAME OVER</text>
+        <text originx="0.5" fontsize="64">GAME OVER</text>
         <button name="RetryButton" originx="0.5">Retry</button>
     </vbox>
 </widget>

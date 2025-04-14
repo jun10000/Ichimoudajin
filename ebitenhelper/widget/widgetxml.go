@@ -23,16 +23,14 @@ type WidgetBaseXML struct {
 }
 
 func (x WidgetBaseXML) Convert() *WidgetBase {
-	var f *text.GoTextFace
-	if x.FontFile != nil && x.FontSize != nil {
-		f = &text.GoTextFace{
-			Source: utility.GetFontFromFileP(*x.FontFile),
-			Size:   *x.FontSize,
-		}
+	var f *text.GoTextFaceSource
+	if x.FontFile != nil {
+		f = utility.GetFontFromFileP(*x.FontFile)
 	}
 
 	return &WidgetBase{
-		font: f,
+		fontFamily: f,
+		fontSize:   x.FontSize,
 
 		Name:     x.Name,
 		Origin:   utility.NewVector(x.OriginX, x.OriginY),

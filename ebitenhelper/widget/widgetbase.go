@@ -6,7 +6,8 @@ import (
 )
 
 type WidgetBase struct {
-	font *text.GoTextFace
+	fontFamily *text.GoTextFaceSource
+	fontSize   *float64
 
 	Name     string
 	Origin   utility.Vector
@@ -14,23 +15,46 @@ type WidgetBase struct {
 	IsHide   bool
 }
 
-func (f *WidgetBase) Init(inherits WidgetBase) {
-	if f.font == nil {
-		f.font = inherits.font
+func (w *WidgetBase) Init(inherits WidgetBase) {
+	if w.fontFamily == nil {
+		w.fontFamily = inherits.fontFamily
+	}
+	if w.fontSize == nil {
+		w.fontSize = inherits.fontSize
 	}
 }
 
-func (f *WidgetBase) GetFont() *text.GoTextFace {
-	return f.font
+func (w *WidgetBase) GetFontFamily() *text.GoTextFaceSource {
+	return w.fontFamily
 }
 
-func (f *WidgetBase) SetFont(font *text.GoTextFace) {
-	f.font = font
+func (w *WidgetBase) GetFontSize() *float64 {
+	return w.fontSize
 }
 
-func (f *WidgetBase) GetAlignedArea(outerArea *utility.RectangleF, innerSize utility.Vector) *utility.RectangleF {
+func (w *WidgetBase) SetFontFamily(fontFamily *text.GoTextFaceSource) {
+	w.fontFamily = fontFamily
+}
+
+func (w *WidgetBase) SetFontSize(fontSize *float64) {
+	w.fontSize = fontSize
+}
+
+func (w *WidgetBase) GetTextFace() text.Face {
+	var s float64
+	if w.fontSize != nil {
+		s = *w.fontSize
+	}
+
+	return &text.GoTextFace{
+		Source: w.fontFamily,
+		Size:   s,
+	}
+}
+
+func (w *WidgetBase) GetAlignedArea(outerArea *utility.RectangleF, innerSize utility.Vector) *utility.RectangleF {
 	outerPos := outerArea.TopLeft()
 	outerSize := outerArea.Size()
-	retPos := f.Origin.Mul(outerSize).Sub(f.Origin.Mul(innerSize)).Add(f.Position.Mul(outerSize)).Add(outerPos)
+	retPos := w.Origin.Mul(outerSize).Sub(w.Origin.Mul(innerSize)).Add(w.Position.Mul(outerSize)).Add(outerPos)
 	return utility.NewRectangleF(retPos.X, retPos.Y, retPos.X+innerSize.X, retPos.Y+innerSize.Y)
 }
