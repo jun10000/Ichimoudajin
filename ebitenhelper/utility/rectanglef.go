@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"image"
 	"math"
 )
 
@@ -18,6 +19,14 @@ func NewRectangleF(minX, minY, maxX, maxY float64) *RectangleF {
 		MaxX: maxX,
 		MaxY: maxY,
 	}
+}
+
+func NewRectangleFFromGoRect(rect image.Rectangle) *RectangleF {
+	return NewRectangleF(
+		float64(rect.Min.X),
+		float64(rect.Min.Y),
+		float64(rect.Max.X),
+		float64(rect.Max.Y))
 }
 
 func (r *RectangleF) TopLeft() Vector {

@@ -1,5 +1,7 @@
 package utility
 
+import "image"
+
 type Rectangle struct {
 	MinX int
 	MinY int
@@ -14,6 +16,10 @@ func NewRectangle(minX, minY, maxX, maxY int) *Rectangle {
 		MaxX: maxX,
 		MaxY: maxY,
 	}
+}
+
+func NewRectangleFromGoRect(rect image.Rectangle) *Rectangle {
+	return NewRectangle(rect.Min.X, rect.Min.Y, rect.Max.X, rect.Max.Y)
 }
 
 func (r *Rectangle) TopLeft() Point {

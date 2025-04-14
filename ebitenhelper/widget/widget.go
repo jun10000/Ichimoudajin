@@ -13,8 +13,7 @@ type Widget struct {
 }
 
 func (a *Widget) Draw(screen *ebiten.Image) {
-	ri := screen.Bounds()
-	r := utility.NewRectangleF(float64(ri.Min.X), float64(ri.Min.Y), float64(ri.Max.X), float64(ri.Max.Y))
+	r := utility.NewRectangleFFromGoRect(screen.Bounds())
 	for _, o := range a.Children {
 		o.Draw(screen, *r)
 	}
