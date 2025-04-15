@@ -18,6 +18,7 @@ type WidgetBase struct {
 	BorderWidth     float64
 	BorderColor     color.Color
 	BackgroundColor color.Color
+	ForegroundColor color.Color
 }
 
 func (w *WidgetBase) Init(inherits WidgetBase) {

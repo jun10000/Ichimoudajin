@@ -20,6 +20,7 @@ type WidgetBaseXML struct {
 	BorderWidth     float64 `xml:"borderwidth,attr"`
 	BorderColor     string  `xml:"bordercolor,attr"`
 	BackgroundColor string  `xml:"backgroundcolor,attr"`
+	ForegroundColor string  `xml:"foregroundcolor,attr"`
 
 	FontFile *string  `xml:"fontfile,attr"`
 	FontSize *float64 `xml:"fontsize,attr"`
@@ -31,8 +32,9 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		f = utility.GetFontFromFileP(*x.FontFile)
 	}
 
-	bdc, _ := utility.HexStringToColor(x.BorderColor)
-	bgc, _ := utility.HexStringToColor(x.BackgroundColor)
+	bdc, _ := utility.HexStringToColor(x.BorderColor, utility.ColorTransparent)
+	bgc, _ := utility.HexStringToColor(x.BackgroundColor, utility.ColorTransparent)
+	fgc, _ := utility.HexStringToColor(x.ForegroundColor, utility.ColorWhite)
 
 	return &WidgetBase{
 		fontFamily: f,
@@ -45,6 +47,7 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		BorderWidth:     x.BorderWidth,
 		BorderColor:     bdc,
 		BackgroundColor: bgc,
+		ForegroundColor: fgc,
 	}
 }
 

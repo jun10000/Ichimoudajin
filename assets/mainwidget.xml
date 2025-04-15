@@ -11,6 +11,6 @@
     <!-- <vbox name="GameOver" originx="0.5" originy="0.5" hide="true"> -->
     <vbox name="GameOver" originx="0.5" originy="0.5">
         <text originx="0.5" fontsize="64">GAME OVER</text>
-        <button name="RetryButton" originx="0.5" borderwidth="2" bordercolor="#0080ff" backgroundcolor="#300080ff">Retry</button>
+        <button name="RetryButton" originx="0.5" borderwidth="2" bordercolor="#0080ff" backgroundcolor="#300080ff" foregroundcolor="#ffff80">Retry</button>
     </vbox>
 </widget>

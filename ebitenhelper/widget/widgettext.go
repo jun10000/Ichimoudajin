@@ -35,5 +35,6 @@ func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(l.X, l.Y)
+	op.ColorScale.ScaleWithColor(w.ForegroundColor)
 	text.Draw(screen, w.Text, w.GetTextFace(), op)
 }
