@@ -28,15 +28,9 @@ func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 	}
 
 	r := w.GetAlignedArea(&preferredArea, w.MinSize())
-	r.MinX += w.Margin + w.BorderWidth/2
-	r.MinY += w.Margin + w.BorderWidth/2
-	r.MaxX -= w.Margin + w.BorderWidth/2
-	r.MaxY -= w.Margin + w.BorderWidth/2
-	utility.DrawRectangle(screen, r.TopLeft(), r.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
+	w.DrawBackground(screen, *r)
 
-	r.MinX += w.BorderWidth/2 + w.Padding
-	r.MinY += w.BorderWidth/2 + w.Padding
-	r.MaxY -= w.BorderWidth/2 + w.Padding
+	w.BackgroundToForegroundArea(r)
 	for _, o := range w.Children {
 		s := o.MinSize()
 		r.MaxX = r.MinX + s.X

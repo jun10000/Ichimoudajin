@@ -3,6 +3,7 @@ package widget
 import (
 	"image/color"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -70,4 +71,19 @@ func (w *WidgetBase) GetAlignedArea(outerArea *utility.RectangleF, innerSize uti
 	outerSize := outerArea.Size()
 	retPos := w.Origin.Mul(outerSize).Sub(w.Origin.Mul(innerSize)).Add(w.Position.Mul(outerSize)).Add(outerPos)
 	return utility.NewRectangleF(retPos.X, retPos.Y, retPos.X+innerSize.X, retPos.Y+innerSize.Y)
+}
+
+func (w *WidgetBase) DrawBackground(screen *ebiten.Image, preferredArea utility.RectangleF) {
+	preferredArea.MinX += w.Margin + w.BorderWidth/2
+	preferredArea.MinY += w.Margin + w.BorderWidth/2
+	preferredArea.MaxX -= w.Margin + w.BorderWidth/2
+	preferredArea.MaxY -= w.Margin + w.BorderWidth/2
+	utility.DrawRectangle(screen, preferredArea.TopLeft(), preferredArea.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
+}
+
+func (w *WidgetBase) BackgroundToForegroundArea(out *utility.RectangleF) {
+	out.MinX += w.Margin + w.BorderWidth + w.Padding
+	out.MinY += w.Margin + w.BorderWidth + w.Padding
+	out.MaxX -= w.Margin + w.BorderWidth + w.Padding
+	out.MaxY -= w.Margin + w.BorderWidth + w.Padding
 }

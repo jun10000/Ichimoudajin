@@ -29,13 +29,10 @@ func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 	}
 
 	r := w.GetAlignedArea(&preferredArea, w.MinSize())
-	r.MinX += w.Margin + w.BorderWidth/2
-	r.MinY += w.Margin + w.BorderWidth/2
-	r.MaxX -= w.Margin + w.BorderWidth/2
-	r.MaxY -= w.Margin + w.BorderWidth/2
-	utility.DrawRectangle(screen, r.TopLeft(), r.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
+	w.DrawBackground(screen, *r)
 
-	l := r.TopLeft().AddF(w.BorderWidth/2 + w.Padding)
+	w.BackgroundToForegroundArea(r)
+	l := r.TopLeft()
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(l.X, l.Y)
 	op.ColorScale.ScaleWithColor(w.ForegroundColor)
