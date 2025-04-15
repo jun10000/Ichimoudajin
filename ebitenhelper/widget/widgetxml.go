@@ -12,15 +12,15 @@ import (
 
 type WidgetBaseXML struct {
 	Name            string  `xml:"name,attr"`
-	OriginX         float64 `xml:"originx,attr"`
-	OriginY         float64 `xml:"originy,attr"`
+	OriginX         float64 `xml:"ox,attr"`
+	OriginY         float64 `xml:"oy,attr"`
 	X               float64 `xml:"x,attr"`
 	Y               float64 `xml:"y,attr"`
 	IsHide          bool    `xml:"hide,attr"`
-	BorderWidth     float64 `xml:"borderwidth,attr"`
-	BorderColor     string  `xml:"bordercolor,attr"`
-	BackgroundColor string  `xml:"backgroundcolor,attr"`
-	ForegroundColor string  `xml:"foregroundcolor,attr"`
+	BorderWidth     float64 `xml:"bdwidth,attr"`
+	BorderColor     string  `xml:"bdcolor,attr"`
+	BackgroundColor string  `xml:"bgcolor,attr"`
+	ForegroundColor string  `xml:"fgcolor,attr"`
 
 	FontFile *string  `xml:"fontfile,attr"`
 	FontSize *float64 `xml:"fontsize,attr"`
