@@ -14,6 +14,7 @@ type WidgetBase struct {
 	Name            string
 	Origin          utility.Vector
 	Position        utility.Vector
+	Padding         float64
 	IsHide          bool
 	BorderWidth     float64
 	BorderColor     color.Color

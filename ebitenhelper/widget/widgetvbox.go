@@ -20,7 +20,7 @@ func (w *WidgetVBox) MinSize() utility.Vector {
 		}
 	}
 
-	return ret.AddF(w.BorderWidth * 2)
+	return ret.AddF(w.BorderWidth*2 + w.Padding*2)
 }
 
 func (w *WidgetVBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
@@ -30,6 +30,10 @@ func (w *WidgetVBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 
 	r := w.GetAlignedArea(&preferredArea, w.MinSize())
 	utility.DrawRectangle(screen, r.TopLeft(), r.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
+
+	r.MinX += w.Padding
+	r.MinY += w.Padding
+	r.MaxX -= w.Padding
 
 	for _, o := range w.Children {
 		s := o.MinSize()
