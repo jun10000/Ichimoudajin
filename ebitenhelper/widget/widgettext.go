@@ -30,16 +30,15 @@ func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 	}
 
 	r := w.GetAlignedArea(&preferredArea, w.MinSize())
-	r.MinX += w.Margin
-	r.MinY += w.Margin
-	r.MaxX -= w.Margin
-	r.MaxY -= w.Margin
+	r.MinX += w.Margin + w.BorderWidth/2
+	r.MinY += w.Margin + w.BorderWidth/2
+	r.MaxX -= w.Margin + w.BorderWidth/2
+	r.MaxY -= w.Margin + w.BorderWidth/2
+	utility.DrawRectangle(screen, r.TopLeft(), r.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
 
-	l := r.TopLeft()
-	utility.DrawRectangle(screen, l, r.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
-
+	l := r.TopLeft().AddF(w.BorderWidth/2 + w.Padding)
 	op := &text.DrawOptions{}
-	op.GeoM.Translate(l.X+w.Padding, l.Y+w.Padding)
+	op.GeoM.Translate(l.X, l.Y)
 	op.ColorScale.ScaleWithColor(w.ForegroundColor)
 	text.Draw(screen, w.Text, w.GetTextFace(), op)
 }

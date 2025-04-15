@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget version="1" fontfile="fonts/LCDPHONE.ttf" fontsize="36">
-    <hbox x="0.01" y="0.01" padding="6" bgcolor="#40000000">
+    <hbox x="0.01" y="0.01" padding="10" bgcolor="#40000000">
         <text oy="0.5">HP: </text>
         <text name="HPText" oy="0.5">3</text>
     </hbox>
-    <hbox ox="1" oy="0" x="-0.01" y="0.01" padding="6" bgcolor="#40000000">
+    <hbox ox="1" oy="0" x="-0.01" y="0.01" padding="10" bgcolor="#40000000">
         <text name="PointText" oy="0.5">123</text>
         <text oy="0.5"> PTS</text>
     </hbox>
     <!-- <vbox name="GameOver" ox="0.5" oy="0.5" hide="true"> -->
     <vbox name="GameOver" ox="0.5" oy="0.5">
         <text ox="0.5" fontsize="64">GAME OVER</text>
-        <button name="RetryButton" ox="0.5" margin="30" padding="6" bdwidth="2" bdcolor="#0080ff" bgcolor="#300080ff" fgcolor="#ffff80">Retry</button>
+        <button name="RetryButton" ox="0.5" margin="20" padding="6" bdwidth="2" bdcolor="#0080ff" bgcolor="#300080ff" fgcolor="#ffff80">Retry</button>
     </vbox>
 </widget>
