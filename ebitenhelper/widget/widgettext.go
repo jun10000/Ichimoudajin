@@ -19,8 +19,8 @@ func (w *WidgetText) MinSize() utility.Vector {
 	f := w.GetTextFace()
 	m := f.Metrics()
 	x, y := text.Measure(w.Text, f, 0)
-	x += w.BorderWidth*2 + w.Padding*2
-	y += w.BorderWidth*2 + w.Padding*2 - m.HDescent
+	x += w.BorderWidth*2 + w.Margin*2 + w.Padding*2
+	y += w.BorderWidth*2 + w.Margin*2 + w.Padding*2 - m.HDescent
 	return utility.NewVector(x, y)
 }
 
@@ -30,6 +30,11 @@ func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 	}
 
 	r := w.GetAlignedArea(&preferredArea, w.MinSize())
+	r.MinX += w.Margin
+	r.MinY += w.Margin
+	r.MaxX -= w.Margin
+	r.MaxY -= w.Margin
+
 	l := r.TopLeft()
 	utility.DrawRectangle(screen, l, r.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
 

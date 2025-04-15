@@ -16,6 +16,7 @@ type WidgetBaseXML struct {
 	OriginY         float64 `xml:"oy,attr"`
 	X               float64 `xml:"x,attr"`
 	Y               float64 `xml:"y,attr"`
+	Margin          float64 `xml:"margin,attr"`
 	Padding         float64 `xml:"padding,attr"`
 	IsHide          bool    `xml:"hide,attr"`
 	BorderWidth     float64 `xml:"bdwidth,attr"`
@@ -44,6 +45,7 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		Name:            x.Name,
 		Origin:          utility.NewVector(x.OriginX, x.OriginY),
 		Position:        utility.NewVector(x.X, x.Y),
+		Margin:          x.Margin,
 		Padding:         x.Padding,
 		IsHide:          x.IsHide,
 		BorderWidth:     x.BorderWidth,
