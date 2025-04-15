@@ -16,9 +16,11 @@ func (w *WidgetText) MinSize() utility.Vector {
 		return utility.ZeroVector()
 	}
 
-	x, y := text.Measure(w.Text, w.GetTextFace(), 0)
+	f := w.GetTextFace()
+	m := f.Metrics()
+	x, y := text.Measure(w.Text, f, 0)
 	x += w.BorderWidth * 2
-	y += w.BorderWidth * 2
+	y += w.BorderWidth*2 - m.HDescent
 	return utility.NewVector(x, y)
 }
 
