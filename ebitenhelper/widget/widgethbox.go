@@ -11,7 +11,6 @@ type WidgetHBox struct {
 
 func (w *WidgetHBox) MinSize() utility.Vector {
 	ret := utility.ZeroVector()
-
 	for _, o := range w.Children {
 		s := o.MinSize()
 		ret.X += s.X
@@ -20,7 +19,7 @@ func (w *WidgetHBox) MinSize() utility.Vector {
 		}
 	}
 
-	return ret.AddF(w.BorderWidth*2 + w.Margin*2 + w.Padding*2)
+	return ret.Add(w.WidgetContainerBase.MinSize())
 }
 
 func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {

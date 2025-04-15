@@ -16,12 +16,11 @@ func (w *WidgetText) MinSize() utility.Vector {
 		return utility.ZeroVector()
 	}
 
+	s := w.WidgetBase.MinSize()
 	f := w.GetTextFace()
-	m := f.Metrics()
 	x, y := text.Measure(w.Text, f, 0)
-	x += w.BorderWidth*2 + w.Margin*2 + w.Padding*2
-	y += w.BorderWidth*2 + w.Margin*2 + w.Padding*2 - m.HDescent
-	return utility.NewVector(x, y)
+	ret := utility.NewVector(x+s.X, y+s.Y-f.Metrics().HDescent)
+	return ret
 }
 
 func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {

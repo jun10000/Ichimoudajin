@@ -48,6 +48,11 @@ func (w *WidgetBase) SetFontSize(fontSize *float64) {
 	w.fontSize = fontSize
 }
 
+func (w *WidgetBase) MinSize() utility.Vector {
+	x := w.Padding*2 + w.BorderWidth*2 + w.Margin*2
+	return utility.NewVector(x, x)
+}
+
 func (w *WidgetBase) GetTextFace() text.Face {
 	var s float64
 	if w.fontSize != nil {
