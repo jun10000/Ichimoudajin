@@ -17,8 +17,8 @@ type WidgetBaseXML struct {
 	OriginY         float64 `xml:"oy,attr"`
 	X               float64 `xml:"x,attr"`
 	Y               float64 `xml:"y,attr"`
-	Margin          *string `xml:"margin,attr"`
-	Padding         *string `xml:"padding,attr"`
+	Margin          string  `xml:"margin,attr"`
+	Padding         string  `xml:"padding,attr"`
 	IsHide          bool    `xml:"hide,attr"`
 	BorderWidth     float64 `xml:"bdwidth,attr"`
 	BorderColor     string  `xml:"bdcolor,attr"`
@@ -37,24 +37,6 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		}
 	}
 
-	var margin utility.Inset
-	if x.Margin != nil {
-		ss := strings.Split(*x.Margin, ",")
-		fs, err := utility.StringToFloatSlice(ss)
-		utility.PanicIfError(err)
-
-		margin = utility.NewInset(fs...)
-	}
-
-	var padding utility.Inset
-	if x.Padding != nil {
-		ss := strings.Split(*x.Padding, ",")
-		fs, err := utility.StringToFloatSlice(ss)
-		utility.PanicIfError(err)
-
-		padding = utility.NewInset(fs...)
-	}
-
 	bdColor, _ := utility.HexStringToColor(x.BorderColor, utility.ColorTransparent)
 	bgColor, _ := utility.HexStringToColor(x.BackgroundColor, utility.ColorTransparent)
 	fgColor, _ := utility.HexStringToColor(x.ForegroundColor, utility.ColorWhite)
@@ -66,8 +48,8 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		Name:            x.Name,
 		Origin:          utility.NewVector(x.OriginX, x.OriginY),
 		Position:        utility.NewVector(x.X, x.Y),
-		Margin:          margin,
-		Padding:         padding,
+		Margin:          utility.NewInsetFromString(x.Margin),
+		Padding:         utility.NewInsetFromString(x.Padding),
 		IsHide:          x.IsHide,
 		BorderWidth:     x.BorderWidth,
 		BorderColor:     bdColor,

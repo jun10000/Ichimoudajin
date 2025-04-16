@@ -1,11 +1,17 @@
 package utility
 
+import "strings"
+
 type Inset struct {
 	Top, Right, Bottom, Left float64
 }
 
-func NewInset(values ...float64) Inset {
+func NewInset(values []float64) Inset {
 	ret := Inset{}
+	if values == nil {
+		return ret
+	}
+
 	switch len(values) {
 	case 1:
 		ret.Top = values[0]
@@ -25,4 +31,10 @@ func NewInset(values ...float64) Inset {
 	}
 
 	return ret
+}
+
+func NewInsetFromString(str string) Inset {
+	ss := strings.Split(str, ",")
+	fs, _ := StringToFloatSlice(ss)
+	return NewInset(fs)
 }
