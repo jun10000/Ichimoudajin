@@ -16,7 +16,7 @@ type WidgetBase struct {
 	Origin          utility.Vector
 	Position        utility.Vector
 	Margin          float64
-	Padding         float64
+	Padding         utility.Inset
 	IsHide          bool
 	BorderWidth     float64
 	BorderColor     color.Color
@@ -50,8 +50,9 @@ func (w *WidgetBase) SetFontSize(fontSize *float64) {
 }
 
 func (w *WidgetBase) MinSize() utility.Vector {
-	x := w.Padding*2 + w.BorderWidth*2 + w.Margin*2
-	return utility.NewVector(x, x)
+	x := w.Padding.Left + w.Padding.Right + w.BorderWidth*2 + w.Margin*2
+	y := w.Padding.Top + w.Padding.Bottom + w.BorderWidth*2 + w.Margin*2
+	return utility.NewVector(x, y)
 }
 
 func (w *WidgetBase) GetTextFace() text.Face {
@@ -89,8 +90,8 @@ func (w *WidgetBase) DrawBackground(screen *ebiten.Image, preferredArea utility.
 }
 
 func (w *WidgetBase) BackgroundToForegroundArea(out *utility.RectangleF) {
-	out.MinX += w.Margin + w.BorderWidth + w.Padding
-	out.MinY += w.Margin + w.BorderWidth + w.Padding
-	out.MaxX -= w.Margin + w.BorderWidth + w.Padding
-	out.MaxY -= w.Margin + w.BorderWidth + w.Padding
+	out.MinX += w.Margin + w.BorderWidth + w.Padding.Left
+	out.MinY += w.Margin + w.BorderWidth + w.Padding.Top
+	out.MaxX -= w.Margin + w.BorderWidth + w.Padding.Right
+	out.MaxY -= w.Margin + w.BorderWidth + w.Padding.Bottom
 }

@@ -106,3 +106,17 @@ func ConvertFromString(str string, typeTo reflect.Type) (any, error) {
 		return nil, fmt.Errorf("found unsupported convertion type: %s", typeTo)
 	}
 }
+
+func StringToFloatSlice(strings []string) ([]float64, error) {
+	ret := make([]float64, 0, len(strings))
+	for _, s := range strings {
+		f, err := strconv.ParseFloat(s, 64)
+		if err != nil {
+			return nil, err
+		}
+
+		ret = append(ret, f)
+	}
+
+	return ret, nil
+}
