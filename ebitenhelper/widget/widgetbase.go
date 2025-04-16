@@ -15,7 +15,7 @@ type WidgetBase struct {
 	Name            string
 	Origin          utility.Vector
 	Position        utility.Vector
-	Margin          float64
+	Margin          utility.Inset
 	Padding         utility.Inset
 	IsHide          bool
 	BorderWidth     float64
@@ -50,8 +50,8 @@ func (w *WidgetBase) SetFontSize(fontSize *float64) {
 }
 
 func (w *WidgetBase) MinSize() utility.Vector {
-	x := w.Padding.Left + w.Padding.Right + w.BorderWidth*2 + w.Margin*2
-	y := w.Padding.Top + w.Padding.Bottom + w.BorderWidth*2 + w.Margin*2
+	x := w.Padding.Left + w.Padding.Right + w.BorderWidth*2 + w.Margin.Left + w.Margin.Right
+	y := w.Padding.Top + w.Padding.Bottom + w.BorderWidth*2 + w.Margin.Top + w.Margin.Bottom
 	return utility.NewVector(x, y)
 }
 
@@ -82,16 +82,16 @@ func (w *WidgetBase) GetAlignedArea(outerArea *utility.RectangleF, innerSize uti
 }
 
 func (w *WidgetBase) DrawBackground(screen *ebiten.Image, preferredArea utility.RectangleF) {
-	preferredArea.MinX += w.Margin + w.BorderWidth/2
-	preferredArea.MinY += w.Margin + w.BorderWidth/2
-	preferredArea.MaxX -= w.Margin + w.BorderWidth/2
-	preferredArea.MaxY -= w.Margin + w.BorderWidth/2
+	preferredArea.MinX += w.Margin.Left + w.BorderWidth/2
+	preferredArea.MinY += w.Margin.Top + w.BorderWidth/2
+	preferredArea.MaxX -= w.Margin.Right + w.BorderWidth/2
+	preferredArea.MaxY -= w.Margin.Bottom + w.BorderWidth/2
 	utility.DrawRectangle(screen, preferredArea.TopLeft(), preferredArea.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
 }
 
 func (w *WidgetBase) BackgroundToForegroundArea(out *utility.RectangleF) {
-	out.MinX += w.Margin + w.BorderWidth + w.Padding.Left
-	out.MinY += w.Margin + w.BorderWidth + w.Padding.Top
-	out.MaxX -= w.Margin + w.BorderWidth + w.Padding.Right
-	out.MaxY -= w.Margin + w.BorderWidth + w.Padding.Bottom
+	out.MinX += w.Margin.Left + w.BorderWidth + w.Padding.Left
+	out.MinY += w.Margin.Top + w.BorderWidth + w.Padding.Top
+	out.MaxX -= w.Margin.Right + w.BorderWidth + w.Padding.Right
+	out.MaxY -= w.Margin.Bottom + w.BorderWidth + w.Padding.Bottom
 }

@@ -17,7 +17,7 @@ type WidgetBaseXML struct {
 	OriginY         float64 `xml:"oy,attr"`
 	X               float64 `xml:"x,attr"`
 	Y               float64 `xml:"y,attr"`
-	Margin          float64 `xml:"margin,attr"`
+	Margin          *string `xml:"margin,attr"`
 	Padding         *string `xml:"padding,attr"`
 	IsHide          bool    `xml:"hide,attr"`
 	BorderWidth     float64 `xml:"bdwidth,attr"`
@@ -35,6 +35,15 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		for _, s := range strings.Split(*x.FontFiles, ",") {
 			fontFamilies = append(fontFamilies, utility.GetFontFromFileP(s))
 		}
+	}
+
+	var margin utility.Inset
+	if x.Margin != nil {
+		ss := strings.Split(*x.Margin, ",")
+		fs, err := utility.StringToFloatSlice(ss)
+		utility.PanicIfError(err)
+
+		margin = utility.NewInset(fs...)
 	}
 
 	var padding utility.Inset
@@ -57,7 +66,7 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		Name:            x.Name,
 		Origin:          utility.NewVector(x.OriginX, x.OriginY),
 		Position:        utility.NewVector(x.X, x.Y),
-		Margin:          x.Margin,
+		Margin:          margin,
 		Padding:         padding,
 		IsHide:          x.IsHide,
 		BorderWidth:     x.BorderWidth,
