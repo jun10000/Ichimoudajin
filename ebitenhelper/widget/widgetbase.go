@@ -9,8 +9,8 @@ import (
 )
 
 type WidgetBase struct {
-	fontFamily *text.GoTextFaceSource
-	fontSize   *float64
+	fontFamilies []*text.GoTextFaceSource
+	fontSize     *float64
 
 	Name            string
 	Origin          utility.Vector
@@ -25,24 +25,24 @@ type WidgetBase struct {
 }
 
 func (w *WidgetBase) Init(inherits WidgetBase) {
-	if w.fontFamily == nil {
-		w.fontFamily = inherits.fontFamily
+	if len(w.fontFamilies) == 0 {
+		w.fontFamilies = inherits.fontFamilies
 	}
 	if w.fontSize == nil {
 		w.fontSize = inherits.fontSize
 	}
 }
 
-func (w *WidgetBase) GetFontFamily() *text.GoTextFaceSource {
-	return w.fontFamily
+func (w *WidgetBase) GetFontFamilies() []*text.GoTextFaceSource {
+	return w.fontFamilies
 }
 
 func (w *WidgetBase) GetFontSize() *float64 {
 	return w.fontSize
 }
 
-func (w *WidgetBase) SetFontFamily(fontFamily *text.GoTextFaceSource) {
-	w.fontFamily = fontFamily
+func (w *WidgetBase) SetFontFamilies(fontFamilies []*text.GoTextFaceSource) {
+	w.fontFamilies = fontFamilies
 }
 
 func (w *WidgetBase) SetFontSize(fontSize *float64) {
@@ -60,10 +60,17 @@ func (w *WidgetBase) GetTextFace() text.Face {
 		s = *w.fontSize
 	}
 
-	return &text.GoTextFace{
-		Source: w.fontFamily,
-		Size:   s,
+	fs := make([]text.Face, 0, utility.InitialWidgetFontCap)
+	for _, f := range w.fontFamilies {
+		fs = append(fs, &text.GoTextFace{
+			Source: f,
+			Size:   s,
+		})
 	}
+
+	mf, err := text.NewMultiFace(fs...)
+	utility.PanicIfError(err)
+	return mf
 }
 
 func (w *WidgetBase) GetAlignedArea(outerArea *utility.RectangleF, innerSize utility.Vector) *utility.RectangleF {

@@ -12,19 +12,18 @@ type WidgetText struct {
 }
 
 func (w *WidgetText) MinSize() utility.Vector {
-	if w.fontFamily == nil {
+	if len(w.fontFamilies) == 0 {
 		return utility.ZeroVector()
 	}
 
 	s := w.WidgetBase.MinSize()
-	f := w.GetTextFace()
-	x, y := text.Measure(w.Text, f, 0)
-	ret := utility.NewVector(x+s.X, y+s.Y-f.Metrics().HDescent)
+	x, y := text.Measure(w.Text, w.GetTextFace(), 0)
+	ret := utility.NewVector(x+s.X, y+s.Y)
 	return ret
 }
 
 func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
-	if w.IsHide || w.fontFamily == nil {
+	if w.IsHide || len(w.fontFamilies) == 0 {
 		return
 	}
 

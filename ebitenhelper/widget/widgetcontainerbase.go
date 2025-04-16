@@ -1,6 +1,10 @@
 package widget
 
-import "github.com/hajimehoshi/ebiten/v2/text/v2"
+import (
+	"slices"
+
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
+)
 
 type WidgetContainerBase struct {
 	*WidgetBase
@@ -8,10 +12,10 @@ type WidgetContainerBase struct {
 }
 
 func (w *WidgetContainerBase) Init(inherits WidgetBase) {
-	if w.fontFamily == nil {
-		w.fontFamily = inherits.fontFamily
+	if len(w.fontFamilies) == 0 {
+		w.fontFamilies = inherits.fontFamilies
 	} else {
-		inherits.fontFamily = w.fontFamily
+		inherits.fontFamilies = w.fontFamilies
 	}
 
 	if w.fontSize == nil {
@@ -25,12 +29,12 @@ func (w *WidgetContainerBase) Init(inherits WidgetBase) {
 	}
 }
 
-func (w *WidgetContainerBase) SetFontFamily(fontFamily *text.GoTextFaceSource) {
-	oldFontFamily := w.fontFamily
-	w.fontFamily = fontFamily
+func (w *WidgetContainerBase) SetFontFamilies(fontFamilies []*text.GoTextFaceSource) {
+	oldFontFamilies := w.fontFamilies
+	w.fontFamilies = fontFamilies
 	for _, o := range w.Children {
-		if o.GetFontFamily() == oldFontFamily {
-			o.SetFontFamily(fontFamily)
+		if slices.Equal(o.GetFontFamilies(), oldFontFamilies) {
+			o.SetFontFamilies(fontFamilies)
 		}
 	}
 }

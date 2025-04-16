@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget version="1" fontfile="fonts/LCDPHONE.ttf" fontsize="36">
+<widget version="1" fontfiles="fonts/LCDPHONE.ttf,fonts/OpenSans.ttf" fontsize="36">
     <hbox x="0.01" y="0.01" padding="10" bgcolor="#40000000">
         <text oy="0.5">HP: </text>
         <text name="HPText" oy="0.5">3</text>

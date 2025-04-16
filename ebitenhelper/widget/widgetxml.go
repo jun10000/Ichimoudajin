@@ -3,6 +3,7 @@ package widget
 import (
 	"encoding/xml"
 	"log"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/assets"
@@ -24,23 +25,25 @@ type WidgetBaseXML struct {
 	BackgroundColor string  `xml:"bgcolor,attr"`
 	ForegroundColor string  `xml:"fgcolor,attr"`
 
-	FontFile *string  `xml:"fontfile,attr"`
-	FontSize *float64 `xml:"fontsize,attr"`
+	FontFiles *string  `xml:"fontfiles,attr"`
+	FontSize  *float64 `xml:"fontsize,attr"`
 }
 
 func (x WidgetBaseXML) Convert() *WidgetBase {
-	var f *text.GoTextFaceSource
-	if x.FontFile != nil {
-		f = utility.GetFontFromFileP(*x.FontFile)
+	fontFamilies := make([]*text.GoTextFaceSource, 0, utility.InitialWidgetFontCap)
+	if x.FontFiles != nil {
+		for _, s := range strings.Split(*x.FontFiles, ",") {
+			fontFamilies = append(fontFamilies, utility.GetFontFromFileP(s))
+		}
 	}
 
-	bdc, _ := utility.HexStringToColor(x.BorderColor, utility.ColorTransparent)
-	bgc, _ := utility.HexStringToColor(x.BackgroundColor, utility.ColorTransparent)
-	fgc, _ := utility.HexStringToColor(x.ForegroundColor, utility.ColorWhite)
+	bdColor, _ := utility.HexStringToColor(x.BorderColor, utility.ColorTransparent)
+	bgColor, _ := utility.HexStringToColor(x.BackgroundColor, utility.ColorTransparent)
+	fgColor, _ := utility.HexStringToColor(x.ForegroundColor, utility.ColorWhite)
 
 	return &WidgetBase{
-		fontFamily: f,
-		fontSize:   x.FontSize,
+		fontFamilies: fontFamilies,
+		fontSize:     x.FontSize,
 
 		Name:            x.Name,
 		Origin:          utility.NewVector(x.OriginX, x.OriginY),
@@ -49,9 +52,9 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		Padding:         x.Padding,
 		IsHide:          x.IsHide,
 		BorderWidth:     x.BorderWidth,
-		BorderColor:     bdc,
-		BackgroundColor: bgc,
-		ForegroundColor: fgc,
+		BorderColor:     bdColor,
+		BackgroundColor: bgColor,
+		ForegroundColor: fgColor,
 	}
 }
 

@@ -52,6 +52,7 @@ var (
 	InitialDrawerCap               = 128
 	InitialTrashCap                = 32
 	InitialPFResultCap             = 128
+	InitialWidgetFontCap           = 4
 )
 
 var (

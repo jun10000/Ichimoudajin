@@ -20,3 +20,5 @@
 ### フォント
 - [LCD Phone](https://www.dafont.com/lcd-phone.font)
   by [Grafito Design](https://www.dafont.com/raul-andres-perez-canseco.d1591)
+- [Open Sans](https://github.com/googlefonts/opensans)
+  ([SIL Open Font License, Version 1.1](https://openfontlicense.org/open-font-license-official-text/))
