@@ -14,7 +14,7 @@ type WidgetBase struct {
 
 	Name            string
 	Origin          utility.Vector
-	Position        utility.Vector
+	Offset          utility.Vector
 	Margin          utility.Inset
 	Padding         utility.Inset
 	IsHide          bool
@@ -77,7 +77,7 @@ func (w *WidgetBase) GetTextFace() text.Face {
 func (w *WidgetBase) GetAlignedArea(outerArea *utility.RectangleF, innerSize utility.Vector) *utility.RectangleF {
 	outerPos := outerArea.TopLeft()
 	outerSize := outerArea.Size()
-	retPos := w.Origin.Mul(outerSize).Sub(w.Origin.Mul(innerSize)).Add(w.Position.Mul(outerSize)).Add(outerPos)
+	retPos := w.Origin.Mul(outerSize).Sub(w.Origin.Mul(innerSize)).Add(w.Offset.Mul(outerSize)).Add(outerPos)
 	return utility.NewRectangleF(retPos.X, retPos.Y, retPos.X+innerSize.X, retPos.Y+innerSize.Y)
 }
 

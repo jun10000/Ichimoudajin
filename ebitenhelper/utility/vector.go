@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand/v2"
+	"strings"
 )
 
 type Vector struct {
@@ -17,6 +18,16 @@ func NewVector(x float64, y float64) Vector {
 
 func NewVectorPtr(x float64, y float64) *Vector {
 	return &Vector{X: x, Y: y}
+}
+
+func NewVectorFromString(str string) Vector {
+	ss := strings.Split(str, ",")
+	fs, _ := StringToFloatSlice(ss)
+	if len(fs) != 2 {
+		return ZeroVector()
+	}
+
+	return Vector{fs[0], fs[1]}
 }
 
 func RandomVector() Vector {
