@@ -150,21 +150,4 @@
    <ellipse/>
   </object>
  </objectgroup>
- <objectgroup id="16" name="Widgets">
-  <object id="21" type="LCDTextWidget" x="1200" y="15" width="70" height="35">
-   <text fontfamily="lcd phone" pixelsize="32" color="#ffffff">PTS</text>
-  </object>
-  <object id="28" name="PointWidget" type="LCDTextWidget" x="1095" y="15" width="90" height="35">
-   <text fontfamily="lcd phone" pixelsize="32" color="#ffffff" halign="right">3579</text>
-  </object>
-  <object id="26" name="GameOverWidget" type="LCDTextWidget" x="448" y="320" width="384" height="64" visible="0">
-   <text fontfamily="lcd phone" pixelsize="64" color="#ffffff">GAME OVER</text>
-  </object>
-  <object id="25" type="LCDTextWidget" x="10" y="15" width="50" height="35">
-   <text fontfamily="lcd phone" pixelsize="32" color="#ffffff">HP</text>
-  </object>
-  <object id="27" name="HPWidget" type="LCDTextWidget" x="70" y="15" width="50" height="35">
-   <text fontfamily="lcd phone" pixelsize="32" color="#ffffff" halign="right">3</text>
-  </object>
- </objectgroup>
 </map>
