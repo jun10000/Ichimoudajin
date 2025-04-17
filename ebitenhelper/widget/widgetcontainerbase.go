@@ -48,3 +48,18 @@ func (w *WidgetContainerBase) SetFontSize(fontSize *float64) {
 		}
 	}
 }
+
+func (w *WidgetContainerBase) GetWidgetObject(name string) WidgetObjecter {
+	for _, o := range w.Children {
+		if o.GetName() == name {
+			return o
+		}
+
+		gc := o.GetWidgetObject(name)
+		if gc != nil {
+			return gc
+		}
+	}
+
+	return nil
+}

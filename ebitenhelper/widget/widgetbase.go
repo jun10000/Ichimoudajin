@@ -49,6 +49,14 @@ func (w *WidgetBase) SetFontSize(fontSize *float64) {
 	w.fontSize = fontSize
 }
 
+func (w *WidgetBase) GetName() string {
+	return w.Name
+}
+
+func (w *WidgetBase) GetWidgetObject(name string) WidgetObjecter {
+	return nil
+}
+
 func (w *WidgetBase) MinSize() utility.Vector {
 	x := w.Padding.Left + w.Padding.Right + w.BorderWidth*2 + w.Margin.Left + w.Margin.Right
 	y := w.Padding.Top + w.Padding.Bottom + w.BorderWidth*2 + w.Margin.Top + w.Margin.Bottom
