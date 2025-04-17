@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/widget"
 )
 
 type PawnStates int
@@ -27,9 +28,9 @@ type Pawn struct {
 	state           PawnStates
 	invincibleTimer *utility.CallTimer
 	currentHP       int
-	destroyer       *Destroyer
-	hpWidget        *TextBlock
-	gameoverWidget  *TextBlock
+	actorDestroyer  *Destroyer
+	widgetHP        *widget.WidgetText
+	widgetGameOver  *widget.WidgetVBox
 
 	MaxHP                 int
 	InvincibleSeconds     float32
@@ -67,23 +68,24 @@ func (g ActorGeneratorStruct) NewPawn1(options *NewActorOptions) *Pawn {
 }
 
 func (a *Pawn) BeginPlay() {
-	if d, ok := utility.GetFirstActor[*Destroyer](); ok {
-		a.destroyer = d
-	} else {
+	d, ok := utility.GetFirstActor[*Destroyer]()
+	if !ok {
 		log.Panicln("actor 'Destroyer' is not found")
 	}
 
-	if w, ok := utility.GetFirstActorByName[*TextBlock]("HPWidget"); ok {
-		a.hpWidget = w
-	} else {
-		log.Panicln("actor 'HPWidget' is not found")
+	whp, ok := widget.GetWidgetObjectByName[*widget.WidgetText]("mainwidget", "HPText")
+	if !ok {
+		log.Panicln("widget object 'HPText' is not found")
 	}
 
-	if w, ok := utility.GetFirstActorByName[*TextBlock]("GameOverWidget"); ok {
-		a.gameoverWidget = w
-	} else {
-		log.Panicln("actor 'GameOverWidget' is not found")
+	wgo, ok := widget.GetWidgetObjectByName[*widget.WidgetVBox]("mainwidget", "GameOver")
+	if !ok {
+		log.Panicln("widget object 'GameOver' is not found")
 	}
+
+	a.actorDestroyer = d
+	a.widgetHP = whp
+	a.widgetGameOver = wgo
 }
 
 func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.PressState, pos utility.Point) {
@@ -94,9 +96,9 @@ func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.
 
 	switch state {
 	case utility.PressStatePressed:
-		a.destroyer.Start(pos.ToVector())
+		a.actorDestroyer.Start(pos.ToVector())
 	case utility.PressStateReleased:
-		a.destroyer.Finish()
+		a.actorDestroyer.Finish()
 	}
 }
 
@@ -125,7 +127,7 @@ func (a *Pawn) ReceiveHit(result *utility.TraceResult[utility.Collider]) {
 }
 
 func (a *Pawn) ApplyHPToWidget() {
-	a.hpWidget.Text = fmt.Sprintf("%d", a.currentHP)
+	a.widgetHP.Text = fmt.Sprintf("%d", a.currentHP)
 }
 
 func (a *Pawn) AddHP(delta int) {
@@ -159,5 +161,5 @@ func (a *Pawn) AddHP(delta int) {
 func (a *Pawn) ReceiveDeath() {
 	utility.GetLevel().Remove(a)
 	a.ApplyHPToWidget()
-	a.gameoverWidget.SetVisibility(true)
+	a.widgetGameOver.IsHide = false
 }

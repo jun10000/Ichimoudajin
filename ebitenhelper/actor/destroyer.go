@@ -8,6 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
+	"github.com/jun10000/Ichimoudajin/ebitenhelper/widget"
 )
 
 type DestroyerStatus int
@@ -21,11 +22,11 @@ const (
 type Destroyer struct {
 	*component.ActorCom
 	*component.DrawCom
-	status      DestroyerStatus
-	circle      *utility.CircleF
-	targets     []utility.MovableCollider
-	points      int
-	pointWidget *TextBlock
+	status  DestroyerStatus
+	circle  *utility.CircleF
+	targets []utility.MovableCollider
+	points  int
+	widget  *widget.WidgetText
 
 	GrowSpeed   float64
 	ShrinkSpeed float64
@@ -56,13 +57,12 @@ func (a *Destroyer) ZOrder() int {
 }
 
 func (a *Destroyer) BeginPlay() {
-	wName := "PointWidget"
-	w, ok := utility.GetFirstActorByName[*TextBlock](wName)
+	wPoint, ok := widget.GetWidgetObjectByName[*widget.WidgetText]("mainwidget", "PointText")
 	if !ok {
-		log.Panicf("actor '%s' not found", wName)
+		log.Panicln("widget object 'PointText' is not found")
 	}
 
-	a.pointWidget = w
+	a.widget = wPoint
 }
 
 func (a *Destroyer) Tick() {
@@ -113,7 +113,7 @@ func (a *Destroyer) Tick() {
 }
 
 func (a *Destroyer) ApplyPointsToWidget() {
-	a.pointWidget.Text = fmt.Sprintf("%d", a.points)
+	a.widget.Text = fmt.Sprintf("%d", a.points)
 }
 
 func (a *Destroyer) Draw(screen *ebiten.Image) {
