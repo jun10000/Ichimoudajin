@@ -35,10 +35,6 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		}
 	}
 
-	bdColor, _ := utility.HexStringToColor(x.BorderColor, utility.ColorTransparent)
-	bgColor, _ := utility.HexStringToColor(x.BackgroundColor, utility.ColorTransparent)
-	fgColor, _ := utility.HexStringToColor(x.ForegroundColor, utility.ColorWhite)
-
 	return &WidgetBase{
 		fontFamilies: fontFamilies,
 		fontSize:     x.FontSize,
@@ -50,9 +46,9 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		Padding:         utility.NewInsetFromString(x.Padding),
 		IsHide:          x.IsHide,
 		BorderWidth:     x.BorderWidth,
-		BorderColor:     bdColor,
-		BackgroundColor: bgColor,
-		ForegroundColor: fgColor,
+		BorderColor:     utility.HexStringToColor(x.BorderColor, utility.ColorTransparent),
+		BackgroundColor: utility.HexStringToColor(x.BackgroundColor, utility.ColorTransparent),
+		ForegroundColor: utility.HexStringToColor(x.ForegroundColor, utility.ColorWhite),
 	}
 }
 

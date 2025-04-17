@@ -1,7 +1,6 @@
 package utility
 
 import (
-	"errors"
 	"fmt"
 	"image/color"
 	"reflect"
@@ -24,49 +23,49 @@ func RuneToInt(r rune) int {
 	return int(r - '0')
 }
 
-func HexStringToColor(hex string, defColor color.Color) (color.Color, error) {
+func HexStringToColor(hex string, defColor color.Color) color.Color {
 	switch utf8.RuneCountInString(hex) {
 	case 7:
 		r, err := strconv.ParseUint(hex[1:3], 16, 8)
 		if err != nil {
-			return defColor, err
+			return defColor
 		}
 
 		g, err := strconv.ParseUint(hex[3:5], 16, 8)
 		if err != nil {
-			return defColor, err
+			return defColor
 		}
 
 		b, err := strconv.ParseUint(hex[5:7], 16, 8)
 		if err != nil {
-			return defColor, err
+			return defColor
 		}
 
-		return RGB{uint8(r), uint8(g), uint8(b)}, nil
+		return RGB{uint8(r), uint8(g), uint8(b)}
 	case 9:
 		a, err := strconv.ParseUint(hex[1:3], 16, 8)
 		if err != nil {
-			return defColor, err
+			return defColor
 		}
 
 		r, err := strconv.ParseUint(hex[3:5], 16, 8)
 		if err != nil {
-			return defColor, err
+			return defColor
 		}
 
 		g, err := strconv.ParseUint(hex[5:7], 16, 8)
 		if err != nil {
-			return defColor, err
+			return defColor
 		}
 
 		b, err := strconv.ParseUint(hex[7:9], 16, 8)
 		if err != nil {
-			return defColor, err
+			return defColor
 		}
 
-		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}, nil
+		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	default:
-		return defColor, errors.New("failed to parse HexColor")
+		return defColor
 	}
 }
 
@@ -97,11 +96,7 @@ func ConvertFromString(str string, typeTo reflect.Type) (any, error) {
 		}
 		return v, nil
 	case TypeRGB:
-		v, err := HexStringToColor(str, ColorTransparent)
-		if err != nil {
-			return nil, err
-		}
-		return v, nil
+		return HexStringToColor(str, ColorTransparent), nil
 	default:
 		return nil, fmt.Errorf("found unsupported convertion type: %s", typeTo)
 	}
