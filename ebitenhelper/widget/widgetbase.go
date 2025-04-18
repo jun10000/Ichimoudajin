@@ -57,9 +57,10 @@ func (w *WidgetBase) GetWidgetObject(name string) WidgetObjecter {
 	return nil
 }
 
-func (w *WidgetBase) MinSize() utility.Vector {
-	x := w.Padding.Left + w.Padding.Right + w.BorderWidth*2 + w.Margin.Left + w.Margin.Right
-	y := w.Padding.Top + w.Padding.Bottom + w.BorderWidth*2 + w.Margin.Top + w.Margin.Bottom
+func (w *WidgetBase) MinSize(screenSize *utility.Vector) utility.Vector {
+	sy := screenSize.Y
+	x := w.Padding.Left + w.Padding.Right + w.BorderWidth*2 + (w.Margin.Left+w.Margin.Right)*sy
+	y := w.Padding.Top + w.Padding.Bottom + w.BorderWidth*2 + (w.Margin.Top+w.Margin.Bottom)*sy
 	return utility.NewVector(x, y)
 }
 
@@ -91,16 +92,19 @@ func (w *WidgetBase) GetAlignedArea(screenArea *utility.RectangleF, outerArea *u
 }
 
 func (w *WidgetBase) DrawBackground(screen *ebiten.Image, preferredArea utility.RectangleF) {
-	preferredArea.MinX += w.Margin.Left + w.BorderWidth/2
-	preferredArea.MinY += w.Margin.Top + w.BorderWidth/2
-	preferredArea.MaxX -= w.Margin.Right + w.BorderWidth/2
-	preferredArea.MaxY -= w.Margin.Bottom + w.BorderWidth/2
+	s := utility.NewRectangleFFromGoRect(screen.Bounds())
+	sy := s.Size().Y
+	preferredArea.MinX += w.Margin.Left*sy + w.BorderWidth/2
+	preferredArea.MinY += w.Margin.Top*sy + w.BorderWidth/2
+	preferredArea.MaxX -= w.Margin.Right*sy + w.BorderWidth/2
+	preferredArea.MaxY -= w.Margin.Bottom*sy + w.BorderWidth/2
 	utility.DrawRectangle(screen, preferredArea.TopLeft(), preferredArea.Size(), float32(w.BorderWidth), w.BorderColor, w.BackgroundColor, true)
 }
 
-func (w *WidgetBase) BackgroundToForegroundArea(out *utility.RectangleF) {
-	out.MinX += w.Margin.Left + w.BorderWidth + w.Padding.Left
-	out.MinY += w.Margin.Top + w.BorderWidth + w.Padding.Top
-	out.MaxX -= w.Margin.Right + w.BorderWidth + w.Padding.Right
-	out.MaxY -= w.Margin.Bottom + w.BorderWidth + w.Padding.Bottom
+func (w *WidgetBase) BackgroundToForegroundArea(screenSize *utility.Vector, out *utility.RectangleF) {
+	sy := screenSize.Y
+	out.MinX += w.Margin.Left*sy + w.BorderWidth + w.Padding.Left
+	out.MinY += w.Margin.Top*sy + w.BorderWidth + w.Padding.Top
+	out.MaxX -= w.Margin.Right*sy + w.BorderWidth + w.Padding.Right
+	out.MaxY -= w.Margin.Bottom*sy + w.BorderWidth + w.Padding.Bottom
 }

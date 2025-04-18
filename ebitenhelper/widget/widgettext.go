@@ -11,12 +11,12 @@ type WidgetText struct {
 	Text string
 }
 
-func (w *WidgetText) MinSize() utility.Vector {
+func (w *WidgetText) MinSize(screenSize *utility.Vector) utility.Vector {
 	if len(w.fontFamilies) == 0 {
 		return utility.ZeroVector()
 	}
 
-	s := w.WidgetBase.MinSize()
+	s := w.WidgetBase.MinSize(screenSize)
 	x, y := text.Measure(w.Text, w.GetTextFace(), 0)
 	ret := utility.NewVector(x+s.X, y+s.Y)
 	return ret
@@ -28,10 +28,11 @@ func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 	}
 
 	s := utility.NewRectangleFFromGoRect(screen.Bounds())
-	r := w.GetAlignedArea(s, &preferredArea, w.MinSize())
+	ssz := s.Size()
+	r := w.GetAlignedArea(s, &preferredArea, w.MinSize(&ssz))
 	w.DrawBackground(screen, *r)
 
-	w.BackgroundToForegroundArea(r)
+	w.BackgroundToForegroundArea(&ssz, r)
 	l := r.TopLeft()
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(l.X, l.Y)

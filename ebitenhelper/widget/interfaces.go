@@ -14,6 +14,6 @@ type WidgetObjecter interface {
 	SetFontSize(fontSize *float64)
 	GetName() string
 	GetWidgetObject(name string) WidgetObjecter
-	MinSize() utility.Vector
+	MinSize(screenSize *utility.Vector) utility.Vector
 	Draw(screen *ebiten.Image, preferredArea utility.RectangleF)
 }

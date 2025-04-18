@@ -9,17 +9,17 @@ type WidgetHBox struct {
 	*WidgetContainerBase
 }
 
-func (w *WidgetHBox) MinSize() utility.Vector {
+func (w *WidgetHBox) MinSize(screenSize *utility.Vector) utility.Vector {
 	ret := utility.ZeroVector()
 	for _, o := range w.Children {
-		s := o.MinSize()
+		s := o.MinSize(screenSize)
 		ret.X += s.X
 		if s.Y > ret.Y {
 			ret.Y = s.Y
 		}
 	}
 
-	return ret.Add(w.WidgetContainerBase.MinSize())
+	return ret.Add(w.WidgetContainerBase.MinSize(screenSize))
 }
 
 func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF) {
@@ -28,12 +28,13 @@ func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 	}
 
 	s := utility.NewRectangleFFromGoRect(screen.Bounds())
-	r := w.GetAlignedArea(s, &preferredArea, w.MinSize())
+	ssz := s.Size()
+	r := w.GetAlignedArea(s, &preferredArea, w.MinSize(&ssz))
 	w.DrawBackground(screen, *r)
 
-	w.BackgroundToForegroundArea(r)
+	w.BackgroundToForegroundArea(&ssz, r)
 	for _, o := range w.Children {
-		s := o.MinSize()
+		s := o.MinSize(&ssz)
 		r.MaxX = r.MinX + s.X
 		o.Draw(screen, *r)
 		r.MinX = r.MaxX
