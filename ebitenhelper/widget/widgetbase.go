@@ -82,10 +82,11 @@ func (w *WidgetBase) GetTextFace() text.Face {
 	return mf
 }
 
-func (w *WidgetBase) GetAlignedArea(outerArea *utility.RectangleF, innerSize utility.Vector) *utility.RectangleF {
+func (w *WidgetBase) GetAlignedArea(screenArea *utility.RectangleF, outerArea *utility.RectangleF, innerSize utility.Vector) (innerArea *utility.RectangleF) {
+	screenHeight := screenArea.Size().Y
 	outerPos := outerArea.TopLeft()
 	outerSize := outerArea.Size()
-	retPos := w.Origin.Mul(outerSize).Sub(w.Origin.Mul(innerSize)).Add(w.Offset.Mul(outerSize)).Add(outerPos)
+	retPos := w.Origin.Mul(outerSize).Sub(w.Origin.Mul(innerSize)).Add(w.Offset.MulF(screenHeight)).Add(outerPos)
 	return utility.NewRectangleF(retPos.X, retPos.Y, retPos.X+innerSize.X, retPos.Y+innerSize.Y)
 }
 

@@ -27,7 +27,8 @@ func (w *WidgetHBox) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 		return
 	}
 
-	r := w.GetAlignedArea(&preferredArea, w.MinSize())
+	s := utility.NewRectangleFFromGoRect(screen.Bounds())
+	r := w.GetAlignedArea(s, &preferredArea, w.MinSize())
 	w.DrawBackground(screen, *r)
 
 	w.BackgroundToForegroundArea(r)
