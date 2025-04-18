@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget version="1" fontfiles="fonts/LCDPHONE.ttf,fonts/OpenSans.ttf" fontsize="36">
+<widget version="1" fontfiles="fonts/LCDPHONE.ttf,fonts/OpenSans.ttf" fontsize="0.05">
     <hbox offset="0.01,0.01" padding="0,0.02" bgcolor="#40000000">
         <text origin="0,0.5">HP: </text>
         <text name="HPText" origin="0,0.5">3</text>
@@ -9,7 +9,7 @@
         <text origin="0,0.5"> PTS</text>
     </hbox>
     <vbox name="GameOver" origin="0.5,0.5" hide="true">
-        <text origin="0.5,0" fontsize="64">GAME OVER</text>
+        <text origin="0.5,0" fontsize="0.1">GAME OVER</text>
         <button name="RetryButton" origin="0.5,0" margin="0.02,0,0,0" padding="0,0.015" bdwidth="0.003" bdcolor="#0080ff" bgcolor="#300080ff" fgcolor="#ffff80">Retry</button>
     </vbox>
 </widget>

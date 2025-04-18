@@ -64,10 +64,10 @@ func (w *WidgetBase) MinSize(screenSize *utility.Vector) utility.Vector {
 	return utility.NewVector(x, y)
 }
 
-func (w *WidgetBase) GetTextFace() text.Face {
+func (w *WidgetBase) GetTextFace(screenSize *utility.Vector) text.Face {
 	var s float64
 	if w.fontSize != nil {
-		s = *w.fontSize
+		s = *w.fontSize * screenSize.Y
 	}
 
 	fs := make([]text.Face, 0, utility.InitialWidgetFontCap)

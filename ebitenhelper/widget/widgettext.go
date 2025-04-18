@@ -17,7 +17,7 @@ func (w *WidgetText) MinSize(screenSize *utility.Vector) utility.Vector {
 	}
 
 	s := w.WidgetBase.MinSize(screenSize)
-	x, y := text.Measure(w.Text, w.GetTextFace(), 0)
+	x, y := text.Measure(w.Text, w.GetTextFace(screenSize), 0)
 	ret := utility.NewVector(x+s.X, y+s.Y)
 	return ret
 }
@@ -37,5 +37,5 @@ func (w *WidgetText) Draw(screen *ebiten.Image, preferredArea utility.RectangleF
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(l.X, l.Y)
 	op.ColorScale.ScaleWithColor(w.ForegroundColor)
-	text.Draw(screen, w.Text, w.GetTextFace(), op)
+	text.Draw(screen, w.Text, w.GetTextFace(&ssz), op)
 }
