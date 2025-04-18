@@ -59,8 +59,8 @@ func (w *WidgetBase) GetWidgetObject(name string) WidgetObjecter {
 
 func (w *WidgetBase) MinSize(screenSize *utility.Vector) utility.Vector {
 	sy := screenSize.Y
-	x := w.Padding.Left + w.Padding.Right + w.BorderWidth*2 + (w.Margin.Left+w.Margin.Right)*sy
-	y := w.Padding.Top + w.Padding.Bottom + w.BorderWidth*2 + (w.Margin.Top+w.Margin.Bottom)*sy
+	x := w.BorderWidth*2 + (w.Margin.Left+w.Margin.Right+w.Padding.Left+w.Padding.Right)*sy
+	y := w.BorderWidth*2 + (w.Margin.Top+w.Margin.Bottom+w.Padding.Top+w.Padding.Bottom)*sy
 	return utility.NewVector(x, y)
 }
 
@@ -103,8 +103,8 @@ func (w *WidgetBase) DrawBackground(screen *ebiten.Image, preferredArea utility.
 
 func (w *WidgetBase) BackgroundToForegroundArea(screenSize *utility.Vector, out *utility.RectangleF) {
 	sy := screenSize.Y
-	out.MinX += w.Margin.Left*sy + w.BorderWidth + w.Padding.Left
-	out.MinY += w.Margin.Top*sy + w.BorderWidth + w.Padding.Top
-	out.MaxX -= w.Margin.Right*sy + w.BorderWidth + w.Padding.Right
-	out.MaxY -= w.Margin.Bottom*sy + w.BorderWidth + w.Padding.Bottom
+	out.MinX += (w.Margin.Left+w.Padding.Left)*sy + w.BorderWidth
+	out.MinY += (w.Margin.Top+w.Padding.Top)*sy + w.BorderWidth
+	out.MaxX -= (w.Margin.Right+w.Padding.Right)*sy + w.BorderWidth
+	out.MaxY -= (w.Margin.Bottom+w.Padding.Bottom)*sy + w.BorderWidth
 }

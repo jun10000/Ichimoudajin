@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget version="1" fontfiles="fonts/LCDPHONE.ttf,fonts/OpenSans.ttf" fontsize="36">
-    <hbox offset="0.01,0.01" padding="0,10" bgcolor="#40000000">
+    <hbox offset="0.01,0.01" padding="0,0.02" bgcolor="#40000000">
         <text origin="0,0.5">HP: </text>
         <text name="HPText" origin="0,0.5">3</text>
     </hbox>
-    <hbox origin="1,0" offset="-0.01,0.01" padding="0,10" bgcolor="#40000000">
+    <hbox origin="1,0" offset="-0.01,0.01" padding="0,0.02" bgcolor="#40000000">
         <text name="PointText" origin="0,0.5">123</text>
         <text origin="0,0.5"> PTS</text>
     </hbox>
     <vbox name="GameOver" origin="0.5,0.5" hide="true">
         <text origin="0.5,0" fontsize="64">GAME OVER</text>
-        <button name="RetryButton" origin="0.5,0" margin="0.02,0,0,0" padding="0,6" bdwidth="2" bdcolor="#0080ff" bgcolor="#300080ff" fgcolor="#ffff80">Retry</button>
+        <button name="RetryButton" origin="0.5,0" margin="0.02,0,0,0" padding="0,0.015" bdwidth="2" bdcolor="#0080ff" bgcolor="#300080ff" fgcolor="#ffff80">Retry</button>
     </vbox>
 </widget>
