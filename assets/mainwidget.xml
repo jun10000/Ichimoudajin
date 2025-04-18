@@ -10,6 +10,6 @@
     </hbox>
     <vbox name="GameOver" origin="0.5,0.5" hide="true">
         <text origin="0.5,0" fontsize="64">GAME OVER</text>
-        <button name="RetryButton" origin="0.5,0" margin="0.02,0,0,0" padding="0,0.015" bdwidth="2" bdcolor="#0080ff" bgcolor="#300080ff" fgcolor="#ffff80">Retry</button>
+        <button name="RetryButton" origin="0.5,0" margin="0.02,0,0,0" padding="0,0.015" bdwidth="0.003" bdcolor="#0080ff" bgcolor="#300080ff" fgcolor="#ffff80">Retry</button>
     </vbox>
 </widget>
