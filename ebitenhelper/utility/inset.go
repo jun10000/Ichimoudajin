@@ -38,3 +38,15 @@ func NewInsetFromString(str string) Inset {
 	fs, _ := StringToFloatSlice(ss)
 	return NewInset(fs)
 }
+
+func (i Inset) MulF(value float64) Inset {
+	return Inset{i.Top * value, i.Right * value, i.Bottom * value, i.Left * value}
+}
+
+func (i Inset) DivF(value float64) Inset {
+	if value == 0 {
+		return Inset{}
+	}
+
+	return Inset{i.Top / value, i.Right / value, i.Bottom / value, i.Left / value}
+}

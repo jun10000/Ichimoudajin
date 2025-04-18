@@ -28,6 +28,8 @@ type WidgetBaseXML struct {
 }
 
 func (x WidgetBaseXML) Convert() *WidgetBase {
+	const unit float64 = 100
+
 	fontFamilies := make([]*text.GoTextFaceSource, 0, utility.InitialWidgetFontCap)
 	if x.FontFiles != nil {
 		for _, s := range strings.Split(*x.FontFiles, ",") {
@@ -35,17 +37,23 @@ func (x WidgetBaseXML) Convert() *WidgetBase {
 		}
 	}
 
+	fontSize := x.FontSize
+	if fontSize != nil {
+		v := *fontSize / unit
+		fontSize = &v
+	}
+
 	return &WidgetBase{
 		fontFamilies: fontFamilies,
-		fontSize:     x.FontSize,
+		fontSize:     fontSize,
 
 		Name:            x.Name,
-		Origin:          utility.NewVectorFromString(x.Origin),
-		Offset:          utility.NewVectorFromString(x.Offset),
-		Margin:          utility.NewInsetFromString(x.Margin),
-		Padding:         utility.NewInsetFromString(x.Padding),
+		Origin:          utility.NewVectorFromString(x.Origin).DivF(unit),
+		Offset:          utility.NewVectorFromString(x.Offset).DivF(unit),
+		Margin:          utility.NewInsetFromString(x.Margin).DivF(unit),
+		Padding:         utility.NewInsetFromString(x.Padding).DivF(unit),
 		IsHide:          x.IsHide,
-		BorderWidth:     x.BorderWidth,
+		BorderWidth:     x.BorderWidth / unit,
 		BorderColor:     utility.HexStringToColor(x.BorderColor, utility.ColorTransparent),
 		BackgroundColor: utility.HexStringToColor(x.BackgroundColor, utility.ColorTransparent),
 		ForegroundColor: utility.HexStringToColor(x.ForegroundColor, utility.ColorWhite),
