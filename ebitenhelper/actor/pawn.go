@@ -2,7 +2,6 @@ package actor
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
@@ -68,12 +67,7 @@ func (g ActorGeneratorStruct) NewPawn1(options *NewActorOptions) *Pawn {
 }
 
 func (a *Pawn) BeginPlay() {
-	d, ok := utility.GetFirstActor[*Destroyer]()
-	if !ok {
-		log.Panicln("actor 'Destroyer' is not found")
-	}
-
-	a.actorDestroyer = d
+	a.actorDestroyer = utility.GetFirstActorP[*Destroyer]()
 	a.widgetHP = widget.GetWidgetObjectByNameP[*widget.WidgetText]("mainwidget", "HPText")
 	a.widgetGameOver = widget.GetWidgetObjectByNameP[*widget.WidgetVBox]("mainwidget", "GameOver")
 }

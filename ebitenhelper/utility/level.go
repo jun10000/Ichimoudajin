@@ -182,6 +182,15 @@ func GetFirstActor[T Actor]() (actor T, ok bool) {
 	return *new(T), false
 }
 
+func GetFirstActorP[T Actor]() T {
+	a, ok := GetFirstActor[T]()
+	if !ok {
+		log.Panicf("actor '%T' is not found", *new(T))
+	}
+
+	return a
+}
+
 func GetActorsByName[T Actor](name string) func(yield func(T) bool) {
 	return func(yield func(T) bool) {
 		l := GetLevel()
