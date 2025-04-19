@@ -3,7 +3,6 @@ package widget
 import (
 	"encoding/xml"
 	"log"
-	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/jun10000/Ichimoudajin/assets"
@@ -12,48 +11,43 @@ import (
 )
 
 type WidgetBaseXML struct {
-	Name            string  `xml:"name,attr"`
-	Origin          string  `xml:"origin,attr"`
-	Offset          string  `xml:"offset,attr"`
-	Margin          string  `xml:"margin,attr"`
-	Padding         string  `xml:"padding,attr"`
-	IsHide          bool    `xml:"hide,attr"`
-	BorderWidth     float64 `xml:"bdwidth,attr"`
-	BorderColor     string  `xml:"bdcolor,attr"`
-	BackgroundColor string  `xml:"bgcolor,attr"`
-	ForegroundColor string  `xml:"fgcolor,attr"`
-
-	FontFiles *string  `xml:"fontfiles,attr"`
-	FontSize  *float64 `xml:"fontsize,attr"`
+	Name            string   `xml:"name,attr"`
+	Origin          string   `xml:"origin,attr"`
+	Offset          string   `xml:"offset,attr"`
+	Margin          string   `xml:"margin,attr"`
+	Padding         string   `xml:"padding,attr"`
+	IsHide          bool     `xml:"hide,attr"`
+	BorderWidth     float64  `xml:"bdwidth,attr"`
+	BorderColor     string   `xml:"bdcolor,attr"`
+	BackgroundColor string   `xml:"bgcolor,attr"`
+	ForegroundColor string   `xml:"fgcolor,attr"`
+	FontFiles       *string  `xml:"fontfiles,attr"`
+	FontSize        *float64 `xml:"fontsize,attr"`
 }
 
 func (x WidgetBaseXML) Convert() *WidgetBase {
-	const unit float64 = 100
-
+	// fontfiles
 	fontFamilies := make([]*text.GoTextFaceSource, 0, utility.InitialWidgetFontCap)
 	if x.FontFiles != nil {
-		for _, s := range strings.Split(*x.FontFiles, ",") {
-			fontFamilies = append(fontFamilies, utility.GetFontFromFileP(s))
-		}
+		fontFamilies = utility.AppendFontFamiliesFromFilePathsString(fontFamilies, *x.FontFiles)
 	}
 
+	// fontsize
 	fontSize := x.FontSize
 	if fontSize != nil {
-		v := *fontSize / unit
-		fontSize = &v
+		*fontSize /= utility.WidgetFloatUnit
 	}
 
 	return &WidgetBase{
-		fontFamilies: fontFamilies,
-		fontSize:     fontSize,
-
+		fontFamilies:    fontFamilies,
+		fontSize:        fontSize,
 		Name:            x.Name,
-		Origin:          utility.NewVectorFromString(x.Origin).DivF(unit),
-		Offset:          utility.NewVectorFromString(x.Offset).DivF(unit),
-		Margin:          utility.NewInsetFromString(x.Margin).DivF(unit),
-		Padding:         utility.NewInsetFromString(x.Padding).DivF(unit),
+		Origin:          utility.NewVectorFromString(x.Origin, utility.WidgetFloatUnit),
+		Offset:          utility.NewVectorFromString(x.Offset, utility.WidgetFloatUnit),
+		Margin:          utility.NewInsetFromString(x.Margin, utility.WidgetFloatUnit),
+		Padding:         utility.NewInsetFromString(x.Padding, utility.WidgetFloatUnit),
 		IsHide:          x.IsHide,
-		BorderWidth:     x.BorderWidth / unit,
+		BorderWidth:     x.BorderWidth / utility.WidgetFloatUnit,
 		BorderColor:     utility.HexStringToColor(x.BorderColor, utility.ColorTransparent),
 		BackgroundColor: utility.HexStringToColor(x.BackgroundColor, utility.ColorTransparent),
 		ForegroundColor: utility.HexStringToColor(x.ForegroundColor, utility.ColorWhite),

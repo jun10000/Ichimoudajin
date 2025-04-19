@@ -20,14 +20,18 @@ func NewVectorPtr(x float64, y float64) *Vector {
 	return &Vector{X: x, Y: y}
 }
 
-func NewVectorFromString(str string) Vector {
+func NewVectorFromString(str string, unit float64) Vector {
+	if unit == 0 {
+		return ZeroVector()
+	}
+
 	ss := strings.Split(str, ",")
 	fs, _ := StringToFloatSlice(ss)
 	if len(fs) != 2 {
 		return ZeroVector()
 	}
 
-	return Vector{fs[0], fs[1]}
+	return Vector{fs[0] / unit, fs[1] / unit}
 }
 
 func RandomVector() Vector {

@@ -26,6 +26,7 @@ var (
 	AIValidOffset              = 0.5
 	AIMaxTaskCount             = 1
 	GamepadDeadZone            = 0.2
+	WidgetFloatUnit            = 100.0
 
 	ColorRed         = RGB{0xff, 0x00, 0x00}
 	ColorOrange      = RGB{0xff, 0x80, 0x00}

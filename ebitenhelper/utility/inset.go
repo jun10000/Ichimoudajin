@@ -33,20 +33,16 @@ func NewInset(values []float64) Inset {
 	return ret
 }
 
-func NewInsetFromString(str string) Inset {
-	ss := strings.Split(str, ",")
-	fs, _ := StringToFloatSlice(ss)
-	return NewInset(fs)
-}
-
-func (i Inset) MulF(value float64) Inset {
-	return Inset{i.Top * value, i.Right * value, i.Bottom * value, i.Left * value}
-}
-
-func (i Inset) DivF(value float64) Inset {
-	if value == 0 {
+func NewInsetFromString(str string, unit float64) Inset {
+	if unit == 0 {
 		return Inset{}
 	}
 
-	return Inset{i.Top / value, i.Right / value, i.Bottom / value, i.Left / value}
+	ss := strings.Split(str, ",")
+	fs, _ := StringToFloatSlice(ss)
+	for i := range fs {
+		fs[i] /= unit
+	}
+
+	return NewInset(fs)
 }

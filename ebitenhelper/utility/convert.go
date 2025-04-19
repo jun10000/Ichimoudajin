@@ -5,9 +5,11 @@ import (
 	"image/color"
 	"reflect"
 	"strconv"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 var (
@@ -114,4 +116,15 @@ func StringToFloatSlice(strings []string) ([]float64, error) {
 	}
 
 	return ret, nil
+}
+
+func AppendFontFamiliesFromFilePathsString(in []*text.GoTextFaceSource, pathsString string) []*text.GoTextFaceSource {
+	for _, s := range strings.Split(pathsString, ",") {
+		f, err := GetFontFromFile(s)
+		if err == nil {
+			in = append(in, f)
+		}
+	}
+
+	return in
 }
