@@ -1,6 +1,8 @@
 package widget
 
 import (
+	"log"
+
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
 
@@ -21,4 +23,13 @@ func GetWidgetObjectByName[T WidgetObjecter](actorName string, objectName string
 	}
 
 	return wo, true
+}
+
+func GetWidgetObjectByNameP[T WidgetObjecter](actorName string, objectName string) T {
+	o, ok := GetWidgetObjectByName[T](actorName, objectName)
+	if !ok {
+		log.Panicf("widget object '%s' is not found", objectName)
+	}
+
+	return o
 }

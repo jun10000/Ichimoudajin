@@ -3,7 +3,6 @@ package actor
 import (
 	"fmt"
 	"image/color"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
@@ -57,12 +56,7 @@ func (a *Destroyer) ZOrder() int {
 }
 
 func (a *Destroyer) BeginPlay() {
-	wPoint, ok := widget.GetWidgetObjectByName[*widget.WidgetText]("mainwidget", "PointText")
-	if !ok {
-		log.Panicln("widget object 'PointText' is not found")
-	}
-
-	a.widget = wPoint
+	a.widget = widget.GetWidgetObjectByNameP[*widget.WidgetText]("mainwidget", "PointText")
 }
 
 func (a *Destroyer) Tick() {

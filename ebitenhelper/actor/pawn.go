@@ -73,19 +73,9 @@ func (a *Pawn) BeginPlay() {
 		log.Panicln("actor 'Destroyer' is not found")
 	}
 
-	whp, ok := widget.GetWidgetObjectByName[*widget.WidgetText]("mainwidget", "HPText")
-	if !ok {
-		log.Panicln("widget object 'HPText' is not found")
-	}
-
-	wgo, ok := widget.GetWidgetObjectByName[*widget.WidgetVBox]("mainwidget", "GameOver")
-	if !ok {
-		log.Panicln("widget object 'GameOver' is not found")
-	}
-
 	a.actorDestroyer = d
-	a.widgetHP = whp
-	a.widgetGameOver = wgo
+	a.widgetHP = widget.GetWidgetObjectByNameP[*widget.WidgetText]("mainwidget", "HPText")
+	a.widgetGameOver = widget.GetWidgetObjectByNameP[*widget.WidgetVBox]("mainwidget", "GameOver")
 }
 
 func (a *Pawn) ReceiveMouseButtonInput(button ebiten.MouseButton, state utility.PressState, pos utility.Point) {
