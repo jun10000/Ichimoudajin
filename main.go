@@ -34,7 +34,7 @@ func NewStage1() *utility.Level {
 }
 
 func main() {
-	utility.SetWindowTitle("Ichimoudajin")
+	utility.SetWindowTitle("Ichimoudajin 0.0.2")
 	utility.SetScreenSize(32*40, 32*22)
 	utility.PlayGame(&GameInstance{}, NewStage1())
 }

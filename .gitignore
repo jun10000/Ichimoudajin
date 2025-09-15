@@ -5,5 +5,7 @@ ichimoudajin.wasm
 ichimoudajin.exe
 
 /assets/*.pfd
-/assets/images
-/assets/fonts
+/assets/images/*
+!/assets/images/README.txt
+/assets/fonts/*
+!/assets/fonts/README.txt
