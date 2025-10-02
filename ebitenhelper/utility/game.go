@@ -3,12 +3,12 @@ package utility
 import (
 	"errors"
 	"image/color"
+	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
-	"github.com/jun10000/Ichimoudajin/assets"
 )
 
 const (
@@ -76,6 +76,24 @@ var (
 	DebugIsShowAIPath = false
 	DebugAIPathColor  = ColorGreen.ToNRGBA(0x30)
 )
+
+var assetFS fs.FS
+
+func SetAssetFS(fsys fs.FS) {
+	if fsys == nil {
+		panic("Asset filesystem is nil")
+	}
+
+	assetFS = fsys
+}
+
+func OpenAssetFile(filename string) (fs.File, error) {
+	return assetFS.Open(filename)
+}
+
+func GetAssetData(filename string) ([]byte, error) {
+	return fs.ReadFile(assetFS, filename)
+}
 
 var windowTitle = "Game"
 
@@ -162,7 +180,13 @@ func GetImageFromFile(filename string) (*ebiten.Image, error) {
 		return img, nil
 	}
 
-	img, _, err := ebitenutil.NewImageFromFileSystem(assets.Assets, filename)
+	f, err := OpenAssetFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	img, _, err := ebitenutil.NewImageFromReader(f)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +208,7 @@ func GetFontFromFile(filename string) (*text.GoTextFaceSource, error) {
 		return ff, nil
 	}
 
-	f, err := assets.Assets.Open(filename)
+	f, err := OpenAssetFile(filename)
 	if err != nil {
 		return nil, err
 	}

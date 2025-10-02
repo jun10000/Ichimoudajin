@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/jun10000/Ichimoudajin/assets"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/tilemap"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/widget"
@@ -34,6 +35,7 @@ func NewStage1() *utility.Level {
 }
 
 func main() {
+	utility.SetAssetFS(assets.Assets)
 	utility.SetWindowTitle("Ichimoudajin 0.0.2")
 	utility.SetScreenSize(32*40, 32*22)
 	utility.PlayGame(&GameInstance{}, NewStage1())

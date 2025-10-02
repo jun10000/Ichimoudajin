@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/jun10000/Ichimoudajin/assets"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/actor"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -281,7 +280,7 @@ func GetTiledFileName(levelName string) string {
 }
 
 func GetTileMap(levelName string) *TileMap {
-	xmlData, err := assets.Assets.ReadFile(GetTiledFileName(levelName))
+	xmlData, err := utility.GetAssetData(GetTiledFileName(levelName))
 	utility.PanicIfError(err)
 
 	ret := &TileMap{}

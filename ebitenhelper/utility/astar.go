@@ -8,8 +8,6 @@ import (
 	"slices"
 
 	"maps"
-
-	"github.com/jun10000/Ichimoudajin/assets"
 )
 
 type AStarNode struct {
@@ -167,18 +165,18 @@ func (a *AStar) setCache(start Point, goal Point, value []Point) {
 }
 
 func (a *AStar) LoadCache(filename string) error {
-	f, err := assets.Assets.Open(filename)
+	f, err := OpenAssetFile(filename)
 	if err != nil {
 		return err
 	}
-
 	defer f.Close()
+
 	g, err := gzip.NewReader(f)
 	if err != nil {
 		return err
 	}
-
 	defer g.Close()
+
 	d := gob.NewDecoder(g)
 	m := map[AStarResultKey][]Point{}
 	err = d.Decode(&m)

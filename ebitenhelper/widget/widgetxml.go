@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
-	"github.com/jun10000/Ichimoudajin/assets"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/component"
 	"github.com/jun10000/Ichimoudajin/ebitenhelper/utility"
 )
@@ -156,7 +155,7 @@ func (x WidgetXML) ToActor(name string) *Widget {
 }
 
 func NewWidgetByFile(name string) (*Widget, error) {
-	xmlByteData, err := assets.Assets.ReadFile(name + ".xml")
+	xmlByteData, err := utility.GetAssetData(name + ".xml")
 	if err != nil {
 		return nil, err
 	}
